@@ -1,7 +1,7 @@
 {
-  "name": "@eth-proxy/client",
+  "name": "@eth-proxy/event-loader",
   "version": "0.1.10",
-  "description": "Proxy for ethereum blockchain",
+  "description": "Enhancers for loading events",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "publishConfig": {
@@ -13,14 +13,8 @@
     "postpublish": "rimraf dist"
   },
   "dependencies": {
-    "ethjs-abi": "0.1.8",
     "ramda": "0.25.0",
-    "redux": "^3.7.2",
-    "redux-observable": "^0.17.0",
-    "reselect": "^3.0.1",
     "rxjs": "5.5.2",
-    "truffle-blockchain-utils": "^0.0.3",
-    "truffle-contract-schema": "^0.0.5",
     "web3": "^0.20.1"
   }
 }
