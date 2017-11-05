@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2015",
+    "declaration": true,
+    "moduleResolution": "node",
+    "lib": ["es2017"],
+    "baseUrl": "./packages",
+    "paths": {
+      "@eth-proxy/*": ["./*/"]
+    }
+  },
+  "exclude": ["node_modules", "**/*/node_modules"],
+  "compileOnSave": false,
+  "buildOnSave": false
+}

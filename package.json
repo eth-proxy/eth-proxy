@@ -1,0 +1,27 @@
+{
+	"name": "@eth-proxy/platform",
+	"version": "0.0.0",	
+	"description": "monorepo for eth-proxy development",
+	"private": true,
+	"scripts": {
+		"bootstrap": "lerna bootstrap",
+    "compile": "./node_modules/.bin/tsc",
+    "test": "./node_modules/.bin/mocha --require ts-node/register ./src/**/*.spec.ts --watch-extensions ts",
+    "test:watch": "npm test -- --watch"
+	},
+	"workspaces": [
+    "packages/*"
+  ],
+	"devDependencies": {
+		"lerna": "^2.5.1",
+		"@types/chai": "^4.0.4",
+		"@types/mocha": "^2.2.44",
+		"@types/ramda": "0.24.18",
+		"chai": "^4.1.2",
+		"mocha": "^4.0.1",
+		"rxjs-marbles": "^2.1.0",
+		"ts-node": "^3.3.0",
+		"tslint": "5.8.0",
+		"typescript": "2.5.3"
+	}
+}
