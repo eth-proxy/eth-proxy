@@ -22,7 +22,8 @@ import {
   first,
   withLatestFrom,
   filter as rxFilter,
-  mergeMapTo
+  mergeMapTo,
+  combineLatest
 } from "rxjs/operators";
 import { send } from "./send";
 import { Transaction, BlockRange, QueryModel } from "../model";
@@ -58,13 +59,13 @@ export const query = (
   );
 
   return contracts$.pipe(
-    withLatestFrom(
+    combineLatest(
+      store.select(getLatestBlockNumber),
       web3Proxy$,
-      store.select(getLatestBlockNumber).let(rxFilter(x => !!x)),
-      store.select(getLogDecoder),
       store.select(getFiltersNotQueriedForMany)
     ),
-    mergeMap(([contracts, web3, toBlock, logDecoder, filterDone]) => {
+    rxFilter(args => args.every(x => !!x)),
+    mergeMap(([contracts, toBlock, web3, rejectDone]) => {
       const addresses = map(c => c.address, contracts);
       const genesis = reduce<number, number>(
         min,
@@ -72,7 +73,7 @@ export const query = (
         map(c => c.genesisBlock, contracts)
       );
 
-      const omittedAlreadyDone = filterDone(
+      const omittedAlreadyDone = rejectDone(
         addresses.map(address => ({
           address,
           range: [genesis, toBlock] as BlockRange
@@ -100,7 +101,9 @@ export const query = (
         )
       ).pipe(
         rxMap(flatten),
-        rxMap(logDecoder),
+        withLatestFrom(store.select(getLogDecoder), (logs, decoder) =>
+          decoder(logs)
+        ),
         rxMap(events => [{ range: [genesis, toBlock], events }]),
         tap(([{ range, events }]) => {
           const results = addresses.map(address => ({
