@@ -1,9 +1,12 @@
 {
   "name": "@eth-proxy/rx-web3",
-  "version": "0.0.1-0",
+  "version": "0.0.1-1",
   "description": "Web3 using rxjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "ramda": "0.25.0",
     "rxjs": "5.5.2",

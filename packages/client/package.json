@@ -1,9 +1,12 @@
 {
   "name": "@eth-proxy/client",
-  "version": "0.0.1-0",
+  "version": "0.0.1-1",
   "description": "Proxy for ethereum blockchain",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "ethjs-abi": "0.1.8",
     "ramda": "0.25.0",
