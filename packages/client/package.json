@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/client",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Proxy for ethereum blockchain",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -12,13 +12,14 @@
     "prepublish": "npm run compile",
     "postpublish": "rimraf dist"
   },
-  "dependencies": {
+  "peerDependencies": {
+    "@eth-proxy/rx-web3": "^0.1.12",
     "ethjs-abi": "0.1.8",
-    "ramda": "0.25.0",
+    "ramda": "^0.25.0",
     "redux": "^3.7.2",
     "redux-observable": "^0.17.0",
     "reselect": "^3.0.1",
-    "rxjs": "5.5.2",
+    "rxjs": "^5.5.2",
     "truffle-blockchain-utils": "^0.0.3",
     "truffle-contract-schema": "^0.0.5",
     "web3": "^0.20.1"
