@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/client",
-  "version": "0.1.18-y.2",
+  "version": "0.1.18-y.3",
   "description": "Proxy for ethereum blockchain",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
