@@ -4,7 +4,7 @@
     "target": "es2015",
     "declaration": true,
     "moduleResolution": "node",
-    "lib": ["es2017"],
+    "lib": ["es2017", "dom"],
     "baseUrl": "./packages",
     "paths": {
       "@eth-proxy/*": ["./*/"]

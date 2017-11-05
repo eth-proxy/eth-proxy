@@ -4,8 +4,8 @@
     "target": "es2015",
     "declaration": true,
     "outDir": "./dist",
-    "lib": ["es2017"],
-    "sourceMap": true,
-    "include": ["**/*"]
-  }
+    "lib": ["es2017", "dom"],
+    "sourceMap": true
+  },
+  "include": ["**/*"]
 }
