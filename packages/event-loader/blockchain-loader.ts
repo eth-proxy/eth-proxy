@@ -6,6 +6,8 @@ import { Reader, EventFilter } from "./model";
 import { Subject } from "rxjs/Subject";
 import { getEvents } from "@eth-proxy/rx-web3";
 import "rxjs/add/Observable/merge";
+import "rxjs/add/Observable/of";
+import "rxjs/add/operator/let";
 
 const rangeSize = 10000;
 

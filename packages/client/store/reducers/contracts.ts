@@ -12,7 +12,8 @@ import {
   fromPairs,
   mapObjIndexed,
   keys,
-  filter
+  filter,
+  all
 } from "ramda";
 import * as Web3 from "web3";
 import { ContractInfo, QueryModel } from "../../model";
@@ -66,12 +67,18 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
 
   const getUserModelToFilter = createSelector(getModule, userModelToFilter);
 
-  const getContractsFromQueryModel = (userModel: QueryModel) => createSelector(
-    getUserModelToFilter,
-    getContractForNameOrAddress,
-    (userModelToFilter, contractsFromNames) => pipe(userModelToFilter, keys, map(contractsFromNames))(userModel)
-  )
+  const getContractsFromQueryModel = (userModel: QueryModel) =>
+    createSelector(
+      getUserModelToFilter,
+      getContractForNameOrAddress,
+      (userModelToFilter, contractsFromNames) =>
+        pipe(userModelToFilter, keys, map(contractsFromNames))(userModel)
+    );
 
+  const getHasContracts = (nameOrAddress: string[]) => createSelector(
+    getContractForNameOrAddress,
+    (getContract) => pipe(map(getContract), all(x => !!x))(nameOrAddress)
+  )
   return {
     getContractFromNameOrAddress: (nameOrAddress: string) => (state: T) =>
       getContractForNameOrAddress(state)(nameOrAddress),
@@ -80,7 +87,8 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
       getModule,
       pipe(values, map(c => c.abi), flatten)
     ),
-    getContractsFromQueryModel
+    getContractsFromQueryModel,
+    getHasContracts
   };
 };
 

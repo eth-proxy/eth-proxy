@@ -27,7 +27,8 @@ export const {
   getContractFromNameOrAddress,
   getContractsFromNamesOrAddresses,
   getAllAbis,
-  getContractsFromQueryModel
+  getContractsFromQueryModel,
+  getHasContracts
 } = fromContracts.getSelectors<State>(m => m.contracts);
 
 export const { getActiveAccount } = fromAccounts.getSelectors<State>(

@@ -1413,7 +1413,7 @@ q@^1.4.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
 
-ramda@0.25.0:
+ramda@0.25.0, ramda@^0.25.0:
   version "0.25.0"
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.25.0.tgz#8fdf68231cffa90bc2f9460390a0cb74a29b29a9"
 
@@ -1577,7 +1577,7 @@ rxjs-marbles@^2.1.0:
     "@types/lodash-es" "^4.0.0"
     lodash-es "^4.0.0"
 
-rxjs@5.5.2:
+rxjs@5.5.2, rxjs@^5.0.0, rxjs@^5.5.2:
   version "5.5.2"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.5.2.tgz#28d403f0071121967f18ad665563255d54236ac3"
   dependencies:

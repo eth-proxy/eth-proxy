@@ -12,7 +12,8 @@ import {
   createQueryEventsSuccess,
   getFiltersNotQueriedForMany,
   createQueryEvents,
-  getContractsFromQueryModel
+  getContractsFromQueryModel,
+  whenContractsRegistered$
 } from "../store";
 import {
   mergeMap,
@@ -20,7 +21,8 @@ import {
   map as rxMap,
   first,
   withLatestFrom,
-  filter as rxFilter
+  filter as rxFilter,
+  mergeMapTo
 } from "rxjs/operators";
 import { send } from "./send";
 import { Transaction, BlockRange, QueryModel } from "../model";
@@ -41,16 +43,19 @@ import {
   keys
 } from "ramda";
 import { getEvents } from "@eth-proxy/rx-web3";
-import 'rxjs/add/Observable/forkJoin';
+import "rxjs/add/Observable/forkJoin";
 
 export const query = (
   store: ObservableStore<State>,
   web3Proxy$: Observable<Web3>,
   getEvents: (web3: Web3, filter: Web3.FilterObject) => Observable<any[]>
 ) => (queryModel: QueryModel): Observable<any> => {
-  const contracts$ = store
-    .select(getContractsFromQueryModel(queryModel))
-    .pipe(first(all(x => !!x)));
+  const contracts$ = store.let(
+    whenContractsRegistered$(
+      keys(queryModel.deps),
+      getContractsFromQueryModel(queryModel)
+    )
+  );
 
   return contracts$.pipe(
     withLatestFrom(
