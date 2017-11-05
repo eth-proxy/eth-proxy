@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/platform-browser",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "@eth-proxy/client utilities for browser",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -12,7 +12,7 @@
     "prepublish": "npm run compile",
     "postpublish": "rimraf dist"
   },
-  "peerDependencies": {
+  "dependencies": {
     "ramda": "^0.25.0",
     "rxjs": "^5.5.2",
     "web3": "^0.20.1"
