@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/rx-web3",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Web3 using rxjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,7 +9,8 @@
   },
   "scripts": {
     "compile": "tsc -p tsconfig.build.json",
-    "prepublish": "npm run compile"
+    "prepublish": "npm run compile",
+    "postpublish": "rimraf dist"
   },
   "dependencies": {
     "ramda": "0.25.0",
