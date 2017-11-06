@@ -42,22 +42,34 @@ import { first, mergeMapTo } from "rxjs/operators";
 import "rxjs/add/Observable/timer";
 import { query } from "./modules/query";
 import { read, DataReader, ReadStrategy } from "./modules/read";
-import * as Web3 from 'web3';
+import * as Web3 from "web3";
+import { curry, curryN } from "ramda";
+
+export type Exec1 = <T extends { name: string; method: string; args: any }>(
+  nameOrAddress: T["name"],
+  method: T["method"],
+  args: T["args"],
+  tx_params?: any
+) => Observable<any>;
+
+export type Exec2 = <T extends { name: string }>(
+  nameOrAddress: T["name"]
+) => <V extends keyof T>(
+  method: V,
+  args: T[V],
+  tx_params?: any
+) => Observable<any>;
 
 export class EthProxy {
   registerContract: (abi, options: RegisterContractOptions) => void;
-  exec: (
-    nameOrAddress: string,
-    method: string,
-    args?: any,
+  exec: Exec1 | Exec2;
+  call: <T extends { name: string }>(
+    nameOrAddress: T["name"]
+  ) => <V extends keyof T>(
+    method: V,
+    args: T[V],
     tx_params?: any
   ) => Observable<any>;
-  call: (
-    nameOrAddress: string,
-    method: string,
-    args?: any,
-    tx_params?: any
-  ) => Promise<any>;
   // rxweb3
   getBalance: (account: string) => any;
   getLatestBlock: () => any;
@@ -102,17 +114,16 @@ export function createProxy(
   return {
     provider$: replayProvider$,
     registerContract: registerContract(store),
-    
-    exec: exec(store, web3Proxy$),
-    call: call(store, web3Proxy$),
+
+    exec: curryN(3, exec(store, web3Proxy$)) as any,
+    call: curryN(3, call(store, web3Proxy$)) as any,
     query: query(store, web3Proxy$, options.eventReader),
-    read: <T>(readDef: DataReader<T>, strategy?: ReadStrategy) => web3Proxy$.pipe(
-      mergeMap(web3 => read(store)(web3)(readDef, strategy))
-    ),
+    read: <T>(readDef: DataReader<T>, strategy?: ReadStrategy) =>
+      web3Proxy$.pipe(mergeMap(web3 => read(store)(web3)(readDef, strategy))),
 
     network$: store.let(getDetectedNetwork$),
     defaultAccount$: store.select(getActiveAccount),
-    
+
     // switch to readers
     getBalance: account => web3Proxy$.pipe(mergeMap(getBalance(account))),
     getLatestBlock: () => web3Proxy$.pipe(mergeMap(getLatestBlock)),
@@ -121,10 +132,9 @@ export function createProxy(
       store
         .select(getContractFromNameOrAddress(nameOrAddress))
         .pipe(first(x => !!x)),
-    
-    // To be removed
-    events$: store.let(getUniqEvents$),
 
+    // To be removed
+    events$: store.let(getUniqEvents$)
   };
 }
 

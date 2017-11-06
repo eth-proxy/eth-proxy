@@ -140,7 +140,6 @@ This is a query model, to search for events we have to do proxy.query(allItemsQu
 we will recive event stream of all events that are matching the query. 
 Also thanks to event caching, if we execute it twice, only new mined blocks will be fetched, what we already fetched will be taken from memory.
 
-
 API
 
 Eth-proxy/client
