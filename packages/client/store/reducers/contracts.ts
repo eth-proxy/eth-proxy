@@ -51,7 +51,7 @@ const contractForRef = (state: State) => (ref: ContractRef) =>
   pipe(
     values,
     find<ContractInfo>(c =>
-      caseInsensitiveCompare(c.name, ref instanceof String ? ref : ref.name)
+      caseInsensitiveCompare(c.name, ref instanceof String ? ref : ref.interface)
     )
   )(state);
 

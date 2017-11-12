@@ -133,8 +133,8 @@ declare module 'rxjs/Observable' {
 
 export type NameRef<T extends string> = T;
 export type InterfaceRef<T extends string> = {
-  name: T;
-  interface: string;
+  interface: T;
+  address: string;
 };
 
 export type ContractRef<T extends string = string> = NameRef<T> | InterfaceRef<T>

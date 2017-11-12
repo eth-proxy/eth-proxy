@@ -37,7 +37,8 @@ import {
   ContractInfo,
   EthProxyOptions,
   QueryModel,
-  ContractRef
+  ContractRef,
+  InterfaceRef
 } from "./model";
 import { first, mergeMapTo } from "rxjs/operators";
 import "rxjs/add/Observable/timer";
