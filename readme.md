@@ -140,6 +140,31 @@ This is a query model, to search for events we have to do proxy.query(allItemsQu
 we will recive event stream of all events that are matching the query. 
 Also thanks to event caching, if we execute it twice, only new mined blocks will be fetched, what we already fetched will be taken from memory.
 
+Typescript interfaces
+
+EthProxy can takes a generic parameter with definition of app contracts which should look like
+```
+interface Contracts {
+  Contract1 : {
+    does1(nb: number): Observable<12>;
+    doesNot1(nb: string): Observable<"12">;
+  },
+  Contract2: {
+    does3(nb: number): Observable<12>;
+    doesNot4(nb: string): Observable<"12">;
+  }
+}
+```
+When using exec or call it will check if types are correct
+
+```
+proxy = createProxy<Contracts>();
+proxy.exec('Contract3') // Error
+proxy.exec('Contract1')('does3'); // Error
+proxy.exec('Contract1')('does1')({}); // Error
+proxy.exec('Contract1')('does1')(12); // Correct
+```
+
 API
 
 Eth-proxy/client

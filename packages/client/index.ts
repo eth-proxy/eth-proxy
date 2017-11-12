@@ -45,31 +45,19 @@ import { read, DataReader, ReadStrategy } from "./modules/read";
 import * as Web3 from "web3";
 import { curry, curryN } from "ramda";
 
-export type Exec1 = <T extends { name: string; method: string; args: any }>(
-  nameOrAddress: T["name"],
-  method: T["method"],
-  args: T["args"],
-  tx_params?: any
-) => Observable<any>;
 
-export type Exec2 = <T extends { name: string }>(
-  nameOrAddress: T["name"]
-) => <V extends keyof T>(
-  method: V,
-  args: T[V],
-  tx_params?: any
-) => Observable<any>;
-
-export class EthProxy {
+export class EthProxy<T> {
   registerContract: (abi, options: RegisterContractOptions) => void;
-  exec: Exec1 | Exec2;
-  call: <T extends { name: string }>(
-    nameOrAddress: T["name"]
-  ) => <V extends keyof T>(
-    method: V,
-    args: T[V],
-    tx_params?: any
-  ) => Observable<any>;
+  exec: <CK extends keyof T>(
+    nameOrAddress: CK
+  ) => <MK extends keyof T[CK]>(
+    method: MK
+  ) => T[CK][MK];
+  call: <CK extends keyof T>(
+    nameOrAddress: CK
+  ) => <MK extends keyof T[CK]>(
+    method: MK
+  ) => T[CK][MK];
   // rxweb3
   getBalance: (account: string) => any;
   getLatestBlock: () => any;
@@ -92,10 +80,10 @@ const defaultOptions = {
   eventReader: getEvents
 };
 
-export function createProxy(
+export function createProxy<T>(
   provider$: Observable<any>,
   options: EthProxyOptions = defaultOptions
-): EthProxy {
+): EthProxy<T> {
   const replayProvider$ = provider$.pipe(shareReplay(1), take(1));
   const web3Proxy$ = replayProvider$.pipe(map(createWeb3Instance));
 
@@ -124,7 +112,6 @@ export function createProxy(
     network$: store.let(getDetectedNetwork$),
     defaultAccount$: store.select(getActiveAccount),
 
-    // switch to readers
     getBalance: account => web3Proxy$.pipe(mergeMap(getBalance(account))),
     getLatestBlock: () => web3Proxy$.pipe(mergeMap(getLatestBlock)),
     getBlock: arg => web3Proxy$.pipe(mergeMap(getBlock(arg))),

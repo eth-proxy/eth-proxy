@@ -1,0 +1,29 @@
+{
+  "name": "@eth-proxy/codegen",
+  "version": "0.0.0",
+  "description": "Contracts code generation for @eth-proxy/client",
+  "main": "dist/index.js",
+  "bin": "dist/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "compile": "tsc -p tsconfig.build.json",
+    "gen": "rimraf dist && npm run compile && cd dist && node index",
+    "prepublish": "npm run compile",
+    "postpublish": "rimraf dist"
+  },
+  "dependencies": {
+    "ramda": "^0.25.0",
+    "ts-simple-ast": "^0.90.0",
+    "require-dir": "0.3.2",
+    "minimist": "1.2.0",
+    "glob": "7.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "8.0.51",
+    "@types/ramda": "0.25.5",
+    "@types/minimist": "1.2.0",
+    "@types/glob": "5.0.33"
+  }
+}
