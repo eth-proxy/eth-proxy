@@ -18,7 +18,7 @@ import {
 import {
   createSetNetwork,
   getDetectedNetwork$,
-  getContractFromNameOrAddress,
+  getContractFromRef,
   getActiveAccount,
   getUniqEvents$
 } from "./store";
@@ -36,7 +36,8 @@ import {
   FailedTransaction,
   ContractInfo,
   EthProxyOptions,
-  QueryModel
+  QueryModel,
+  ContractRef
 } from "./model";
 import { first, mergeMapTo } from "rxjs/operators";
 import "rxjs/add/Observable/timer";
@@ -45,25 +46,23 @@ import { read, DataReader, ReadStrategy } from "./modules/read";
 import * as Web3 from "web3";
 import { curry, curryN } from "ramda";
 
+export type Exec<T> = <CK extends keyof T>(
+  nameOrAddress: ContractRef<CK>
+) => <MK extends keyof T[CK]>(method: MK) => T[CK][MK];
 
-export class EthProxy<T> {
+export class EthProxy<T = {}> {
   registerContract: (abi, options: RegisterContractOptions) => void;
-  exec: <CK extends keyof T>(
-    nameOrAddress: CK
-  ) => <MK extends keyof T[CK]>(
-    method: MK
-  ) => T[CK][MK];
+
+  exec: Exec<T>;
   call: <CK extends keyof T>(
-    nameOrAddress: CK
-  ) => <MK extends keyof T[CK]>(
-    method: MK
-  ) => T[CK][MK];
+    nameOrAddress: ContractRef<CK>
+  ) => <MK extends keyof T[CK]>(method: MK) => T[CK][MK];
+
   // rxweb3
   getBalance: (account: string) => any;
   getLatestBlock: () => any;
   getBlock: (args) => any;
 
-  //
   provider$: Observable<Web3.Provider>;
   network$: Observable<string>;
   defaultAccount$: Observable<string | undefined>;
@@ -115,9 +114,9 @@ export function createProxy<T>(
     getBalance: account => web3Proxy$.pipe(mergeMap(getBalance(account))),
     getLatestBlock: () => web3Proxy$.pipe(mergeMap(getLatestBlock)),
     getBlock: arg => web3Proxy$.pipe(mergeMap(getBlock(arg))),
-    getContractInfo: (nameOrAddress: string) =>
+    getContractInfo: (ref: ContractRef) =>
       store
-        .select(getContractFromNameOrAddress(nameOrAddress))
+        .select(getContractFromRef(ref))
         .pipe(first(x => !!x)),
 
     // To be removed

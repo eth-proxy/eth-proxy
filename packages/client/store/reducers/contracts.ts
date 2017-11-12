@@ -16,7 +16,7 @@ import {
   all
 } from "ramda";
 import * as Web3 from "web3";
-import { ContractInfo, QueryModel } from "../../model";
+import { ContractInfo, QueryModel, ContractRef } from "../../model";
 import { eventAbiToSignature, eventInputToSignature } from "../../utils";
 
 export interface State {
@@ -47,42 +47,39 @@ export function reducer(
 const caseInsensitiveCompare = (a: string, b: string) =>
   a && b && a.toLowerCase() === b.toLowerCase();
 
-const contractFor = (state: State) => (nameOrAddress: string) =>
+const contractForRef = (state: State) => (ref: ContractRef) =>
   pipe(
     values,
-    find<ContractInfo>(
-      c =>
-        caseInsensitiveCompare(c.name, nameOrAddress) ||
-        caseInsensitiveCompare(c.address, nameOrAddress)
+    find<ContractInfo>(c =>
+      caseInsensitiveCompare(c.name, ref instanceof String ? ref : ref.name)
     )
   )(state);
 
 export const getSelectors = <T>(getModule: (state: T) => State) => {
-  const getContractForNameOrAddress = createSelector(getModule, contractFor);
+  const getContractForRef = createSelector(getModule, contractForRef);
 
-  const getContractsFromNamesOrAddresses = (nameOrAddress: string[]) =>
-    createSelector(getContractForNameOrAddress, getContract =>
-      map(getContract, nameOrAddress)
-    );
+  const getContractsFromRefs = (refs: ContractRef[]) =>
+    createSelector(getContractForRef, getContract => map(getContract, refs));
 
   const getUserModelToFilter = createSelector(getModule, userModelToFilter);
 
   const getContractsFromQueryModel = (userModel: QueryModel) =>
     createSelector(
       getUserModelToFilter,
-      getContractForNameOrAddress,
-      (userModelToFilter, contractsFromNames) =>
-        pipe(userModelToFilter, keys, map(contractsFromNames))(userModel)
+      getContractForRef,
+      (userModelToFilter, contractsFromRefs) =>
+        pipe(userModelToFilter, keys, map(contractsFromRefs))(userModel)
     );
 
-  const getHasContracts = (nameOrAddress: string[]) => createSelector(
-    getContractForNameOrAddress,
-    (getContract) => pipe(map(getContract), all(x => !!x))(nameOrAddress)
-  )
+  const getHasContracts = (res: ContractRef[]) =>
+    createSelector(getContractForRef, getContract =>
+      pipe(map(getContract), all(x => !!x))(res)
+    );
+
   return {
-    getContractFromNameOrAddress: (nameOrAddress: string) => (state: T) =>
-      getContractForNameOrAddress(state)(nameOrAddress),
-    getContractsFromNamesOrAddresses,
+    getContractFromRef: (contractRef: ContractRef) => (state: T) =>
+      getContractForRef(state)(contractRef),
+    getContractsFromRefs,
     getAllAbis: createSelector(
       getModule,
       pipe(values, map(c => c.abi), flatten)
@@ -95,7 +92,9 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
 function userModelToFilter(state: State) {
   return (model: QueryModel) => {
     // wait until contracts are available
-    const namesToAddresses = renameBy(pipe(contractFor(state), x => x.address));
+    const refsToAddresses = renameBy(
+      pipe(contractForRef(state), x => x.address)
+    );
     const eventAbis: Web3.AbiDefinition[] = pipe(
       values,
       map<any, Web3.AbiDefinition[]>(c => c.abi),
@@ -110,7 +109,7 @@ function userModelToFilter(state: State) {
       )(eventAbis);
 
     return pipe(
-      namesToAddresses,
+      refsToAddresses,
       mapObjIndexed(contract => {
         if (contract === "*") {
           return "*";

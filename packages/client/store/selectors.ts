@@ -24,8 +24,8 @@ export const { getNetworkId } = fromNetwork.getSelectors<State>(
 );
 
 export const {
-  getContractFromNameOrAddress,
-  getContractsFromNamesOrAddresses,
+  getContractFromRef,
+  getContractsFromRefs,
   getAllAbis,
   getContractsFromQueryModel,
   getHasContracts

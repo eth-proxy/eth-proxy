@@ -1,7 +1,7 @@
 import * as Web3 from "web3";
 import { Observable } from "rxjs/Observable";
 import { map, concat, mergeMap, distinctUntilKeyChanged } from "rxjs/operators";
-import { head, curry } from "ramda";
+import { head, curry, CurriedFunction2 } from "ramda";
 import "rxjs/add/observable/bindNodeCallback";
 
 export function getNetwork(web3: Web3): Observable<string> {

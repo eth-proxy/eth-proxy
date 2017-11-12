@@ -9,19 +9,19 @@ import {
 } from "../store";
 import { mergeMap, tap, map } from "rxjs/operators";
 import { send } from "./send";
-import { Transaction } from "../model";
+import { Transaction, ContractRef } from "../model";
 
 export const exec = (
   store: ObservableStore<State>,
   web3Proxy$: Observable<Web3>
 ) => (
-  nameOrAddress: string,
+  contractRef: ContractRef,
   method: string,
   args: any,
   tx_params: any
 ): Observable<Transaction> => {
   return send<string>(store, web3Proxy$)(
-    nameOrAddress,
+    contractRef,
     method,
     args,
     tx_params

@@ -52,6 +52,9 @@ export type Transaction =
   | FailedTransaction
   | ConfirmedTransaction;
 
+export type TransactionResult<T> = Observable<Transaction>;
+export type CallResult<T> = Promise<T>;
+
 export interface ContractInfo {
   address: string;
   name: string;
@@ -113,7 +116,6 @@ export type ObservableTransactionResult<T> = Observable<
   TransationResultEvent<T>
 >;
 
-
 export interface ContractDefaults {
   from?: string;
   gas?: string;
@@ -128,3 +130,11 @@ declare module 'rxjs/Observable' {
     on(this: Observable<any>, type: "confirmation", fn: Function): Observable<T>
   }
 }
+
+export type NameRef<T extends string> = T;
+export type InterfaceRef<T extends string> = {
+  name: T;
+  interface: string;
+};
+
+export type ContractRef<T extends string = string> = NameRef<T> | InterfaceRef<T>

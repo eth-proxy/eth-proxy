@@ -5,8 +5,7 @@ import Ast, {
   InterfaceDeclarationStructure,
   PropertySignatureStructure
 } from "ts-simple-ast";
-import * as sample from "../sample.json";
-import { chain, map, toUpper, concat, pipe, flip } from "ramda";
+import { chain, map, toUpper, concat, pipe, flip, assoc, prop } from "ramda";
 import {
   imports,
   getContractInterface,
@@ -15,31 +14,33 @@ import {
   transactionOptions,
   getRootInterface
 } from "./lib";
-import * as requireDir from 'require-dir';
-import * as glob from 'glob';
-import * as argv from 'minimist';
+import * as requireDir from "require-dir";
+import * as glob from "glob";
+import * as argv from "minimist";
+import * as path from "path";
 
 const args = argv(process.argv.slice(2));
 
-const contractsDir = args['contractsDir'] || args['cDir'];
-const outputDir = args['output'] || args['o'];
+const contractsDir = path.join(
+  process.cwd(),
+  args["contractsDir"] || args["cDir"]
+);
+const outputDir = path.join(process.cwd(), args["output"] || args["o"]);
 
 const files = requireDir(contractsDir);
-
-const ast = new Ast();
-
 const contracts = Object.values(files);
-export const contract = (sample as any) as TruffleJson;
 
-const sourceFile = ast.addSourceFileFromStructure(outputDir, {
-  interfaces: [
-    getRootInterface(contracts),
-    ...contracts.map(getContractInterface),
-    ...chain(getInputInterfaces, contracts),
-    ...chain(getOutputInterfaces, contracts),
-    transactionOptions
-  ],
-  imports
-});
+const sourceFile = new Ast()
+  .addSourceFileFromStructure(outputDir, {
+    interfaces: [
+      getRootInterface(contracts),
+      ...map(getContractInterface, contracts),
+      ...chain(getInputInterfaces, contracts),
+      ...chain(getOutputInterfaces, contracts),
+      transactionOptions
+    ].map(assoc("isExported", true)),
+    imports
+  })
+  .insertText(0, "/* tslint:disable */\n");
 
 sourceFile.save();

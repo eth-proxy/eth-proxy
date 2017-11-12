@@ -21,7 +21,7 @@ export function bufferResult({
   );
 
   return result$.pipe(
-    rxMap(prop("result")),
+    rxMap((x : any) => x.result),
     bufferWhen(() => complete$),
     rxMap(flatten)
   );

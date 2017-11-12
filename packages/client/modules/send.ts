@@ -3,19 +3,20 @@ import * as Web3 from "web3";
 import {
   ObservableStore,
   State,
-  getContractFromNameOrAddress,
+  getContractFromRef,
   getDefaultTxParams
 } from "../store";
 import { mergeMap, first, withLatestFrom, map } from "rxjs/operators";
 import { caseInsensitiveCompare } from "../utils";
 import { executeMethod } from "@eth-proxy/rx-web3";
+import { ContractRef } from "../model";
 
 export const send = <T>(
   store: ObservableStore<State>,
   web3Proxy$: Observable<Web3>
-) => (nameOrAddress: string, method: string, args: any, tx_params: any) => {
+) => (contractRef: ContractRef, method: string, args: any, tx_params: any) => {
   const contract$ = store
-    .select(getContractFromNameOrAddress(nameOrAddress))
+    .select(getContractFromRef(contractRef))
     .pipe(first(x => !!x));
 
   return contract$.pipe(

@@ -6,7 +6,7 @@ import {
   getTransactionByTx,
   createTxGenerated,
   createTransactionFailed,
-  getContractsFromNamesOrAddresses,
+  getContractsFromRefs,
   getLatestBlockNumber,
   getLogDecoder,
   createQueryEventsSuccess,

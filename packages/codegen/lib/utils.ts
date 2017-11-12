@@ -5,7 +5,11 @@ export function solidityToJsType(contractType: string) {
   if (contractType.startsWith("uint") || contractType.startsWith("int")) {
     return "BigNumber";
   }
-  if (contractType.startsWith("bytes") || contractType === "address") {
+  if (
+    contractType.startsWith("bytes") ||
+    contractType === "address" ||
+    contractType === "string"
+  ) {
     return "string";
   }
   if (contractType === "bool") {
@@ -33,10 +37,7 @@ export function getProperty({
   };
 }
 
-export function hasComplexInput({
-  inputs,
-  type
-}: AbiDefinition): boolean {
+export function hasComplexInput({ inputs, type }: AbiDefinition): boolean {
   return (
     type === "function" &&
     inputs.length > 1 &&
