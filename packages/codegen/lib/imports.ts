@@ -10,6 +10,9 @@ export const imports = [
       },
       {
         name: "CallResult"
+      },
+      {
+        name: "EventMetadata"
       }
     ],
     moduleSpecifier: "@eth-proxy/client"

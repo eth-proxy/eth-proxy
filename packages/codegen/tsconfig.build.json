@@ -7,5 +7,6 @@
     "lib": ["es2017"],
     "sourceMap": true
   },
-  "include": ["**/*"]
+  "include": ["**/*"],
+  "exclude": ["example/**/*"]
 }

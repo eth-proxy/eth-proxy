@@ -12,7 +12,10 @@ import {
   getInputInterfaces,
   getOutputInterfaces,
   transactionOptions,
-  getRootInterface
+  getRootInterface,
+  getEventInterfaces,
+  getEventTypeAliases,
+  getContractsEventTypeAliases
 } from "./lib";
 import * as requireDir from "require-dir";
 import * as glob from "glob";
@@ -32,14 +35,19 @@ const contracts = Object.values(files);
 
 const sourceFile = new Ast()
   .addSourceFileFromStructure(outputDir, {
+    imports,
     interfaces: [
       getRootInterface(contracts),
       ...map(getContractInterface, contracts),
       ...chain(getInputInterfaces, contracts),
       ...chain(getOutputInterfaces, contracts),
-      transactionOptions
+      transactionOptions,
+      ...chain(getEventInterfaces, contracts)
     ].map(assoc("isExported", true)),
-    imports
+    typeAliases: [
+      ...map(getEventTypeAliases, contracts),
+      getContractsEventTypeAliases(contracts)
+    ].map(assoc("isExported", true))
   })
   .insertText(0, "/* tslint:disable */\n");
 

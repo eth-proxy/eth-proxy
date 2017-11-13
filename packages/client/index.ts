@@ -38,7 +38,8 @@ import {
   EthProxyOptions,
   QueryModel,
   ContractRef,
-  InterfaceRef
+  InterfaceRef,
+  Block
 } from "./model";
 import { first, mergeMapTo } from "rxjs/operators";
 import "rxjs/add/Observable/timer";
@@ -60,16 +61,16 @@ export class EthProxy<T = {}> {
   ) => <MK extends keyof T[CK]>(method: MK) => T[CK][MK];
 
   // rxweb3
-  getBalance: (account: string) => any;
-  getLatestBlock: () => any;
-  getBlock: (args) => any;
+  getBalance: (account: string) => Observable<any>;
+  getLatestBlock: () => Observable<Block>;
+  getBlock: (args) => Observable<Block>;
 
   provider$: Observable<Web3.Provider>;
   network$: Observable<string>;
   defaultAccount$: Observable<string | undefined>;
 
   getContractInfo: (nameOrAddress: string) => Observable<ContractInfo>;
-  query: (queryModel: QueryModel) => Observable<any>;
+  query: (queryModel: QueryModel<T>) => Observable<any>;
 
   events$: Observable<any[]>;
   read: <T>(readDef: DataReader<T>, strategy?: ReadStrategy) => Observable<T>;

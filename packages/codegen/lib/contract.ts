@@ -7,6 +7,7 @@ import { map } from "ramda";
 import {
   toOutputName,
   toInputName,
+  solidityToJsStrictType,
   solidityToJsType,
   hasComplexInput
 } from "./utils";
@@ -45,10 +46,10 @@ const getReturnType = (contractName: string, fun: FunctionDescription) => {
     const param =
       fun.outputs.length > 1
         ? toOutputName(contractName)(fun.name)
-        : solidityToJsType(fun.outputs[0].type);
+        : solidityToJsStrictType(fun.outputs[0].type);
     return `CallResult<${param}>`;
   }
-  return `TransactionResult<any>`;
+  return `TransactionResult<ContractsEvents>`;
 };
 
 const getParams = (

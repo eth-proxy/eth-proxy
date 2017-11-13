@@ -1,7 +1,7 @@
-import { pipe, flip, toUpper, concat } from "ramda";
+import { pipe, flip, toUpper, concat, curry, CurriedFunction2 } from "ramda";
 import { PropertySignatureStructure } from "ts-simple-ast";
 
-export function solidityToJsType(contractType: string) {
+export function solidityToJsStrictType(contractType: string) {
   if (contractType.startsWith("uint") || contractType.startsWith("int")) {
     return "BigNumber";
   }
@@ -20,12 +20,26 @@ export function solidityToJsType(contractType: string) {
   }
 }
 
+export function solidityToJsType(contractType: string) {
+  const strictType = solidityToJsStrictType(contractType);
+  if (strictType === "BigNumber") {
+    return "BigNumber | number";
+  }
+  return strictType;
+}
+
 export const capitalize = (text: string) => text.replace(/^./, toUpper);
 
-export const toInputName = (contractName: string) =>
-  pipe(capitalize, concat(contractName), flip(concat)("Input"));
-export const toOutputName = (contractName: string) =>
-  pipe(capitalize, concat(contractName), flip(concat)("Output"));
+const toName = curry(
+  (postfix: string, contractName: string, name: string) =>
+    `${contractName}${capitalize(name)}${postfix}`
+);
+
+export const toInputName = toName("Input");
+export const toOutputName = toName("Output");
+export const toEventPayloadName = toName("Payload");
+export const toEventName = toName("Event");
+export const toContractEventsName = toName("Events");
 
 export function getProperty({
   name,

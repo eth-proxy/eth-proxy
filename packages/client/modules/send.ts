@@ -22,7 +22,8 @@ export const send = <T>(
   return contract$.pipe(
     withLatestFrom(web3Proxy$),
     mergeMap(([{ abi, address }, web3]) => {
-      const web3MethodRef = web3.eth.contract(abi).at(address)[method];
+      const atAddress = contractRef instanceof String ? address : contractRef.address;
+      const web3MethodRef = web3.eth.contract(abi).at(atAddress)[method];
 
       const orderedArgs = Array.isArray(args)
         ? args

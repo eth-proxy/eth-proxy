@@ -3,6 +3,7 @@ import { Observable } from "rxjs/Observable";
 import { map, concat, mergeMap, distinctUntilKeyChanged } from "rxjs/operators";
 import { head, curry, CurriedFunction2 } from "ramda";
 import "rxjs/add/observable/bindNodeCallback";
+import { BigNumber } from 'bignumber.js';
 
 export function getNetwork(web3: Web3): Observable<string> {
   return Observable.bindNodeCallback<string>(

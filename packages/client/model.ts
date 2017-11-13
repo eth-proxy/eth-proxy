@@ -80,11 +80,11 @@ export interface QueryResult {
   events: any[];
 }
 
-export interface QueryModel {
+export interface QueryModel<T extends {} = {}> {
   name: string;
   deps: {
-    [contractName: string]: {
-      [eventName: string]: {
+    [P in keyof T]: {
+      [V in keyof T[P]]: {
         [inputName: string]: any;
       } | '*';
     } | '*';
@@ -138,3 +138,32 @@ export type InterfaceRef<T extends string> = {
 };
 
 export type ContractRef<T extends string = string> = NameRef<T> | InterfaceRef<T>
+
+export interface Block {
+  author: string;
+  difficulty: any;
+  extraData: string;
+  gasLimit: number;
+  gasUsed: number;
+  hash: string;
+  logsBloom: string;
+  miner: string;
+  number: number;
+  parentHash: string;
+  receiptsRoot: string;
+  sealFields: string[];
+  sha3Uncles: string;
+  signature: string;
+  size: number;
+  stateRoot: string;
+  step: string;
+  timestamp: number;
+  totalDifficulty: any;
+  transactions: string[];
+  transactionsRoot: string;
+  uncles: string[];
+}
+
+export interface Provider {
+  sendAsync: any;
+}
