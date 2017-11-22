@@ -2,17 +2,17 @@ import * as Web3 from "web3";
 import { Observable } from "rxjs/Observable";
 import { map, concat, mergeMap, distinctUntilKeyChanged } from "rxjs/operators";
 import { head, curry, CurriedFunction2 } from "ramda";
-import "rxjs/add/observable/bindNodeCallback";
 import { BigNumber } from 'bignumber.js';
+import { bindNodeCallback } from "rxjs/observable/bindNodeCallback";
 
 export function getNetwork(web3: Web3): Observable<string> {
-  return Observable.bindNodeCallback<string>(
+  return bindNodeCallback<string>(
     web3.version.getNetwork.bind(web3)
   )();
 }
 
 export function executeMethod<T>(web3Method: any, args = [], tx_params = {}) {
-  return Observable.bindNodeCallback<T>(web3Method)(...args, tx_params);
+  return bindNodeCallback<T>(web3Method)(...args, tx_params);
 }
 
 export function getReceipt(web3: Web3, tx): Observable<any> {
@@ -33,7 +33,7 @@ export function getDefaultAccount(web3) {
     callback: (err: Error | null, value: string[]) => void
   ) => void;
 
-  return Observable.bindNodeCallback(callback)().pipe(
+  return bindNodeCallback(callback)().pipe(
     map(value => head(value))
   );
 }
@@ -45,7 +45,7 @@ export function getBalance(account: string) {
       callback: (err: Error | null, value: any) => void
     ) => void;
 
-    return Observable.bindNodeCallback(callback)(account).pipe(
+    return bindNodeCallback(callback)(account).pipe(
       map(wei => new Web3().fromWei(wei, "ether"))
     );
   };

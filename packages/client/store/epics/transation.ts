@@ -10,8 +10,8 @@ import { mergeMap, retryWhen, delay, take, concat, map, withLatestFrom } from "r
 import { getReceipt } from "@eth-proxy/rx-web3";
 import { Observable } from "rxjs/Observable";
 import { getLogDecoder } from "../selectors";
-import "rxjs/add/Observable/of";
 import { EpicContext, State } from "../model";
+import { of } from "rxjs/observable/of";
 
 export const findReceiptEpic = (
   actions$: ActionsObservable<any>,
@@ -33,7 +33,7 @@ export const findReceiptEpic = (
             delay(1000),
             take(24),
             concat(_ =>
-              Observable.of(
+              of(
                 createTransactionFailed(
                   "Transaction was not processed within 240s",
                   tx

@@ -17,7 +17,8 @@ export interface ObservableStore<T> extends Store<T> {
 }
 
 export function createObservableStore(
-  middleware: Middleware
+  middleware: Middleware,
+  externalStore: any
 ): ObservableStore<State> {
   const state$ = new BehaviorSubject<State>(reducer(undefined, { type: 'init' }));
   const select = <S>(selector?: Selector<State, S>) =>
@@ -30,7 +31,15 @@ export function createObservableStore(
   redux.select = select;
   redux.let = state$.let.bind(state$);
 
-  redux.subscribe(() => state$.next(redux.getState()))
+  redux.subscribe(() => {
+    state$.next(redux.getState())
+    if (externalStore) {
+      externalStore.dispatch({
+        type: 'SET_ETH-PROXY_STATE',
+        payload: redux.getState()
+      })
+    }
+  })
 
   return redux;
 }

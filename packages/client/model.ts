@@ -1,5 +1,31 @@
 import * as Web3 from "web3";
 import { Observable } from "rxjs/Observable";
+import { RegisterContractOptions } from "./modules/register-contract";
+// asd asdsa 
+export type Send<T> = <CK extends keyof T>(
+  nameOrAddress: ContractRef<CK>
+) => <MK extends keyof T[CK]>(method: MK) => T[CK][MK];
+
+export class EthProxy<T = {}> {
+  registerContract: (abi, options: RegisterContractOptions) => void;
+
+  send: Send<T>;
+
+  // rxweb3
+  getBalance: (account: string) => Observable<any>;
+  getLatestBlock: () => Observable<Block>;
+  getBlock: (args) => Observable<Block>;
+
+  provider$: Observable<Web3.Provider>;
+  network$: Observable<string>;
+  defaultAccount$: Observable<string | undefined>;
+
+  getContractInfo: (nameOrAddress: string) => Observable<ContractInfo>;
+  query: (queryModel: QueryModel<T>) => Observable<any>;
+
+  events$: Observable<any[]>;
+}
+
 
 export interface InputDefinition {
   indexed: boolean;
@@ -29,9 +55,11 @@ export interface TruffleJson {
 }
 
 export interface TransactionInfo {
+  contractName: string;
   address: string;
-  from: string;
   method: string;
+  txParams: any;
+  args: any;
   tx: string;
 }
 
@@ -53,7 +81,7 @@ export type Transaction =
   | ConfirmedTransaction;
 
 export type TransactionResult<T> = Observable<Transaction>;
-export type CallResult<T> = Promise<T>;
+export type CallResult<T> = Observable<T>;
 
 export interface ContractInfo {
   address: string;
@@ -63,8 +91,11 @@ export interface ContractInfo {
 }
 
 export interface EthProxyOptions {
-  pollInterval: number;
-  eventReader: (web3: Web3, options: Web3.FilterObject) => Observable<any[]>;
+  pollInterval?: number;
+  eventReader?: (web3: Web3, options: Web3.FilterObject) => Observable<any[]>;
+  store?: {
+    dispatch: Function
+  }
 }
 
 export type BlockRange = [number, number];
@@ -83,11 +114,15 @@ export interface QueryResult {
 export interface QueryModel<T extends {} = {}> {
   name: string;
   deps: {
-    [P in keyof T]: {
-      [V in keyof T[P]]: {
-        [inputName: string]: any;
-      } | '*';
-    } | '*';
+    [P in keyof Partial<T>]:
+      | {
+          [eventName: string]:
+            | {
+                [inputName: string]: any;
+              }
+            | "*";
+        }
+      | "*"
   };
 }
 
@@ -96,7 +131,7 @@ export interface Web3Provider {
 }
 
 export interface TransationHashEvent {
-  type: 'tx';
+  type: "tx";
   value: string;
 }
 export interface TransactionConfirmation<T> {
@@ -105,7 +140,7 @@ export interface TransactionConfirmation<T> {
   tx: string;
 }
 export interface TransationConfirmationEvent<T> {
-  type: 'confirmation';
+  type: "confirmation";
   value: TransactionConfirmation<T>;
 }
 export type TransationResultEvent<T> =
@@ -123,21 +158,27 @@ export interface ContractDefaults {
   value?: string;
 }
 
-declare module 'rxjs/Observable' {
+declare module "rxjs/Observable" {
   // tslint:disable-next-line:interface-name no-shadowed-variable
   interface Observable<T> {
-    once(this: Observable<any>, type: "tx", fn: Function): Observable<T>
-    on(this: Observable<any>, type: "confirmation", fn: Function): Observable<T>
+    once(this: Observable<any>, type: "tx", fn: Function): Observable<T>;
+    on(
+      this: Observable<any>,
+      type: "confirmation",
+      fn: Function
+    ): Observable<T>;
   }
 }
 
 export type NameRef<T extends string> = T;
-export type InterfaceRef<T extends string> = {
+export interface InterfaceRef<T extends string> {
   interface: T;
   address: string;
-};
+}
 
-export type ContractRef<T extends string = string> = NameRef<T> | InterfaceRef<T>
+export type ContractRef<T extends string = string> =
+  | NameRef<T>
+  | InterfaceRef<T>;
 
 export interface Block {
   author: string;
@@ -166,4 +207,14 @@ export interface Block {
 
 export interface Provider {
   sendAsync: any;
+}
+
+export interface EventMetadata {
+  address: string;
+  logIndex: number;
+  transactionHash: string;
+  transactionIndex: number;
+  type: string;
+  blockHash: string;
+  blockNumber: number;
 }

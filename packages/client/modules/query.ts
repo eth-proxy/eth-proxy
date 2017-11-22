@@ -25,7 +25,6 @@ import {
   mergeMapTo,
   combineLatest
 } from "rxjs/operators";
-import { send } from "./send";
 import { Transaction, BlockRange, QueryModel } from "../model";
 import {
   all,
@@ -41,10 +40,11 @@ import {
   propEq,
   filter,
   pipe,
-  keys
+  keys,
+  pathEq
 } from "ramda";
 import { getEvents } from "@eth-proxy/rx-web3";
-import "rxjs/add/Observable/forkJoin";
+import { forkJoin } from "rxjs/observable/forkJoin";
 
 export const query = (
   store: ObservableStore<State>,
@@ -64,7 +64,7 @@ export const query = (
       web3Proxy$,
       store.select(getFiltersNotQueriedForMany)
     ),
-    rxFilter(args => args.every(x => !!x)),
+    first(args => args.every(x => !!x)),
     mergeMap(([contracts, toBlock, web3, rejectDone]) => {
       const addresses = map(c => c.address, contracts);
       const genesis = reduce<number, number>(
@@ -91,7 +91,7 @@ export const query = (
         )
       );
 
-      return Observable.forkJoin(
+      return forkJoin(
         omittedAlreadyDone.map(([fromBlock, toBlock]) =>
           getEvents(web3, {
             toBlock,
@@ -108,7 +108,7 @@ export const query = (
         tap(([{ range, events }]) => {
           const results = addresses.map(address => ({
             address,
-            events: filter(propEq("address", address), events),
+            events: filter(pathEq(["meta","address"], address), events),
             range
           }));
           store.dispatch(createQueryEventsSuccess(results));

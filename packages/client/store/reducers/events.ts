@@ -127,7 +127,7 @@ export function eventEntitiesReducer(
 }
 
 export interface State {
-  entities: EventsQueryState;
+  entities: EventsByHash;
   queries: EventsQueryState;
 }
 

@@ -1,13 +1,10 @@
+import { TransactionInfo } from "../../model";
+
 export const TX_GENERATED = "TX_GENERATED";
 
 export interface TxGenerated {
   type: "TX_GENERATED";
-  payload: {
-    address: string;
-    from: string;
-    method: string;
-    tx: string;
-  };
+  payload: TransactionInfo;
 }
 
 export const createTxGenerated = (

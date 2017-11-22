@@ -15,7 +15,8 @@ import {
   FailedTransaction,
   ContractInfo,
   QueryArgs,
-  QueryModel
+  QueryModel,
+  InterfaceRef
 } from "../model";
 import * as Web3 from "web3";
 

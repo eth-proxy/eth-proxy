@@ -59,7 +59,7 @@ export function getEventTypeAliases({
 
   return {
     name: toContractEventsName(contract_name)(""),
-    type: eventsUnion
+    type: eventsUnion || "never"
   };
 }
 

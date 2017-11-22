@@ -19,7 +19,7 @@ export function registerContract(store: ObservableStore<State>) {
   ): void => {
     store
       .let(getDetectedNetwork$)
-      .pipe(map(networkId => presetAddress || json.networks[networkId].address))
+      .pipe(map(networkId => presetAddress || json.networks[networkId] && json.networks[networkId].address))
       .subscribe(address =>
         store.dispatch(
           createRegisterConract(json, {

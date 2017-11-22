@@ -31,6 +31,8 @@ export const networkNameFromId = (networkId: string) => {
   }
 };
 
+export const isString = (x): x is string => (typeof x === 'string' || x instanceof String);
+
 export const isMain = (networkId: string) =>
   networkNameFromId(networkId) === "Main";
 
@@ -63,7 +65,6 @@ function createEthersanUrl(subPath: string) {
     );
 }
 
-
-export function idFromEvent({ transactionHash, transactionIndex, logIndex }: any) {
+export function idFromEvent({ meta: { transactionHash, transactionIndex, logIndex } }: any) {
   return transactionHash + transactionIndex + logIndex
 }

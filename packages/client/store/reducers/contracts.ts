@@ -17,7 +17,11 @@ import {
 } from "ramda";
 import * as Web3 from "web3";
 import { ContractInfo, QueryModel, ContractRef } from "../../model";
-import { eventAbiToSignature, eventInputToSignature } from "../../utils";
+import {
+  eventAbiToSignature,
+  eventInputToSignature,
+  isString
+} from "../../utils";
 
 export interface State {
   [address: string]: ContractInfo;
@@ -50,9 +54,13 @@ const caseInsensitiveCompare = (a: string, b: string) =>
 const contractForRef = (state: State) => (ref: ContractRef) =>
   pipe(
     values,
-    find<ContractInfo>(c =>
-      caseInsensitiveCompare(c.name, ref instanceof String ? ref : ref.interface)
-    )
+    find<ContractInfo>(c => {
+      const nameOrAddress = isString(ref) ? ref : ref.interface;
+      return (
+        caseInsensitiveCompare(c.name, nameOrAddress) ||
+        caseInsensitiveCompare(c.address, nameOrAddress)
+      );
+    })
   )(state);
 
 export const getSelectors = <T>(getModule: (state: T) => State) => {

@@ -4,13 +4,14 @@ import { EventFilter } from "./model";
 import { bufferResult } from "./results-buffer";
 import { pipe } from "ramda";
 import { Observable } from "rxjs/Observable";
+import { of } from "rxjs/observable/of";
 
 export function defaultReader(web3: Web3, filter: EventFilter) {
   const bcReader = createBlockchainReader(web3, filter);
   
   return pipe(bcReader, bufferResult)(
     filter,
-    Observable.of([filter.fromBlock, filter.toBlock] as [number, number])
+    of([filter.fromBlock, filter.toBlock] as [number, number])
   );
 }
 

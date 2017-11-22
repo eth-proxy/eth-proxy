@@ -23,12 +23,9 @@ import {
   getUniqEvents$
 } from "./store";
 import {
-  registerContract,
-  RegisterContractOptions
+  registerContract
 } from "./modules/register-contract";
-import { exec } from "./modules/exec";
 import { rootEpic } from "./store/epics";
-import { call } from "./modules/call";
 import {
   TransactionWithHash,
   TruffleJson,
@@ -39,42 +36,14 @@ import {
   QueryModel,
   ContractRef,
   InterfaceRef,
-  Block
+  Block,
+  EthProxy
 } from "./model";
 import { first, mergeMapTo } from "rxjs/operators";
-import "rxjs/add/Observable/timer";
 import { query } from "./modules/query";
-import { read, DataReader, ReadStrategy } from "./modules/read";
 import * as Web3 from "web3";
 import { curry, curryN } from "ramda";
-
-export type Exec<T> = <CK extends keyof T>(
-  nameOrAddress: ContractRef<CK>
-) => <MK extends keyof T[CK]>(method: MK) => T[CK][MK];
-
-export class EthProxy<T = {}> {
-  registerContract: (abi, options: RegisterContractOptions) => void;
-
-  exec: Exec<T>;
-  call: <CK extends keyof T>(
-    nameOrAddress: ContractRef<CK>
-  ) => <MK extends keyof T[CK]>(method: MK) => T[CK][MK];
-
-  // rxweb3
-  getBalance: (account: string) => Observable<any>;
-  getLatestBlock: () => Observable<Block>;
-  getBlock: (args) => Observable<Block>;
-
-  provider$: Observable<Web3.Provider>;
-  network$: Observable<string>;
-  defaultAccount$: Observable<string | undefined>;
-
-  getContractInfo: (nameOrAddress: string) => Observable<ContractInfo>;
-  query: (queryModel: QueryModel<T>) => Observable<any>;
-
-  events$: Observable<any[]>;
-  read: <T>(readDef: DataReader<T>, strategy?: ReadStrategy) => Observable<T>;
-}
+import { process, callAdapter, createExecAdapter } from "./modules/contract";
 
 const defaultOptions = {
   pollInterval: 1000,
@@ -83,8 +52,9 @@ const defaultOptions = {
 
 export function createProxy<T>(
   provider$: Observable<any>,
-  options: EthProxyOptions = defaultOptions
+  userOptions: EthProxyOptions
 ): EthProxy<T> {
+  const options = { ...defaultOptions, ...userOptions };
   const replayProvider$ = provider$.pipe(shareReplay(1), take(1));
   const web3Proxy$ = replayProvider$.pipe(map(createWeb3Instance));
 
@@ -98,17 +68,22 @@ export function createProxy<T>(
       options
     }
   });
-  const store = createObservableStore(epicMiddleware);
+  
+  const store = createObservableStore(epicMiddleware, options.store);
+
+  const adapters = {
+    call: callAdapter,
+    exec: createExecAdapter({
+      store
+    })
+  }
 
   return {
     provider$: replayProvider$,
     registerContract: registerContract(store),
 
-    exec: curryN(3, exec(store, web3Proxy$)) as any,
-    call: curryN(3, call(store, web3Proxy$)) as any,
+    send: process(store, web3Proxy$, adapters) as any,
     query: query(store, web3Proxy$, options.eventReader),
-    read: <T>(readDef: DataReader<T>, strategy?: ReadStrategy) =>
-      web3Proxy$.pipe(mergeMap(web3 => read(store)(web3)(readDef, strategy))),
 
     network$: store.let(getDetectedNetwork$),
     defaultAccount$: store.select(getActiveAccount),
@@ -128,3 +103,4 @@ export function createProxy<T>(
 
 export * from "./model";
 export * from "./utils";
+export { ethProxyIntegrationReducer, State as EthProxyState } from './store'
