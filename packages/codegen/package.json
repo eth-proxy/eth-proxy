@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/codegen",
-  "version": "0.1.18-y.28",
+  "version": "0.1.18-y.29",
   "description": "Contracts code generation for @eth-proxy/client",
   "main": "dist/index.js",
   "bin": "dist/index.js",
@@ -9,8 +9,10 @@
   },
   "scripts": {
     "compile": "tsc -p tsconfig.build.json",
-    "gen-example": "cd dist && node index --o=\"../example/contracts.ts\" --cDir=\"../example/contracts\"",
-    "start": "rimraf dist && npm run compile && npm run gen-example",
+    "gen": "cd dist && node index --cDir=\"../example/contracts\"",
+    "gen:eth-proxy": "npm run gen -- --o=\"../example/output/eth-proxy/contracts.ts\"",
+    "gen:truffle": "npm run gen -- --o=\"../example/output/truffle/contracts.ts\" --target=truffle",
+    "start": "rimraf dist && npm run compile && npm run gen:eth-proxy && npm run gen:truffle",
     "prepublish": "rimraf dist && npm run compile",
     "postpublish": "rimraf dist"
   },
