@@ -2,7 +2,7 @@ import {
   InterfaceDeclarationStructure,
   PropertySignatureStructure
 } from "ts-simple-ast";
-import { toOutputName, getProperty } from "./utils";
+import { toOutputName, getProperty } from "../../lib";
 
 export function getOutputInterfaces({
   contract_name,

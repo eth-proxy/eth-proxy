@@ -1,7 +1,7 @@
 import { pipe, flip, toUpper, concat, curry, CurriedFunction2 } from "ramda";
 import { PropertySignatureStructure } from "ts-simple-ast";
 
-export function solidityToJsStrictType(contractType: string) {
+export function solidityToJsOutputType(contractType: string) {
   if (contractType.startsWith("uint") || contractType.startsWith("int")) {
     return "BigNumber";
   }
@@ -20,10 +20,10 @@ export function solidityToJsStrictType(contractType: string) {
   }
 }
 
-export function solidityToJsType(contractType: string) {
-  const strictType = solidityToJsStrictType(contractType);
+export function solidityToJsInputType(contractType: string) {
+  const strictType = solidityToJsOutputType(contractType);
   if (strictType === "BigNumber") {
-    return "BigNumber | number";
+    return "BigNumber | number | string";
   }
   return strictType;
 }
@@ -47,14 +47,6 @@ export function getProperty({
 }: FunctionParameter): PropertySignatureStructure {
   return {
     name: name || "anonymous",
-    type: solidityToJsType(type)
+    type: solidityToJsInputType(type)
   };
-}
-
-export function hasComplexInput({ inputs, type }: AbiDefinition): boolean {
-  return (
-    type === "function" &&
-    inputs.length > 1 &&
-    (inputs as FunctionParameter[]).every(i => !!i.name)
-  );
 }

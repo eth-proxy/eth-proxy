@@ -4,13 +4,13 @@ import {
   ParameterDeclarationStructure
 } from "ts-simple-ast";
 import { map } from "ramda";
+import { hasComplexInput } from "./utils";
 import {
   toOutputName,
   toInputName,
-  solidityToJsStrictType,
-  solidityToJsType,
-  hasComplexInput
-} from "./utils";
+  solidityToJsOutputType,
+  solidityToJsInputType,
+} from "../../lib";
 
 export function getContractInterface({
   contract_name,
@@ -46,7 +46,7 @@ const getReturnType = (contractName: string, fun: FunctionDescription) => {
     const param =
       fun.outputs.length > 1
         ? toOutputName(contractName)(fun.name)
-        : solidityToJsStrictType(fun.outputs[0].type);
+        : solidityToJsOutputType(fun.outputs[0].type);
     return `CallResult<${param}>`;
   }
   return `TransactionResult<ContractsEvents>`;
@@ -72,9 +72,12 @@ const getParams = (
   }
 };
 
-function getParam(abi: FunctionParameter, index: number): ParameterDeclarationStructure {
+function getParam(
+  abi: FunctionParameter,
+  index: number
+): ParameterDeclarationStructure {
   return {
-    name: abi.name || ("anonymous" + index),
-    type: solidityToJsType(abi.type)
+    name: abi.name || "anonymous" + index,
+    type: solidityToJsInputType(abi.type)
   };
 }
