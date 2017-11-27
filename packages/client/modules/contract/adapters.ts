@@ -8,36 +8,41 @@ import {
 } from "../../store";
 import { prop, identity } from "ramda";
 
-export const callAdapter = (
+export const createCallAdapter = ({ userInterceptor }) => (
   source: Observable<{ address; from; method; data }>
 ) => {
-  return source.let(map(prop("data")));
+  return source.pipe(
+    map(prop("data")),
+    userInterceptor
+  );
 };
 
 export interface CreateExecAdapterContext {
-  store: ObservableStore<State>,
-  userAdapter?: (source: Observable<any>) => Observable<any>
+  store: ObservableStore<State>;
+  userInterceptor: (source: Observable<any>) => Observable<any>;
 }
 
-export interface SendResult { 
-  address: string; 
-  args: any; 
-  method: string; 
+export interface SendResult {
+  address: string;
+  args: any;
+  method: string;
   data: any;
   contractName: string;
   txParams: any;
 }
 
-export const createExecAdapter = ({
-  store,
-  userAdapter = map(identity)
-}) => (
+export const createExecAdapter = ({ store, userInterceptor }) => (
   source: Observable<SendResult>
 ) => {
   return source.pipe(
     map(res => ({ ...res, tx: res.data })),
     tap(result => store.dispatch(createTxGenerated(result))),
     mergeMap(({ tx }) => store.select(getTransactionByTx(tx))),
-    userAdapter
+    tap((result: any) => {
+      if (result.status === "failed") {
+        throw Error(result.error);
+      }
+    }),
+    userInterceptor
   );
 };

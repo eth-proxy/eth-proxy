@@ -1,7 +1,7 @@
 import * as Web3 from "web3";
 import { Observable } from "rxjs/Observable";
 import { RegisterContractOptions } from "./modules/register-contract";
-// asd asdsa 
+
 export type Send<T> = <CK extends keyof T>(
   nameOrAddress: ContractRef<CK>
 ) => <MK extends keyof T[CK]>(method: MK) => T[CK][MK];
@@ -91,10 +91,14 @@ export interface ContractInfo {
 }
 
 export interface EthProxyOptions {
-  pollInterval?: number;
-  eventReader?: (web3: Web3, options: Web3.FilterObject) => Observable<any[]>;
-  store?: {
+  pollInterval: number;
+  eventReader: (web3: Web3, options: Web3.FilterObject) => Observable<any[]>;
+  store: {
     dispatch: Function
+  },
+  interceptors: {
+    call?: (obs: Observable<any>) => any;
+    transaction?: (obs: Observable<any>) => any;
   }
 }
 

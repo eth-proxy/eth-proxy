@@ -51,6 +51,9 @@ export const process = (
       const methodAbi = context.contract.abi.find(
         x => x.name === method
       ) as Web3.FunctionDescription;
+      if(!methodAbi) {
+        throw Error(`Method '${method}' not found on '${context.contract.name}'`);
+      }
 
       const type = methodAbi.constant ? "call" : "exec";
 
@@ -68,22 +71,16 @@ Observable.prototype.once = once;
 Observable.prototype.on = on;
 
 function once(type, fn) {
-  return this.map(function(result) {
+  return this.map(result => {
     return result.status === "pending" ? fn(result.data) : result;
   });
 }
 
 function on(type, fn) {
-  return this.filter(function(next) {
+  return this.filter(next => {
     return !(next && next.status === "pending");
-  }).map(function(next) {
-    if (next.status === "confirmed") {
-      return fn(next.value);
-    }
-    if (next.status === "failed") {
-      throw Error(next.error);
-    }
-    return next;
+  }).map(next => {
+    return next.status === "confirmed" ? fn(next.value) : next;
   });
 }
 

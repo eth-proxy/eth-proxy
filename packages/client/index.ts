@@ -42,17 +42,18 @@ import {
 import { first, mergeMapTo } from "rxjs/operators";
 import { query } from "./modules/query";
 import * as Web3 from "web3";
-import { curry, curryN } from "ramda";
-import { process, callAdapter, createExecAdapter } from "./modules/contract";
+import { curry, curryN, identity } from "ramda";
+import { process, createCallAdapter, createExecAdapter } from "./modules/contract";
 
 const defaultOptions = {
   pollInterval: 1000,
-  eventReader: getEvents
+  eventReader: getEvents,
+  interceptors: {}
 };
 
 export function createProxy<T>(
   provider$: Observable<any>,
-  userOptions: EthProxyOptions
+  userOptions: Partial<EthProxyOptions>
 ): EthProxy<T> {
   const options = { ...defaultOptions, ...userOptions };
   const replayProvider$ = provider$.pipe(shareReplay(1), take(1));
@@ -72,9 +73,12 @@ export function createProxy<T>(
   const store = createObservableStore(epicMiddleware, options.store);
 
   const adapters = {
-    call: callAdapter,
+    call: createCallAdapter({
+      userInterceptor: (options.interceptors as any).call || map(identity)
+    }),
     exec: createExecAdapter({
-      store
+      store,
+      userInterceptor: (options.interceptors as any).transaction || map(identity)
     })
   }
 

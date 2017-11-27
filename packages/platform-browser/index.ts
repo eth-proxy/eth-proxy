@@ -15,7 +15,7 @@ function getWindow() {
   return window as EthWindow;
 }
 
-export function browserProxyFactory(options?: EthProxyOptions) {
+export function browserProxyFactory(options?: Partial<EthProxyOptions>) {
   const provider$ = race(
     of(getWindow().web3).pipe(filter(x => !!x)),
     fromEvent(getWindow(), "load").pipe(map(() => getWindow().web3))

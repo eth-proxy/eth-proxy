@@ -36,35 +36,6 @@ export const isString = (x): x is string => (typeof x === 'string' || x instance
 export const isMain = (networkId: string) =>
   networkNameFromId(networkId) === "Main";
 
-const createNetworkPrefix = (networkId: string) =>
-  isMain(networkId) ? "" : networkNameFromId(networkId);
-
-const createEtherscanBaseUrl = (networkPrefix: string) =>
-  `https://${networkPrefix}etherscan.io`;
-
-export function networkToTxUrl(tx: string, params?: string) {
-  return createEthersanUrl(`$/tx/${tx}?${params}`)
-}
-export function networkToAddressUrl(address: string, params?: string) {
-  return createEthersanUrl(`/address/${address}?${params}`)
-}
-export function networkToTokenUrl(token: string, params?: string) {
-  return createEthersanUrl(`/token/${token}?${params}`)
-}
-
-function createEthersanUrl(subPath: string) {
-  return (networkId: Observable<string>) =>
-    networkId.let(
-      map(
-        pipe(
-          baseUrl => concat(baseUrl, subPath),
-          createEtherscanBaseUrl,
-          createNetworkPrefix
-        )
-      )
-    );
-}
-
 export function idFromEvent({ meta: { transactionHash, transactionIndex, logIndex } }: any) {
   return transactionHash + transactionIndex + logIndex
 }
