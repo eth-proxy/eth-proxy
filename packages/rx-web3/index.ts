@@ -1,14 +1,14 @@
 import * as Web3 from "web3";
 import { Observable } from "rxjs/Observable";
 import { map, concat, mergeMap, distinctUntilKeyChanged } from "rxjs/operators";
-import { head, curry, CurriedFunction2 } from "ramda";
-import { BigNumber } from 'bignumber.js';
+import { head, curry, CurriedFunction2, flatten } from "ramda";
+import { BigNumber } from "bignumber.js";
 import { bindNodeCallback } from "rxjs/observable/bindNodeCallback";
+import { merge } from "rxjs/observable/merge";
+import { forkJoin } from "rxjs/observable/forkJoin";
 
 export function getNetwork(web3: Web3): Observable<string> {
-  return bindNodeCallback<string>(
-    web3.version.getNetwork.bind(web3)
-  )();
+  return bindNodeCallback<string>(web3.version.getNetwork.bind(web3))();
 }
 
 export function executeMethod<T>(web3Method: any, args = [], tx_params = {}) {
@@ -33,9 +33,7 @@ export function getDefaultAccount(web3) {
     callback: (err: Error | null, value: string[]) => void
   ) => void;
 
-  return bindNodeCallback(callback)().pipe(
-    map(value => head(value))
-  );
+  return bindNodeCallback(callback)().pipe(map(value => head(value)));
 }
 
 export function getBalance(account: string) {
@@ -61,7 +59,7 @@ export function getLatestBlockHash(web3): Observable<string> {
         observer.next(blockHash);
       }
     });
-    return () => filter.stopWatching();
+    return () => filter.stopWatching((_) => {});
   });
 }
 
@@ -89,30 +87,73 @@ export function getBlock(blockHashOrNumber: "latest" | string | number) {
 }
 
 export const getEvents = curry((web3: Web3, options: Web3.FilterObject) => {
-  return new Observable<any[]>(observer => {
-    const allEvents = web3.eth.filter(options);
-    allEvents.get((err, events) => {
-      if (err) {
-        observer.error(err);
-        return;
-      }
-      observer.next(events);
-      observer.complete();
-    });
-    return () => allEvents.stopWatching();
-  });
+  const addressList = Array.isArray(options.address)
+    ? options.address
+    : [options.address];
+
+  const eventLoader = getAddressEvents(web3);
+
+  const eventLoaders$ = addressList.map(address =>
+    eventLoader(
+      Object.assign({}, options, {
+        address
+      })
+    )
+  );
+
+  return forkJoin(eventLoaders$, flatten);
 });
 
-export function watchEvents(web3: Web3, options: Web3.FilterObject) {
-  return new Observable(observer => {
-    const allEvents = web3.eth.filter(options);
-    allEvents.watch((err, event) => {
-      if (err) {
-        observer.error(err);
-        return;
-      }
-      observer.next(event);
+const getAddressEvents = curry(
+  (web3: Web3, options: Web3.FilterObject): Observable<any> => {
+    return new Observable(observer => {
+      const allEvents = web3.eth.filter(options);
+      allEvents.get((err, event) => {
+        if (err) {
+          observer.error(err);
+          return;
+        }
+        observer.next(event);
+        observer.complete();
+      });
+      return () => allEvents.stopWatching(
+        (_) => {}
+      );
     });
-    return () => allEvents.stopWatching();
-  });
+  }
+);
+
+// NATIVE WATCH DOES NOT WORK WITH ADDRESS LIST
+export function watchEvents(web3: Web3, options: Web3.FilterObject) {
+  const addressList = Array.isArray(options.address)
+    ? options.address
+    : [options.address];
+
+  const nativeWatch = watchAddressEvents(web3);
+
+  const watches$ = addressList.map(address =>
+    nativeWatch(
+      Object.assign({}, options, {
+        address
+      })
+    )
+  );
+
+  return merge(...watches$);
 }
+
+const watchAddressEvents = curry(
+  (web3: Web3, options: Web3.FilterObject): Observable<any> => {
+    return new Observable(observer => {
+      const allEvents = web3.eth.filter(options);
+      allEvents.watch((err, event) => {
+        if (err) {
+          observer.error(err);
+          return;
+        }
+        observer.next(event);
+      });
+      return () => allEvents.stopWatching(_ => {});
+    });
+  }
+);

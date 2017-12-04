@@ -1,8 +1,7 @@
 import * as Web3 from "web3";
 import * as ethJSABI from "ethjs-abi";
-import { BigNumber } from "bignumber.js";
 
-export const decodeLogs = abi => logs => {
+export const decodeLogs = abi => (logs: any[]) => {
   const events = eventsFromAbi(abi);
 
   return logs
@@ -12,8 +11,6 @@ export const decodeLogs = abi => logs => {
     })
     .map(log => {
       const eventAbi = events[log.topics[0]];
-
-      var parsedEvent = {};
 
       var argTopics = eventAbi.anonymous ? log.topics : log.topics.slice(1);
 

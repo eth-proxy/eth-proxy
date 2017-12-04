@@ -1,7 +1,7 @@
 import * as Web3 from "web3";
 import { createProxy, EthProxyOptions, EthProxy } from "@eth-proxy/client";
 import { Observable } from "rxjs/Observable";
-import { single, map, filter } from "rxjs/operators";
+import { map, filter } from "rxjs/operators";
 import { race } from "rxjs/observable/race";
 import { of } from "rxjs/observable/of";
 import { fromEvent } from "rxjs/observable/fromEvent";

@@ -36,7 +36,50 @@ export const createQueryEventsFailed = (payload: QueryArgs[]) => ({
   payload
 });
 
+export const EVENTS_LOADED = "EVENTS_LOADED";
+
+export interface EventsLoaded {
+  type: "EVENTS_LOADED";
+  payload: any[];
+}
+
+export const createEventsLoaded = (payload: any[]) => ({
+  type: EVENTS_LOADED,
+  payload
+});
+
+export const ADD_EVENTS_WATCH = "ADD_EVENTS_WATCH";
+
+export interface AddEventsWatch {
+  type: "ADD_EVENTS_WATCH";
+  payload: {
+    id: number;
+    fromBlock: number;
+    addresses: string[];
+  };
+}
+
+export const createAddEventsWatch = (payload: AddEventsWatch['payload']) => ({
+  type: ADD_EVENTS_WATCH,
+  payload
+});
+
+export const REMOVE_EVENTS_WATCH = "REMOVE_EVENTS_WATCH";
+
+export interface RemoveEventsWatch {
+  type: "REMOVE_EVENTS_WATCH";
+  payload: number;
+}
+
+export const createRemoveEventsWatch = (payload: number) => ({
+  type: REMOVE_EVENTS_WATCH,
+  payload
+});
+
 export type EventsActionTypes =
   | QueryEvents
   | QueryEventsSuccess
-  | QueryEventsFailed;
+  | QueryEventsFailed
+  | EventsLoaded
+  | AddEventsWatch
+  | RemoveEventsWatch;

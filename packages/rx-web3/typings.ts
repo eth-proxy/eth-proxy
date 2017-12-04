@@ -118,7 +118,7 @@ declare module "web3" {
     interface FilterResult {
       get<T>(callback: Callback<SolidityEvent<T>[]>): void;
       watch<T>(callback: Callback<SolidityEvent<T>[]>): void;
-      stopWatching(): void;
+      stopWatching(callback: Callback<true>): void;
     }
 
     interface Block {

@@ -1,5 +1,9 @@
 import { Block } from "web3";
-import { createSelector } from "reselect";
+import {
+  createSelector,
+  defaultMemoize,
+  createSelectorCreator
+} from "reselect";
 import {
   indexBy,
   prop,
@@ -14,7 +18,8 @@ import {
   propEq,
   equals,
   uniqBy,
-  uniq
+  uniq,
+  pick
 } from "ramda";
 
 import * as actions from "../actions";
@@ -114,8 +119,15 @@ export function eventEntitiesReducer(
         ...indexBy(idFromEvent, chain(x => x.events, action.payload))
       };
     }
+    case actions.EVENTS_LOADED: {
+      return {
+        ...state,
+        ...indexBy(idFromEvent, action.payload)
+      };
+    }
     case actions.TRANSACTION_CONFIRMED: {
       const { logs } = action.payload;
+
       return {
         ...state,
         ...indexBy(idFromEvent, logs)
@@ -136,92 +148,24 @@ export const reducer = combineReducers<State>({
   queries: eventsQueryReducer
 });
 
+export const createLengthEqualSelector = createSelectorCreator(
+  defaultMemoize,
+  (x, y) => x && y && x.length === y.length
+);
+
 export const getSelectors = <T>(getModule: (state: T) => State) => {
   const getEventEntities = createSelector(getModule, m => m.entities);
   const getEventQueries = createSelector(getModule, m => m.queries);
-  const getFilterNotQueried = createSelector(
-    getEventQueries,
-    filterOutCommonDone
-  );
-
-  const getFiltersNotQueriedForMany = createSelector(
-    getFilterNotQueried,
-    filterOutDone => (toFilter: QueryArgs[]) => filterOutDone(toFilter)
-  );
-
   const getAllEvents = createSelector(getEventEntities, values);
+  const getEventsForAddresses = (address: string[]) =>
+    createLengthEqualSelector(getAllEvents, events =>
+      events.filter(x => address.includes(x.meta.address))
+    );
 
   return {
     getAllEvents,
     getEventEntities,
     getEventQueries,
-    getFiltersNotQueriedForMany
+    getEventsForAddresses
   };
 };
-
-// export const filterOutDone = (state: EventsQueryState) => (
-//   toFilter: QueryArgs
-// ) => {
-//   const { address, range } = toFilter;
-//   const hasRanges = state[address].map(x => x.range);
-
-//   return hasRanges.reduce(
-//     (toQuery, has) => chain(todo => filterNotDone(has, todo), toQuery),
-//     [range]
-//   );
-// };
-
-export const filterOutCommonDone = (state: EventsQueryState) => (
-  toFilter: QueryArgs[]
-) => {
-  const addresess = toFilter.map(x => x.address);
-  const addressRanges = chain(
-    address => (state[address] || []).map(x => x.range),
-    addresess
-  );
-
-  const commonRanges = uniq(addressRanges).filter(range =>
-    all(
-      address => !!(state[address] || []).find(propEq("range", range)),
-      addresess
-    )
-  );
-
-  return commonRanges.reduce(
-    (toQuery, has) => chain(todo => filterNotDone(has, todo), toQuery),
-    [toFilter[0].range]
-  );
-};
-
-export function filterNotDone(
-  [hasFrom, hasTo]: BlockRange,
-  [wantFrom, wantTo]: BlockRange
-): BlockRange[] {
-  // No intersection
-  if (hasFrom > wantTo || hasTo < wantFrom) {
-    return [[wantFrom, wantTo]];
-  }
-  // Has  --|||||||----
-  // Want ----|||------
-  if (hasFrom <= wantFrom && hasTo >= wantTo) {
-    return [];
-  }
-  // Has   ----||||---
-  // Want  ---|||-----
-  if (hasFrom >= wantFrom && hasTo > wantTo) {
-    return [[wantFrom, hasFrom]];
-  }
-  // Has   ----|||-----
-  // Want  -----||||---
-  if (hasFrom <= wantFrom && hasTo <= wantTo) {
-    return [[hasTo, wantTo]];
-  }
-  // Has  ----|||||||------
-  // Want --|||||||||||----
-  if (hasFrom > wantFrom && hasTo < wantTo) {
-    return [[wantFrom, hasFrom], [hasTo, wantTo]];
-  }
-  throw Error(
-    "Range not found, " + JSON.stringify({ hasFrom, wantFrom, hasTo, wantTo })
-  );
-}

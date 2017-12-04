@@ -6,7 +6,7 @@ import {
   getContractFromRef,
   getDefaultTxParams
 } from "../../store";
-import { mergeMap, first, withLatestFrom, map } from "rxjs/operators";
+import { map } from "rxjs/operators";
 import { caseInsensitiveCompare, isString } from "../../utils";
 import { executeMethod } from "@eth-proxy/rx-web3";
 import { ContractRef, ContractInfo } from "../../model";

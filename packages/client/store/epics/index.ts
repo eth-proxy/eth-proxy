@@ -1,17 +1,17 @@
-import { Epic } from "redux-observable";
 import { combineEpics } from "redux-observable";
 import { findReceiptEpic } from "./transation";
 import { watchAccount } from "./account";
 import { watchLatestBlock } from "./blocks";
+import { queryEvents } from './query-events'
+import { watchEvents } from './watch-events';
 
-import {
-  TransactionConfirmed,
-  TX_GENERATED,
-  TxGenerated,
-  TransactionFailed
-} from "../actions";
-import { 
-  EpicContext
-} from '../model';
+import { EpicContext } from "../model";
+import { Epic } from "redux-observable";
 
-export const rootEpic = combineEpics(findReceiptEpic, watchAccount, watchLatestBlock);
+export const rootEpic = combineEpics(
+  findReceiptEpic,
+  watchAccount,
+  watchLatestBlock,
+  queryEvents,
+  watchEvents
+);

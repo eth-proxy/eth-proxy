@@ -47,12 +47,13 @@ export const { getLatestBlock, getLatestBlockNumber } = fromBlocks.getSelectors<
 export const {
   getAllEvents,
   getEventEntities,
-  getFiltersNotQueriedForMany
+  getEventQueries,
+  getEventsForAddresses
 } = fromEvents.getSelectors<State>(m => m.events);
 
 export const getDefaultTxParams = createStructuredSelector({
   from: getActiveAccount,
-  gas: always(600000)
+  gas: always(800000)
 });
 
 export const getLogDecoder = createSelector(getAllAbis, abis =>

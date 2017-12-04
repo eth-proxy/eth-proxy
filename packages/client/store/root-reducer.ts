@@ -17,6 +17,9 @@ export const reducer = combineReducers<State>({
   blocks: fromBlocks.reducer,
   events: fromEvents.reducer
 });
+const initialState = reducer(undefined, { type: "" });
 
-export const ethProxyIntegrationReducer = (state: State = {} as State, action) =>
-  action.type === "SET_ETH-PROXY_STATE" ? action.payload : state;
+export const ethProxyIntegrationReducer = (
+  state: State = initialState as State,
+  action
+) => (action.type === "SET_ETH-PROXY_STATE" ? action.payload : state);

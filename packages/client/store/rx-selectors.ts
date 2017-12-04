@@ -1,11 +1,12 @@
 import { Observable } from "rxjs/Observable";
 import { State } from "./model";
-import { map as rxMap, filter as rxFilter } from "rxjs/operators";
+import { map as rxMap } from "rxjs/operators";
 import { first } from "rxjs/operators/first";
 import { getNetworkId, getEventEntities, getHasContracts } from "./selectors";
-import { tap, pairwise, startWith, filter } from "rxjs/operators";
-import { keys, uniq, without, map, complement, isEmpty } from "ramda";
+import { pairwise, startWith, filter } from "rxjs/operators";
+import { keys, without, map, complement, isEmpty } from "ramda";
 import { Selector } from "reselect";
+import { sortEvents } from "../utils";
 
 export function getDetectedNetwork$(state$: Observable<State>) {
   return state$.pipe(rxMap(getNetworkId), first(x => !!x));
@@ -20,7 +21,8 @@ export function getUniqEvents$(state$: Observable<State>) {
       const added = without(keys(prev), keys(curr));
       return map(key => curr[key], added);
     }),
-    filter(complement(isEmpty))
+    rxMap(sortEvents),
+    filter(complement(isEmpty)),
   );
 }
 

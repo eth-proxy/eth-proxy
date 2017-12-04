@@ -21,4 +21,6 @@ export interface State {
 export interface EpicContext {
   web3Proxy$ : Observable<Web3>;
   options: EthProxyOptions;
+  getEvents: (options: Web3.FilterObject) => Observable<any[]>;
+  watchEvents: (options: Web3.FilterObject) => Observable<any>;
 }

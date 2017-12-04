@@ -11,9 +11,9 @@ import {
   getNetwork,
   getBalance,
   getLatestBlock,
-  getDefaultAccount,
   getBlock,
-  getEvents
+  getEvents,
+  watchEvents
 } from "@eth-proxy/rx-web3";
 import {
   createSetNetwork,
@@ -22,28 +22,22 @@ import {
   getActiveAccount,
   getUniqEvents$
 } from "./store";
-import {
-  registerContract
-} from "./modules/register-contract";
+import { registerContract } from "./modules/register-contract";
 import { rootEpic } from "./store/epics";
 import {
-  TransactionWithHash,
-  TruffleJson,
-  ConfirmedTransaction,
-  FailedTransaction,
-  ContractInfo,
   EthProxyOptions,
-  QueryModel,
   ContractRef,
-  InterfaceRef,
-  Block,
   EthProxy
 } from "./model";
-import { first, mergeMapTo } from "rxjs/operators";
+import { first } from "rxjs/operators";
 import { query } from "./modules/query";
 import * as Web3 from "web3";
-import { curry, curryN, identity } from "ramda";
-import { process, createCallAdapter, createExecAdapter } from "./modules/contract";
+import { identity } from "ramda";
+import {
+  process,
+  createCallAdapter,
+  createExecAdapter
+} from "./modules/contract";
 
 const defaultOptions = {
   pollInterval: 1000,
@@ -63,13 +57,21 @@ export function createProxy<T>(
     .pipe(mergeMap(getNetwork), map(createSetNetwork))
     .subscribe(action => store.dispatch(action));
 
+  const getEvents = (filter: Web3.FilterObject) =>
+    web3Proxy$.let(mergeMap(web3 => options.eventReader(web3, filter)));
+
+  const appWatchEvents = (filter: Web3.FilterObject) =>
+    web3Proxy$.let(mergeMap(web3 => watchEvents(web3, filter)));
+
   const epicMiddleware = createEpicMiddleware(rootEpic, {
     dependencies: {
       web3Proxy$,
-      options
+      options,
+      getEvents,
+      watchEvents: appWatchEvents
     }
   });
-  
+
   const store = createObservableStore(epicMiddleware, options.store);
 
   const adapters = {
@@ -78,16 +80,17 @@ export function createProxy<T>(
     }),
     exec: createExecAdapter({
       store,
-      userInterceptor: (options.interceptors as any).transaction || map(identity)
+      userInterceptor:
+        (options.interceptors as any).transaction || map(identity)
     })
-  }
+  };
 
   return {
     provider$: replayProvider$,
     registerContract: registerContract(store),
 
     send: process(store, web3Proxy$, adapters) as any,
-    query: query(store, web3Proxy$, options.eventReader),
+    query: query(store),
 
     network$: store.let(getDetectedNetwork$),
     defaultAccount$: store.select(getActiveAccount),
@@ -96,9 +99,7 @@ export function createProxy<T>(
     getLatestBlock: () => web3Proxy$.pipe(mergeMap(getLatestBlock)),
     getBlock: arg => web3Proxy$.pipe(mergeMap(getBlock(arg))),
     getContractInfo: (ref: ContractRef) =>
-      store
-        .select(getContractFromRef(ref))
-        .pipe(first(x => !!x)),
+      store.select(getContractFromRef(ref)).pipe(first(x => !!x)),
 
     // To be removed
     events$: store.let(getUniqEvents$)
@@ -107,4 +108,4 @@ export function createProxy<T>(
 
 export * from "./model";
 export * from "./utils";
-export { ethProxyIntegrationReducer, State as EthProxyState } from './store'
+export { ethProxyIntegrationReducer, State as EthProxyState } from "./store";

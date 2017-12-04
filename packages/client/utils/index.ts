@@ -1,7 +1,7 @@
 export * from "./decode-logs";
 import * as Web3 from "web3";
 import { map } from "rxjs/operators";
-import { pipe, concat } from "ramda";
+import { pipe, concat, ascend, sortWith, path } from "ramda";
 import { Observable } from "rxjs/Observable";
 import 'rxjs/add/operator/let';
 
@@ -39,3 +39,10 @@ export const isMain = (networkId: string) =>
 export function idFromEvent({ meta: { transactionHash, transactionIndex, logIndex } }: any) {
   return transactionHash + transactionIndex + logIndex
 }
+
+
+export const sortEvents = sortWith<any>([
+  ascend(path(['meta', 'blockNumber'])),
+  ascend(path(['meta', 'transactionIndex'])),
+  ascend(path(['meta', 'logIndex']))
+]);
