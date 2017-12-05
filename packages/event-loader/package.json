@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/event-loader",
-  "version": "0.1.18-y.38",
+  "version": "0.1.18-y.39",
   "description": "Enhancers for loading events",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,7 +13,7 @@
     "postpublish": "rimraf dist"
   },
   "dependencies": {
-    "@eth-proxy/rx-web3": "^0.1.18-y.38",
+    "@eth-proxy/rx-web3": "^0.1.18-y.39",
     "ramda": "^0.25.0",
     "rxjs": "^5.0.0",
     "web3": "^0.20.1"
