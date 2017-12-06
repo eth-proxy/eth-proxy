@@ -1,8 +1,6 @@
 export * from "./decode-logs";
 import * as Web3 from "web3";
-import { map } from "rxjs/operators";
-import { pipe, concat, ascend, sortWith, path } from "ramda";
-import { Observable } from "rxjs/Observable";
+import { ascend, sortWith, path } from "ramda";
 import 'rxjs/add/operator/let';
 
 export function createWeb3Instance(provider: Web3.Provider) {

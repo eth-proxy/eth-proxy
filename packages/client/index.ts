@@ -74,23 +74,25 @@ export function createProxy<T>(
 
   const store = createObservableStore(epicMiddleware, options.store);
 
-  const adapters = {
+  const interceptors = {
     call: createCallAdapter({
-      userInterceptor: (options.interceptors as any).call || map(identity)
+      userInterceptor: (options.interceptors as any).call || identity
     }),
     exec: createExecAdapter({
       store,
       userInterceptor:
-        (options.interceptors as any).transaction || map(identity)
-    })
+        (options.interceptors as any).transaction || identity
+    }),
+    preQuery: (options.interceptors as any).preQuery || identity,
+    postQuery: (options.interceptors as any).postQuery || identity
   };
 
   return {
     provider$: replayProvider$,
     registerContract: registerContract(store),
 
-    send: process(store, web3Proxy$, adapters) as any,
-    query: query(store),
+    send: process(store, web3Proxy$, interceptors) as any,
+    query: query(store, interceptors),
 
     network$: store.let(getDetectedNetwork$),
     defaultAccount$: store.select(getActiveAccount),
@@ -99,10 +101,7 @@ export function createProxy<T>(
     getLatestBlock: () => web3Proxy$.pipe(mergeMap(getLatestBlock)),
     getBlock: arg => web3Proxy$.pipe(mergeMap(getBlock(arg))),
     getContractInfo: (ref: ContractRef) =>
-      store.select(getContractFromRef(ref)).pipe(first(x => !!x)),
-
-    // To be removed
-    events$: store.let(getUniqEvents$)
+      store.select(getContractFromRef(ref)).pipe(first(x => !!x))
   };
 }
 

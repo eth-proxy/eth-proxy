@@ -6,15 +6,12 @@ import {
   ObservableStore,
   State
 } from "../../store";
-import { prop, identity } from "ramda";
+import { prop } from "ramda";
 
 export const createCallAdapter = ({ userInterceptor }) => (
   source: Observable<{ address; from; method; data }>
 ) => {
-  return source.pipe(
-    map(prop("data")),
-    userInterceptor
-  );
+  return source.pipe(map(prop("data")), userInterceptor);
 };
 
 export interface CreateExecAdapterContext {
@@ -35,7 +32,10 @@ export const createExecAdapter = ({ store, userInterceptor }) => (
   source: Observable<SendResult>
 ) => {
   return source.pipe(
-    map(res => ({ ...res, tx: res.data })),
+    map(res => ({
+      ...res,
+      tx: res.data
+    })),
     tap(result => store.dispatch(createTxGenerated(result))),
     mergeMap(({ tx }) => store.select(getTransactionByTx(tx))),
     tap((result: any) => {

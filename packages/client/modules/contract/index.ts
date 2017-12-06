@@ -80,7 +80,7 @@ function on(type, fn) {
   return this.filter(next => {
     return !(next && next.status === "pending");
   }).map(next => {
-    return next.status === "confirmed" ? fn(next.value) : next;
+    return next.status === "confirmed" ? fn(next) : next;
   });
 }
 

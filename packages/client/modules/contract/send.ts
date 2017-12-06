@@ -10,6 +10,7 @@ import { map } from "rxjs/operators";
 import { caseInsensitiveCompare, isString } from "../../utils";
 import { executeMethod } from "@eth-proxy/rx-web3";
 import { ContractRef, ContractInfo } from "../../model";
+import { isNil } from "ramda";
 
 export interface SendContext {
   web3: Web3;
@@ -64,7 +65,7 @@ function arraifyArgs(inputs: Web3.FunctionParameter[], args): any[] {
 function orderArgs(inputs: Web3.FunctionParameter[], args: any) {
   return inputs.map(({ name }) => {
     const arg = args[name];
-    if (!arg) {
+    if (isNil(arg)) {
       throw Error("Invalid Argument! " + name);
     }
     return arg;
@@ -74,7 +75,7 @@ function orderArgs(inputs: Web3.FunctionParameter[], args: any) {
 function formatArgs(inputs: Web3.FunctionParameter[], args: any[]) {
   return inputs.map(({ name, type }, index) => {
     const argValue = args[index];
-    if (!argValue) {
+    if (isNil(argValue)) {
       throw Error("Invalid Argument! " + name);
     }
     return formatArg(type, argValue);

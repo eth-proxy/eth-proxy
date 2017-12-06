@@ -10,7 +10,8 @@ export class EthProxy<T = {}> {
   registerContract: (abi, options: RegisterContractOptions) => void;
 
   send: Send<T>;
-
+  query: (queryModel: QueryModel<T>) => Observable<any>;
+  
   // rxweb3
   getBalance: (account: string) => Observable<any>;
   getLatestBlock: () => Observable<Block>;
@@ -21,9 +22,6 @@ export class EthProxy<T = {}> {
   defaultAccount$: Observable<string | undefined>;
 
   getContractInfo: (nameOrAddress: string) => Observable<ContractInfo>;
-  query: (queryModel: QueryModel<T>) => Observable<any>;
-
-  events$: Observable<any[]>;
 }
 
 
@@ -90,16 +88,20 @@ export interface ContractInfo {
   abi: Web3.AbiDefinition[];
 }
 
+export interface EthProxyInterceptors {
+  call: (obs: Observable<any>) => any;
+  transaction: (obs: Observable<any>) => any;
+  preQuery: (obs: Observable<any>) => any;
+  postQuery: (obs: Observable<any>) => any;
+}
+
 export interface EthProxyOptions {
   pollInterval: number;
   eventReader: (web3: Web3, options: Web3.FilterObject) => Observable<any[]>;
   store: {
     dispatch: Function
   },
-  interceptors: {
-    call?: (obs: Observable<any>) => any;
-    transaction?: (obs: Observable<any>) => any;
-  }
+  interceptors: Partial<EthProxyInterceptors>;
 }
 
 export type BlockRange = [number, number];

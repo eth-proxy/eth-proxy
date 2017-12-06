@@ -24,14 +24,14 @@ export function reducer(
         }
       ];
     case actions.TRANSACTION_CONFIRMED: {
-      const { receipt } = action.payload;
+      const { receipt, logs } = action.payload;
       const { transactionHash } = receipt;
 
       return map(t => {
         if (t.tx !== transactionHash) {
           return t;
         }
-        return Object.assign({}, t, { status: "confirmed", receipt });
+        return Object.assign({}, t, { status: "confirmed", receipt, logs });
       }, state);
     }
     case actions.TRANSACTION_FAILED: {
