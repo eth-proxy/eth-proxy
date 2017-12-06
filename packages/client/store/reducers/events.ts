@@ -1,4 +1,4 @@
-import { Block } from "web3";
+
 import {
   createSelector,
   defaultMemoize,
@@ -6,24 +6,17 @@ import {
 } from "reselect";
 import {
   indexBy,
-  prop,
   reduce,
-  pipe,
   values,
-  flatten,
   chain,
   map,
-  intersectionWith,
-  all,
-  propEq,
-  equals,
-  uniqBy,
-  uniq,
-  pick
+  mapObjIndexed,
+  filter,
+  groupBy
 } from "ramda";
 
 import * as actions from "../actions";
-import { QueryResult, BlockRange, QueryArgs } from "../../model";
+import { BlockRange } from "../../model";
 import { combineReducers, AnyAction } from "redux";
 import { idFromEvent } from "../../utils";
 
@@ -31,6 +24,7 @@ export interface QueryState {
   loading: boolean;
   range: BlockRange;
   eventIds: string[];
+  error?: string;
 }
 
 export interface EventsQueryState {
@@ -86,8 +80,16 @@ export function eventsQueryReducer(
           const { address, range } = query;
           return {
             ...contract,
-            [address]: contract[address].filter(
-              result => !rangeEqual(result.range, range)
+            [address]: (contract[address] || []).map(
+              result =>
+                rangeEqual(result.range, range)
+                  ? {
+                      range,
+                      eventIds: [],
+                      loading: false,
+                      error: "Could not load"
+                    }
+                  : result
             )
           };
         },
@@ -157,15 +159,36 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
   const getEventEntities = createSelector(getModule, m => m.entities);
   const getEventQueries = createSelector(getModule, m => m.queries);
   const getAllEvents = createSelector(getEventEntities, values);
+  const getEventsByAddress = createSelector(
+    getAllEvents,
+    groupBy((x: any) => x.meta.address)
+  );
   const getEventsForAddresses = (address: string[]) =>
     createLengthEqualSelector(getAllEvents, events =>
       events.filter(x => address.includes(x.meta.address))
     );
 
+  const getFailedQueriedByAddresses = createSelector(
+    getEventQueries,
+    mapObjIndexed<QueryState[], QueryState[]>(qs => filter(x => !!x.error, qs))
+  );
+
+  const getQueryResultsByAddress = createSelector(
+    getEventsByAddress,
+    getFailedQueriedByAddresses,
+    (eventsByAddress, failedQueries) => {
+      return mapObjIndexed((queries, address) => ({
+        failedQueries: queries,
+        events: eventsByAddress[address] || []
+      }), failedQueries)
+    }
+  );
+
   return {
     getAllEvents,
     getEventEntities,
     getEventQueries,
-    getEventsForAddresses
+    getEventsForAddresses,
+    getQueryResultsByAddress
   };
 };

@@ -5,7 +5,7 @@ import { take } from "rxjs/operators/take";
 import { mergeMap } from "rxjs/operators/mergeMap";
 import { createEpicMiddleware } from "redux-observable";
 
-import { createObservableStore } from "./store";
+import { createObservableStore, getActiveAccount$ } from "./store";
 import { createWeb3Instance } from "./utils";
 import {
   getNetwork,
@@ -18,9 +18,7 @@ import {
 import {
   createSetNetwork,
   getDetectedNetwork$,
-  getContractFromRef,
-  getActiveAccount,
-  getUniqEvents$
+  getContractFromRef
 } from "./store";
 import { registerContract } from "./modules/register-contract";
 import { rootEpic } from "./store/epics";
@@ -95,7 +93,7 @@ export function createProxy<T>(
     query: query(store, interceptors),
 
     network$: store.let(getDetectedNetwork$),
-    defaultAccount$: store.select(getActiveAccount),
+    defaultAccount$: store.let(getActiveAccount$),
 
     getBalance: account => web3Proxy$.pipe(mergeMap(getBalance(account))),
     getLatestBlock: () => web3Proxy$.pipe(mergeMap(getLatestBlock)),

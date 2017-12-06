@@ -29,7 +29,11 @@ export function createObservableStore(
     applyMiddleware(middleware)
   ) as ObservableStore<State>;
   redux.select = select;
-  redux.let = state$.let.bind(state$);
+  redux.let = <S>(rxSelect: RxSelector<State, S>): Observable<S> => state$.pipe(
+    distinctUntilChanged(),
+    rxSelect,
+    distinctUntilChanged()
+  );
 
   redux.subscribe(() => {
     state$.next(redux.getState())

@@ -1,38 +1,28 @@
 import { Observable } from "rxjs/Observable";
 import { State } from "./model";
-import { map as rxMap } from "rxjs/operators";
+import { map as rxMap, filter } from "rxjs/operators";
 import { first } from "rxjs/operators/first";
-import { getNetworkId, getEventEntities, getHasContracts } from "./selectors";
-import { pairwise, startWith, filter } from "rxjs/operators";
-import { keys, without, map, complement, isEmpty } from "ramda";
-import { Selector } from "reselect";
-import { sortEvents } from "../utils";
+import {
+  getNetworkId,
+  getHasContracts,
+  getContractsFromQueryModel,
+  getActiveAccount
+} from "./selectors";
+import { keys } from "ramda";
+import { QueryModel } from "../model";
+import * as Web3 from "web3";
 
 export function getDetectedNetwork$(state$: Observable<State>) {
   return state$.pipe(rxMap(getNetworkId), first(x => !!x));
 }
 
-export function getUniqEvents$(state$: Observable<State>) {
-  return state$.pipe(
-    rxMap(getEventEntities),
-    startWith({}),
-    pairwise(),
-    rxMap(([prev, curr]) => {
-      const added = without(keys(prev), keys(curr));
-      return map(key => curr[key], added);
-    }),
-    rxMap(sortEvents),
-    filter(complement(isEmpty)),
-  );
-}
-
-export function whenContractsRegistered$<T>(
-  namesOrAddresses: string[],
-  selector: Selector<State, T>
-) {
+export function getContractsFromModel$(queryModel: QueryModel) {
   return (state$: Observable<State>) =>
     state$.pipe(
-      first(getHasContracts(namesOrAddresses)),
-      rxMap(selector)
+      first(getHasContracts(keys(queryModel.deps))),
+      rxMap(getContractsFromQueryModel(queryModel))
     );
 }
+
+export const getActiveAccount$ = (state$: Observable<State>) =>
+  state$.pipe(rxMap(getActiveAccount), filter(x => x !== undefined));

@@ -10,7 +10,7 @@ import {
   delayWhen,
   mergeMapTo
 } from "rxjs/operators";
-import { min, pick, values, flatten, chain } from "ramda";
+import { min, pick, values, flatten, mergeWith, pipe, concat, reduce } from "ramda";
 import { never } from "rxjs/observable/never";
 
 import { getContext } from "./context";
@@ -21,21 +21,24 @@ import {
   createAddEventsWatch,
   createRemoveEventsWatch,
   createQueryEvents,
-  getEventsForAddresses
+  getQueryResultsByAddress
 } from "../../store";
 import { merge } from "rxjs/observable/merge";
 import { QueryState } from "../../store/reducers/events";
 import { sortEvents } from "../../utils";
+import { of } from "rxjs/observable/of";
 
 let globalId = 0;
-// should return events
-export const query = (store: ObservableStore<State>) => (
+
+export const query = (store: ObservableStore<State>, interceptors) => (
   queryModel: QueryModel
 ): Observable<any> => {
   const id = globalId++;
   return merge(
     never(),
-    getContext(store, queryModel).pipe(
+    of(queryModel).pipe(
+      interceptors.preQuery,
+      mergeMap(getContext(store)),
       tap(context => {
         const queries = createQueries(context);
         store.dispatch(createQueryEvents(queries));
@@ -54,16 +57,33 @@ export const query = (store: ObservableStore<State>) => (
           const queriedArray = values(queried);
           return flatten<QueryState>(queriedArray);
         });
-        const loaded$ = queries$.pipe(first(qs => qs.every(q => !q.loading)));
+        const loaded$ = queries$.pipe(first(qs => !qs.some(q => q.loading)));
+        
+        const result$ = store.select(getQueryResultsByAddress).let(
+          map(resultsByAddress => {
+            const { events, failedQueries } = pipe(
+              pick(addresses),
+              values,
+              reduce(mergeWith(concat), {})
+            )(resultsByAddress) as any
+
+            return {
+              id,
+              events: sortEvents(events),
+              failedQueries
+            }
+          })
+        );
 
         return queries$.pipe(
           delayWhen(() => loaded$),
           first(),
-          mergeMapTo(
-            store.select(getEventsForAddresses(addresses)).let(map(sortEvents))
-          )
+          mergeMapTo(result$)
         );
       })
     )
-  ).pipe(finalize(() => store.dispatch(createRemoveEventsWatch(id))));
+  ).pipe(
+    interceptors.postQuery,
+    finalize(() => store.dispatch(createRemoveEventsWatch(id)))
+  );
 };

@@ -1,16 +1,14 @@
 import { Observable } from "rxjs/Observable";
-import * as Web3 from "web3";
 import {
   ObservableStore,
   State,
   getLatestBlockNumber,
   getEventQueries,
-  getContractsFromQueryModel,
-  whenContractsRegistered$
+  getContractsFromModel$
 } from "../../store";
 import { first, combineLatest, map, withLatestFrom } from "rxjs/operators";
 import { QueryModel, ContractInfo } from "../../model";
-import { keys, zipObj, unnest } from "ramda";
+import { zipObj, unnest, curry, CurriedFunction2 } from "ramda";
 import { EventsQueryState } from "../../store/reducers/events";
 
 export interface ExecuteQueryContext {
@@ -19,24 +17,19 @@ export interface ExecuteQueryContext {
   queries: EventsQueryState;
 }
 
-export const getContext = (
-  store: ObservableStore<State>,
-  queryModel: QueryModel
-): Observable<ExecuteQueryContext> => {
-  const contracts$ = store.let(
-    whenContractsRegistered$(
-      keys(queryModel.deps),
-      getContractsFromQueryModel(queryModel)
-    )
-  );
-
-  return contracts$.pipe(
-    combineLatest(
-      store.select(getLatestBlockNumber),
-    ),
-    withLatestFrom(store.select(getEventQueries)),
-    map(unnest),
-    first(args => args.every(x => !!x)),
-    map<any, any>(zipObj(["contracts", "latestBlockNumber", "queries"]))
-  );
-};
+export const getContext = curry(
+  (
+    store: ObservableStore<State>,
+    queryModel: QueryModel
+  ): Observable<ExecuteQueryContext> => {
+    return store
+      .let(getContractsFromModel$(queryModel))
+      .pipe(
+        combineLatest(store.select(getLatestBlockNumber)),
+        withLatestFrom(store.select(getEventQueries)),
+        map(unnest),
+        first(args => args.every(x => !!x)),
+        map<any, any>(zipObj(["contracts", "latestBlockNumber", "queries"]))
+      );
+  }
+);
