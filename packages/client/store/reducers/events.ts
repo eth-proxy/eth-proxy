@@ -12,13 +12,19 @@ import {
   map,
   mapObjIndexed,
   filter,
-  groupBy
+  groupBy,
+  pipe,
+  pick,
+  mergeWith,
+  concat,
+  evolve,
+  equals
 } from "ramda";
 
 import * as actions from "../actions";
 import { BlockRange } from "../../model";
 import { combineReducers, AnyAction } from "redux";
-import { idFromEvent } from "../../utils";
+import { idFromEvent, sortEvents } from "../../utils";
 
 export interface QueryState {
   loading: boolean;
@@ -155,11 +161,16 @@ export const createLengthEqualSelector = createSelectorCreator(
   (x, y) => x && y && x.length === y.length
 );
 
+export const createDeepEqualSelector = createSelectorCreator(
+  defaultMemoize,
+  equals
+);
+
 export const getSelectors = <T>(getModule: (state: T) => State) => {
   const getEventEntities = createSelector(getModule, m => m.entities);
   const getEventQueries = createSelector(getModule, m => m.queries);
   const getAllEvents = createSelector(getEventEntities, values);
-  const getEventsByAddress = createSelector(
+  const getEventsByAddress = createLengthEqualSelector(
     getAllEvents,
     groupBy((x: any) => x.meta.address)
   );
@@ -168,7 +179,7 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
       events.filter(x => address.includes(x.meta.address))
     );
 
-  const getFailedQueriedByAddresses = createSelector(
+  const getFailedQueriedByAddresses = createDeepEqualSelector(
     getEventQueries,
     mapObjIndexed<QueryState[], QueryState[]>(qs => filter(x => !!x.error, qs))
   );
@@ -183,12 +194,24 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
       }), failedQueries)
     }
   );
+  
+  const getQueryResultFromAddresses = (addresses: string[]) => createSelector(
+    getQueryResultsByAddress,
+    (resultsByAddress) => {
+      return pipe(
+        pick(addresses),
+        values,
+        reduce(mergeWith(concat), {}),
+        evolve({ events : sortEvents })
+      )(resultsByAddress) as any;
+    }
+  )
 
   return {
     getAllEvents,
     getEventEntities,
     getEventQueries,
     getEventsForAddresses,
-    getQueryResultsByAddress
+    getQueryResultFromAddresses
   };
 };

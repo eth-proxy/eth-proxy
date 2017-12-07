@@ -3,14 +3,18 @@ import { Observable } from "rxjs/Observable";
 import {
   map,
   tap,
-  ignoreElements,
   finalize,
   mergeMap,
   first,
   delayWhen,
   mergeMapTo
 } from "rxjs/operators";
-import { min, pick, values, flatten, mergeWith, pipe, concat, reduce } from "ramda";
+import {
+  pick,
+  values,
+  flatten,
+  assoc
+} from "ramda";
 import { never } from "rxjs/observable/never";
 
 import { getContext } from "./context";
@@ -21,11 +25,10 @@ import {
   createAddEventsWatch,
   createRemoveEventsWatch,
   createQueryEvents,
-  getQueryResultsByAddress
+  getQueryResultFromAddresses
 } from "../../store";
 import { merge } from "rxjs/observable/merge";
 import { QueryState } from "../../store/reducers/events";
-import { sortEvents } from "../../utils";
 import { of } from "rxjs/observable/of";
 
 let globalId = 0;
@@ -46,7 +49,7 @@ export const query = (store: ObservableStore<State>, interceptors) => (
           createAddEventsWatch({
             id,
             addresses: queries.map(x => x.address),
-            fromBlock: queries.map(x => x.range[1]).reduce(min, Infinity)
+            fromBlock: context.latestBlockNumber
           })
         );
       }),
@@ -58,22 +61,10 @@ export const query = (store: ObservableStore<State>, interceptors) => (
           return flatten<QueryState>(queriedArray);
         });
         const loaded$ = queries$.pipe(first(qs => !qs.some(q => q.loading)));
-        
-        const result$ = store.select(getQueryResultsByAddress).let(
-          map(resultsByAddress => {
-            const { events, failedQueries } = pipe(
-              pick(addresses),
-              values,
-              reduce(mergeWith(concat), {})
-            )(resultsByAddress) as any
 
-            return {
-              id,
-              events: sortEvents(events),
-              failedQueries
-            }
-          })
-        );
+        const result$ = store
+          .select(getQueryResultFromAddresses(addresses))
+          .pipe(map(assoc("id", id)));
 
         return queries$.pipe(
           delayWhen(() => loaded$),

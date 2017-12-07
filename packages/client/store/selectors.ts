@@ -49,7 +49,7 @@ export const {
   getEventEntities,
   getEventQueries,
   getEventsForAddresses,
-  getQueryResultsByAddress
+  getQueryResultFromAddresses
 } = fromEvents.getSelectors<State>(m => m.events);
 
 export const getDefaultTxParams = createStructuredSelector({
