@@ -6,26 +6,16 @@ import {
   getContractFromRef,
   getDefaultTxParams
 } from "../../store";
-import {
-  mergeMap,
-  first,
-  withLatestFrom,
-  map,
-  mergeMapTo,
-  combineLatest,
-  filter
-} from "rxjs/operators";
-import { caseInsensitiveCompare } from "../../utils";
-import { executeMethod } from "@eth-proxy/rx-web3";
+import { mergeMap, first, filter } from "rxjs/operators";
 import { ContractRef } from "../../model";
-
-import {
-  TransactionWithHash,
-  FailedTransaction,
-  ConfirmedTransaction
-} from "../../model";
 import { send, SendContext } from "./send";
-import { zipObj } from "ramda";
+import { zipObj, curry } from "ramda";
+import { combineLatest } from "rxjs/observable/combineLatest";
+import { of } from "rxjs/observable/of";
+
+const areParamsValid = curry((type: string, params: any) => {
+  return !(type === "exec" && !params.from);
+});
 
 export const process = (
   store: ObservableStore<State>,
@@ -40,29 +30,34 @@ export const process = (
     .pipe(first(x => !!x));
 
   return contract$.pipe(
-    combineLatest(web3Proxy$, store.select(getDefaultTxParams)),
-    first(contextValues => contextValues.every(x => !!x)),
-    mergeMap(contextValues => {
-      const context = (zipObj(
-        ["contract", "web3", "defaultTxParams"],
-        contextValues
-      ) as any) as SendContext;
-
-      const methodAbi = context.contract.abi.find(
+    mergeMap(contract => {
+      const methodAbi = contract.abi.find(
         x => x.name === method
       ) as Web3.FunctionDescription;
-      if(!methodAbi) {
-        throw Error(`Method '${method}' not found on '${context.contract.name}'`);
+      if (!methodAbi) {
+        throw Error(`Method '${method}' not found on '${contract.name}'`);
       }
-
       const type = methodAbi.constant ? "call" : "exec";
+
+      return combineLatest(
+        of(contract),
+        of(adapters[type]),
+        web3Proxy$,
+        store.select(getDefaultTxParams).let(filter(areParamsValid(type)))
+      ).pipe(first((contextValues: any) => contextValues.every(x => !!x)));
+    }),
+    mergeMap(contextValues => {
+      const context = (zipObj(
+        ["contract", "adapter", "web3", "defaultTxParams"],
+        contextValues
+      ) as any) as SendContext;
 
       return send(context, {
         contractRef,
         method,
         args,
         tx_params
-      }).let(adapters[type]);
+      }).let(context.adapter);
     })
   );
 };

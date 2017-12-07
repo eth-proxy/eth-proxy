@@ -14,6 +14,7 @@ import { isNil } from "ramda";
 
 export interface SendContext {
   web3: Web3;
+  adapter: any;
   defaultTxParams: any;
   contract: ContractInfo;
 }
