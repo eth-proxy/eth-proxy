@@ -8,6 +8,7 @@
     "access": "public"
   },
   "scripts": {
+    "precompile": "rimraf dist",
     "compile": "tsc -p tsconfig.build.json",
     "gen": "cd dist && node index --cDir=\"../example/contracts\"",
     "gen:eth-proxy": "npm run gen -- --o=\"../example/output/eth-proxy/contracts.ts\"",

@@ -9,7 +9,7 @@ import {
   toOutputName,
   toInputName,
   solidityToJsOutputType,
-  solidityToJsInputType,
+  solidityToJsInputType
 } from "../../lib";
 
 export function getContractInterface({
@@ -34,7 +34,7 @@ const getMethod = (contractName: string) => (
       {
         name: "options",
         hasQuestionToken: true,
-        type: "TransactionOptions"
+        type: "RequestOptions"
       }
     ],
     returnType: getReturnType(contractName, fun)
@@ -42,14 +42,27 @@ const getMethod = (contractName: string) => (
 };
 
 const getReturnType = (contractName: string, fun: FunctionDescription) => {
-  if (fun.constant) {
-    const param =
-      fun.outputs.length > 1
-        ? toOutputName(contractName)(fun.name)
+  const callOutputName =
+    fun.outputs.length > 1
+      ? toOutputName(contractName)(fun.name)
+      : fun.outputs.length === 0
+        ? "undefined"
         : solidityToJsOutputType(fun.outputs[0].type);
-    return `CallResult<${param}>`;
-  }
-  return `TransactionResult<ContractsEvents>`;
+
+  const inputName =
+    fun.inputs.length > 1
+      ? toInputName(contractName)(fun.name)
+      : fun.inputs.length === 0
+        ? "undefined"
+        : solidityToJsInputType(fun.inputs[0].type);
+
+  return `Request<
+    "${contractName}", 
+    "${fun.name}", 
+    ${inputName}, 
+    CallResult<${callOutputName}>,
+    TransactionResult<ContractsEvents>
+    >`;
 };
 
 const getParams = (

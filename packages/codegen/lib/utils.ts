@@ -41,12 +41,22 @@ export const toEventPayloadName = toName("Payload");
 export const toEventName = toName("Event");
 export const toContractEventsName = toName("Events");
 
-export function getProperty({
+export function getInputProperty({
   name,
   type
-}: FunctionParameter): PropertySignatureStructure {
+}: FunctionParameter, index: number): PropertySignatureStructure {
   return {
-    name: name || "anonymous",
+    name: name || "anonymous" + index,
     type: solidityToJsInputType(type)
+  };
+}
+
+export function getOutputProperty({
+  name,
+  type
+}: FunctionParameter, index: number): PropertySignatureStructure {
+  return {
+    name: name || "anonymous" + index,
+    type: solidityToJsOutputType(type)
   };
 }

@@ -44,3 +44,7 @@ export const sortEvents = sortWith<any>([
   ascend(path(['meta', 'transactionIndex'])),
   ascend(path(['meta', 'logIndex']))
 ]);
+
+export function getMethodAbi(abi: Web3.AbiDefinition[], method: string) {
+  return abi.find(({ name }) => caseInsensitiveCompare(name, method));
+}

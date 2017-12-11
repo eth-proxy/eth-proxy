@@ -9,6 +9,12 @@ export const imports = [
       },
       {
         name: "EventMetadata"
+      },
+      {
+        name: 'Request'
+      },
+      {
+        name: 'RequestOptions'
       }
     ],
     moduleSpecifier: "@eth-proxy/client"

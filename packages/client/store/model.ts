@@ -8,6 +8,7 @@ import * as fromAccounts from "./reducers/accounts";
 import * as fromTransactions from "./reducers/transactions";
 import * as fromBlocks from "./reducers/blocks";
 import * as fromEvents from "./reducers/events";
+import * as fromCalls from "./reducers/calls";
 
 export interface State {
   networkId: fromNetwork.State;
@@ -16,6 +17,15 @@ export interface State {
   transactions: fromTransactions.State;
   blocks: fromBlocks.State;
   events: fromEvents.State;
+  calls: fromCalls.State;
+}
+
+export interface ProcessRequestArgs {
+  abi;
+  address;
+  method;
+  args;
+  txParams;
 }
 
 export interface EpicContext {
@@ -23,4 +33,6 @@ export interface EpicContext {
   options: EthProxyOptions;
   getEvents: (options: Web3.FilterObject) => Observable<any[]>;
   watchEvents: (options: Web3.FilterObject) => Observable<any>;
+  processTransaction: (args: ProcessRequestArgs) => Observable<any>
+  processCall: (args: ProcessRequestArgs) => Observable<any>
 }

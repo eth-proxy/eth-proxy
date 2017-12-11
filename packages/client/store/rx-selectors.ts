@@ -6,7 +6,8 @@ import {
   getNetworkId,
   getHasContracts,
   getContractsFromQueryModel,
-  getActiveAccount
+  getActiveAccount,
+  getContractFromRef
 } from "./selectors";
 import { keys } from "ramda";
 import { QueryModel } from "../model";
@@ -21,6 +22,14 @@ export function getContractsFromModel$(queryModel: QueryModel) {
     state$.pipe(
       first(getHasContracts(keys(queryModel.deps))),
       rxMap(getContractsFromQueryModel(queryModel))
+    );
+}
+
+export function getContractFromRef$(contractRef: any) {
+  return (state$: Observable<State>) =>
+    state$.pipe(
+      rxMap(getContractFromRef(contractRef)),
+      first(x => !!x),
     );
 }
 

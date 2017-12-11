@@ -21,8 +21,8 @@ export function getSourceFile(contracts: TruffleJson[]): SourceFileStructure {
       ...map(getContractInterface, contracts),
       ...chain(getInputInterfaces, contracts),
       ...chain(getOutputInterfaces, contracts),
-      transactionOptions,
-      ...createEventInterfaces(createEventInterface)(contracts)
+      ...createEventInterfaces(createEventInterface)(contracts),      
+      transactionOptions
     ].map(assoc("isExported", true))
   };
 }

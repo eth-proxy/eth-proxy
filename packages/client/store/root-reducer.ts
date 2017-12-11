@@ -4,6 +4,7 @@ import * as fromAccounts from "./reducers/accounts";
 import * as fromTransactions from "./reducers/transactions";
 import * as fromBlocks from "./reducers/blocks";
 import * as fromEvents from "./reducers/events";
+import * as fromCalls from "./reducers/calls";
 
 import { combineReducers, AnyAction } from "redux";
 
@@ -15,7 +16,8 @@ export const reducer = combineReducers<State>({
   accounts: fromAccounts.reducer,
   transactions: fromTransactions.reducer,
   blocks: fromBlocks.reducer,
-  events: fromEvents.reducer
+  events: fromEvents.reducer,
+  calls: fromCalls.reducer
 });
 const initialState = reducer(undefined, { type: "" });
 

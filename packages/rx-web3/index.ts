@@ -1,19 +1,23 @@
 import * as Web3 from "web3";
 import { Observable } from "rxjs/Observable";
 import { map, concat, mergeMap, distinctUntilKeyChanged } from "rxjs/operators";
-import { head, curry, CurriedFunction2, flatten } from "ramda";
-import { BigNumber } from "bignumber.js";
+import { head, curry, flatten } from "ramda";
 import { bindNodeCallback } from "rxjs/observable/bindNodeCallback";
 import { merge } from "rxjs/observable/merge";
 import { forkJoin } from "rxjs/observable/forkJoin";
+
+import { BigNumber } from "bignumber.js";
+import { CurriedFunction3 } from 'ramda';
 
 export function getNetwork(web3: Web3): Observable<string> {
   return bindNodeCallback<string>(web3.version.getNetwork.bind(web3))();
 }
 
-export function executeMethod<T>(web3Method: any, args = [], tx_params = {}) {
-  return bindNodeCallback<T>(web3Method)(...args, tx_params);
-}
+export const executeMethod = curry(
+  <T>(web3Method: any, args = [], tx_params) => {
+    return bindNodeCallback<T>(web3Method)(...args, tx_params);
+  }
+);
 
 export function getReceipt(web3: Web3, tx): Observable<any> {
   return Observable.create(observer => {
@@ -59,7 +63,7 @@ export function getLatestBlockHash(web3): Observable<string> {
         observer.next(blockHash);
       }
     });
-    return () => filter.stopWatching((_) => {});
+    return () => filter.stopWatching(_ => {});
   });
 }
 
@@ -116,9 +120,7 @@ const getAddressEvents = curry(
         observer.next(event);
         observer.complete();
       });
-      return () => allEvents.stopWatching(
-        (_) => {}
-      );
+      return () => allEvents.stopWatching(_ => {});
     });
   }
 );

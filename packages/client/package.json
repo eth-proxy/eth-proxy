@@ -8,6 +8,7 @@
     "access": "public"
   },
   "scripts": {
+    "precompile": "rimraf dist",
     "compile": "tsc -p tsconfig.build.json",
     "prepublish": "rimraf dist && npm run compile",
     "postpublish": "rimraf dist"

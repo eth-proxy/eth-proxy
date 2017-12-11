@@ -5,7 +5,7 @@ import { take } from "rxjs/operators/take";
 import { mergeMap } from "rxjs/operators/mergeMap";
 import { createEpicMiddleware } from "redux-observable";
 
-import { createObservableStore, getActiveAccount$ } from "./store";
+import { createObservableStore, getActiveAccount$, ProcessRequestArgs } from "./store";
 import { createWeb3Instance } from "./utils";
 import {
   getNetwork,
@@ -32,16 +32,20 @@ import { query } from "./modules/query";
 import * as Web3 from "web3";
 import { identity } from "ramda";
 import {
-  process,
-  createCallAdapter,
-  createExecAdapter
-} from "./modules/contract";
+  processTransaction,
+  createWeb3RequestProcessor,
+  processCall
+} from './modules/contract'
 
 const defaultOptions = {
   pollInterval: 1000,
   eventReader: getEvents,
-  interceptors: {}
+  interceptors: {},
+  store: undefined
 };
+
+let globalId = 0;
+const genId = () => (globalId++).toString();
 
 export function createProxy<T>(
   provider$: Observable<any>,
@@ -61,26 +65,27 @@ export function createProxy<T>(
   const appWatchEvents = (filter: Web3.FilterObject) =>
     web3Proxy$.let(mergeMap(web3 => watchEvents(web3, filter)));
 
+  const web3RequestProcessor = (args: ProcessRequestArgs) =>
+    web3Proxy$.pipe(
+      map(createWeb3RequestProcessor),
+      mergeMap(processor => processor(args))
+    );
+
   const epicMiddleware = createEpicMiddleware(rootEpic, {
     dependencies: {
       web3Proxy$,
       options,
       getEvents,
-      watchEvents: appWatchEvents
+      watchEvents: appWatchEvents,
+      processTransaction: web3RequestProcessor,
+      processCall: web3RequestProcessor
     }
   });
 
   const store = createObservableStore(epicMiddleware, options.store);
 
   const interceptors = {
-    call: createCallAdapter({
-      userInterceptor: (options.interceptors as any).call || identity
-    }),
-    exec: createExecAdapter({
-      store,
-      userInterceptor:
-        (options.interceptors as any).transaction || identity
-    }),
+    call: (options.interceptors as any).call || identity,
     preQuery: (options.interceptors as any).preQuery || identity,
     postQuery: (options.interceptors as any).postQuery || identity
   };
@@ -89,7 +94,6 @@ export function createProxy<T>(
     provider$: replayProvider$,
     registerContract: registerContract(store),
 
-    send: process(store, web3Proxy$, interceptors) as any,
     query: query(store, interceptors),
 
     network$: store.let(getDetectedNetwork$),
@@ -99,10 +103,14 @@ export function createProxy<T>(
     getLatestBlock: () => web3Proxy$.pipe(mergeMap(getLatestBlock)),
     getBlock: arg => web3Proxy$.pipe(mergeMap(getBlock(arg))),
     getContractInfo: (ref: ContractRef) =>
-      store.select(getContractFromRef(ref)).pipe(first(x => !!x))
+      store.select(getContractFromRef(ref)).pipe(first(x => !!x)),
+
+    transaction: processTransaction(store, genId) as any,
+    ethCall: processCall(store, genId) as any
   };
 }
 
 export * from "./model";
 export * from "./utils";
 export { ethProxyIntegrationReducer, State as EthProxyState } from "./store";
+export * from './modules/contract'
