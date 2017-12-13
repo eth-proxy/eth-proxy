@@ -6,8 +6,8 @@ import {
   getContractFromRef,
   getDefaultTxParams
 } from "../../store";
-import { mergeMap, first, filter } from "rxjs/operators";
-import { ContractRef } from "../../model";
+import { mergeMap, first, filter, map } from "rxjs/operators";
+import { ContractRef, TransactionConfirmation } from "../../model";
 import { send, SendContext } from "./send";
 import { zipObj, curry } from "ramda";
 import { combineLatest } from "rxjs/observable/combineLatest";
@@ -62,21 +62,25 @@ export const process = (
   );
 };
 
-Observable.prototype.once = once;
-Observable.prototype.on = on;
-
-function once(type, fn) {
-  return this.map(result => {
-    return result.status === "pending" ? fn(result.data) : result;
-  });
+export function once(type: "tx", fn: (string) => any) {
+  return (obs: Observable<any>) =>
+    obs.let(
+      map(result => {
+        return result.status === "pending" ? fn(result.data) : result;
+      })
+    );
 }
 
-function on(type, fn) {
-  return this.filter(next => {
-    return !(next && next.status === "pending");
-  }).map(next => {
-    return next.status === "confirmed" ? fn(next) : next;
-  });
+export function on(type: "confirmation", fn: (confirmation: TransactionConfirmation<any>) => any) {
+  return (obs: Observable<any>) =>
+    obs.pipe(
+      filter(next => {
+        return !(next && next.status === "pending");
+      }),
+      map(next => {
+        return next.status === "confirmed" ? fn(next) : next;
+      })
+    );
 }
 
 export * from "./adapters";

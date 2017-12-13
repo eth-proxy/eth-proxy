@@ -3,7 +3,6 @@ import {
   PropertySignatureStructure,
   TypeAliasDeclarationStructure
 } from "ts-simple-ast";
-import { chain, map, filter } from "ramda";
 import {
   solidityToJsOutputType,
   toEventPayloadName,

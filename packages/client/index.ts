@@ -106,3 +106,4 @@ export function createProxy<T>(
 export * from "./model";
 export * from "./utils";
 export { ethProxyIntegrationReducer, State as EthProxyState } from "./store";
+export { on, once } from './modules/contract'

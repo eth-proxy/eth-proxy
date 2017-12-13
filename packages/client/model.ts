@@ -164,18 +164,6 @@ export interface ContractDefaults {
   value?: string;
 }
 
-declare module "rxjs/Observable" {
-  // tslint:disable-next-line:interface-name no-shadowed-variable
-  interface Observable<T> {
-    once(this: Observable<any>, type: "tx", fn: Function): Observable<T>;
-    on(
-      this: Observable<any>,
-      type: "confirmation",
-      fn: Function
-    ): Observable<T>;
-  }
-}
-
 export type NameRef<T extends string> = T;
 export interface InterfaceRef<T extends string> {
   interface: T;

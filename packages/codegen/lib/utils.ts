@@ -1,7 +1,12 @@
 import { pipe, flip, toUpper, concat, curry, CurriedFunction2 } from "ramda";
 import { PropertySignatureStructure } from "ts-simple-ast";
 
-export function solidityToJsOutputType(contractType: string) {
+export function solidityToJsOutputType(contractType: string): string {
+  if (contractType.includes('[]')) {
+    const itemType = contractType.replace('[]', '');
+    const jsItemType = solidityToJsOutputType(itemType);
+    return jsItemType + '[]'
+  }
   if (contractType.startsWith("uint") || contractType.startsWith("int")) {
     return "BigNumber";
   }
@@ -15,17 +20,11 @@ export function solidityToJsOutputType(contractType: string) {
   if (contractType === "bool") {
     return "boolean";
   }
-  if (contractType === "address[]") {
-    return "string[]";
-  }
 }
 
 export function solidityToJsInputType(contractType: string) {
   const strictType = solidityToJsOutputType(contractType);
-  if (strictType === "BigNumber") {
-    return "BigNumber | number | string";
-  }
-  return strictType;
+  return strictType.replace('BigNumber', "NumberLike");
 }
 
 export const capitalize = (text: string) => text.replace(/^./, toUpper);
