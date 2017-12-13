@@ -10,7 +10,7 @@ import { map } from "rxjs/operators";
 import { caseInsensitiveCompare, isString } from "../../utils";
 import { executeMethod } from "@eth-proxy/rx-web3";
 import { ContractRef, ContractInfo } from "../../model";
-import { isNil } from "ramda";
+import { isNil, contains } from "ramda";
 
 export interface SendContext {
   web3: Web3;
@@ -86,6 +86,9 @@ function formatArgs(inputs: Web3.FunctionParameter[], args: any[]) {
 function formatArg(type, value: any) {
   if (type === "bool") {
     return Boolean(value);
+  }
+  if(contains('[]', type)) {
+    return value.map(arg => formatArg(type.replace('[]', ''), arg))
   }
   return value.toString();
 }
