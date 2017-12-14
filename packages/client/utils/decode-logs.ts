@@ -46,9 +46,12 @@ export const decodeLogs = abi => (logs: any[]) => {
     });
 };
 
-function parseArg(type: string, value: string | number) {
+function parseArg(type: string, value: any) {
+  if (type.endsWith("[]")) {
+    return value.map(item => parseArg(type.replace("[]", ""), item));
+  }
   if (type.startsWith("uint") || type.startsWith("int")) {
-    return new Web3().toBigNumber("0x" + (value as number).toString(16));
+    return new Web3().toBigNumber("0x" + value.toString(16));
   }
   return value;
 }
