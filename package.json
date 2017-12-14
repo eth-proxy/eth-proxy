@@ -14,7 +14,7 @@
 	"devDependencies": {
 		"@types/chai": "^4.0.4",
 		"@types/mocha": "^2.2.44",
-		"@types/ramda": "0.24.18",
+		"@types/ramda": "0.25.5",
 		"chai": "^4.1.2",
 		"lerna": "^2.5.1",
 		"mocha": "^4.0.1",
@@ -22,6 +22,6 @@
 		"rxjs-marbles": "^2.1.0",
 		"ts-node": "^3.3.0",
 		"tslint": "5.8.0",
-		"typescript": "2.5.3"
+		"typescript": "2.6.1"
 	}
 }

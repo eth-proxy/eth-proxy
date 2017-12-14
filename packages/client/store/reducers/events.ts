@@ -1,31 +1,36 @@
-import { Block } from "web3";
-import { createSelector } from "reselect";
+
+import {
+  createSelector,
+  defaultMemoize,
+  createSelectorCreator
+} from "reselect";
 import {
   indexBy,
-  prop,
   reduce,
-  pipe,
   values,
-  flatten,
   chain,
   map,
-  intersectionWith,
-  all,
-  propEq,
-  equals,
-  uniqBy,
-  uniq
+  mapObjIndexed,
+  filter,
+  groupBy,
+  pipe,
+  pick,
+  mergeWith,
+  concat,
+  evolve,
+  equals
 } from "ramda";
 
 import * as actions from "../actions";
-import { QueryResult, BlockRange, QueryArgs } from "../../model";
+import { BlockRange } from "../../model";
 import { combineReducers, AnyAction } from "redux";
-import { idFromEvent } from "../../utils";
+import { idFromEvent, sortEvents } from "../../utils";
 
 export interface QueryState {
   loading: boolean;
   range: BlockRange;
   eventIds: string[];
+  error?: string;
 }
 
 export interface EventsQueryState {
@@ -81,8 +86,16 @@ export function eventsQueryReducer(
           const { address, range } = query;
           return {
             ...contract,
-            [address]: contract[address].filter(
-              result => !rangeEqual(result.range, range)
+            [address]: (contract[address] || []).map(
+              result =>
+                rangeEqual(result.range, range)
+                  ? {
+                      range,
+                      eventIds: [],
+                      loading: false,
+                      error: "Could not load"
+                    }
+                  : result
             )
           };
         },
@@ -114,8 +127,15 @@ export function eventEntitiesReducer(
         ...indexBy(idFromEvent, chain(x => x.events, action.payload))
       };
     }
+    case actions.EVENTS_LOADED: {
+      return {
+        ...state,
+        ...indexBy(idFromEvent, action.payload)
+      };
+    }
     case actions.TRANSACTION_CONFIRMED: {
       const { logs } = action.payload;
+
       return {
         ...state,
         ...indexBy(idFromEvent, logs)
@@ -127,7 +147,7 @@ export function eventEntitiesReducer(
 }
 
 export interface State {
-  entities: EventsQueryState;
+  entities: EventsByHash;
   queries: EventsQueryState;
 }
 
@@ -136,92 +156,62 @@ export const reducer = combineReducers<State>({
   queries: eventsQueryReducer
 });
 
+export const createLengthEqualSelector = createSelectorCreator(
+  defaultMemoize,
+  (x, y) => x && y && x.length === y.length
+);
+
+export const createDeepEqualSelector = createSelectorCreator(
+  defaultMemoize,
+  equals
+);
+
 export const getSelectors = <T>(getModule: (state: T) => State) => {
   const getEventEntities = createSelector(getModule, m => m.entities);
   const getEventQueries = createSelector(getModule, m => m.queries);
-  const getFilterNotQueried = createSelector(
-    getEventQueries,
-    filterOutCommonDone
-  );
-
-  const getFiltersNotQueriedForMany = createSelector(
-    getFilterNotQueried,
-    filterOutDone => (toFilter: QueryArgs[]) => filterOutDone(toFilter)
-  );
-
   const getAllEvents = createSelector(getEventEntities, values);
+  const getEventsByAddress = createLengthEqualSelector(
+    getAllEvents,
+    groupBy((x: any) => x.meta.address)
+  );
+  const getEventsForAddresses = (address: string[]) =>
+    createLengthEqualSelector(getAllEvents, events =>
+      events.filter(x => address.includes(x.meta.address))
+    );
+
+  const getFailedQueriedByAddresses = createDeepEqualSelector(
+    getEventQueries,
+    mapObjIndexed<QueryState[], QueryState[]>(qs => filter(x => !!x.error, qs))
+  );
+
+  const getQueryResultsByAddress = createSelector(
+    getEventsByAddress,
+    getFailedQueriedByAddresses,
+    (eventsByAddress, failedQueries) => {
+      return mapObjIndexed((queries, address) => ({
+        failedQueries: queries,
+        events: eventsByAddress[address] || []
+      }), failedQueries)
+    }
+  );
+  
+  const getQueryResultFromAddresses = (addresses: string[]) => createSelector(
+    getQueryResultsByAddress,
+    (resultsByAddress) => {
+      return pipe(
+        pick(addresses),
+        values,
+        reduce(mergeWith(concat), {}),
+        evolve({ events : sortEvents })
+      )(resultsByAddress) as any;
+    }
+  )
 
   return {
     getAllEvents,
     getEventEntities,
     getEventQueries,
-    getFiltersNotQueriedForMany
+    getEventsForAddresses,
+    getQueryResultFromAddresses
   };
 };
-
-// export const filterOutDone = (state: EventsQueryState) => (
-//   toFilter: QueryArgs
-// ) => {
-//   const { address, range } = toFilter;
-//   const hasRanges = state[address].map(x => x.range);
-
-//   return hasRanges.reduce(
-//     (toQuery, has) => chain(todo => filterNotDone(has, todo), toQuery),
-//     [range]
-//   );
-// };
-
-export const filterOutCommonDone = (state: EventsQueryState) => (
-  toFilter: QueryArgs[]
-) => {
-  const addresess = toFilter.map(x => x.address);
-  const addressRanges = chain(
-    address => (state[address] || []).map(x => x.range),
-    addresess
-  );
-
-  const commonRanges = uniq(addressRanges).filter(range =>
-    all(
-      address => !!(state[address] || []).find(propEq("range", range)),
-      addresess
-    )
-  );
-
-  return commonRanges.reduce(
-    (toQuery, has) => chain(todo => filterNotDone(has, todo), toQuery),
-    [toFilter[0].range]
-  );
-};
-
-export function filterNotDone(
-  [hasFrom, hasTo]: BlockRange,
-  [wantFrom, wantTo]: BlockRange
-): BlockRange[] {
-  // No intersection
-  if (hasFrom > wantTo || hasTo < wantFrom) {
-    return [[wantFrom, wantTo]];
-  }
-  // Has  --|||||||----
-  // Want ----|||------
-  if (hasFrom <= wantFrom && hasTo >= wantTo) {
-    return [];
-  }
-  // Has   ----||||---
-  // Want  ---|||-----
-  if (hasFrom >= wantFrom && hasTo > wantTo) {
-    return [[wantFrom, hasFrom]];
-  }
-  // Has   ----|||-----
-  // Want  -----||||---
-  if (hasFrom <= wantFrom && hasTo <= wantTo) {
-    return [[hasTo, wantTo]];
-  }
-  // Has  ----|||||||------
-  // Want --|||||||||||----
-  if (hasFrom > wantFrom && hasTo < wantTo) {
-    return [[wantFrom, hasFrom], [hasTo, wantTo]];
-  }
-  throw Error(
-    "Range not found, " + JSON.stringify({ hasFrom, wantFrom, hasTo, wantTo })
-  );
-}

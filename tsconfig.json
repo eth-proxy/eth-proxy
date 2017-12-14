@@ -8,7 +8,9 @@
     "baseUrl": "./packages",
     "paths": {
       "@eth-proxy/*": ["./*/"]
-    }
+    },
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "exclude": ["node_modules", "**/*/node_modules"],
   "compileOnSave": false,

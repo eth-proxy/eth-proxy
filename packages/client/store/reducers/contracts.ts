@@ -16,11 +16,16 @@ import {
   all
 } from "ramda";
 import * as Web3 from "web3";
-import { ContractInfo, QueryModel } from "../../model";
-import { eventAbiToSignature, eventInputToSignature } from "../../utils";
+import { ContractInfo, QueryModel, ContractRef } from "../../model";
+import {
+  eventAbiToSignature,
+  eventInputToSignature,
+  isString,
+  caseInsensitiveCompare
+} from "../../utils";
 
 export interface State {
-  [address: string]: ContractInfo;
+  [contractName: string]: ContractInfo;
 }
 
 export function reducer(
@@ -32,7 +37,7 @@ export function reducer(
       const { address, abi, contract_name, genesisBlock } = action.payload;
       return {
         ...state,
-        [address]: {
+        [contract_name]: {
           address,
           abi,
           name: contract_name,
@@ -44,45 +49,46 @@ export function reducer(
   }
 }
 
-const caseInsensitiveCompare = (a: string, b: string) =>
-  a && b && a.toLowerCase() === b.toLowerCase();
+const contractForRef = (state: State) => (ref: ContractRef) => {
+  const name = isString(ref) ? ref : ref.interface;
+  const contract = state[name];
 
-const contractFor = (state: State) => (nameOrAddress: string) =>
-  pipe(
-    values,
-    find<ContractInfo>(
-      c =>
-        caseInsensitiveCompare(c.name, nameOrAddress) ||
-        caseInsensitiveCompare(c.address, nameOrAddress)
-    )
-  )(state);
+  if (!contract) {
+    return undefined;
+  }
+
+  const address = isString(ref) ? contract.address : ref.address;
+
+  if (!address) {
+    throw Error("Invalid Address");
+  }
+
+  return {
+    ...contract,
+    address
+  };
+};
 
 export const getSelectors = <T>(getModule: (state: T) => State) => {
-  const getContractForNameOrAddress = createSelector(getModule, contractFor);
+  const getContractForRef = createSelector(getModule, contractForRef);
 
-  const getContractsFromNamesOrAddresses = (nameOrAddress: string[]) =>
-    createSelector(getContractForNameOrAddress, getContract =>
-      map(getContract, nameOrAddress)
-    );
-
-  const getUserModelToFilter = createSelector(getModule, userModelToFilter);
+  const getContractsFromRefs = (refs: ContractRef[]) =>
+    createSelector(getContractForRef, getContract => map(getContract, refs));
 
   const getContractsFromQueryModel = (userModel: QueryModel) =>
-    createSelector(
-      getUserModelToFilter,
-      getContractForNameOrAddress,
-      (userModelToFilter, contractsFromNames) =>
-        pipe(userModelToFilter, keys, map(contractsFromNames))(userModel)
+    createSelector(getContractForRef, contractsFromRefs =>
+      map(contractsFromRefs, keys(userModel.deps))
     );
 
-  const getHasContracts = (nameOrAddress: string[]) => createSelector(
-    getContractForNameOrAddress,
-    (getContract) => pipe(map(getContract), all(x => !!x))(nameOrAddress)
-  )
+  const getHasContracts = (res: ContractRef[]) =>
+    createSelector(getContractForRef, getContract =>
+      pipe(map(getContract), all(x => !!x))(res)
+    );
+
   return {
-    getContractFromNameOrAddress: (nameOrAddress: string) => (state: T) =>
-      getContractForNameOrAddress(state)(nameOrAddress),
-    getContractsFromNamesOrAddresses,
+    getContractFromRef: (contractRef: ContractRef) => (state: T) =>
+      getContractForRef(state)(contractRef),
+    getContractsFromRefs,
     getAllAbis: createSelector(
       getModule,
       pipe(values, map(c => c.abi), flatten)
@@ -92,10 +98,13 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
   };
 };
 
+// JUST PROTOTYPE NOT USED ATM
 function userModelToFilter(state: State) {
   return (model: QueryModel) => {
     // wait until contracts are available
-    const namesToAddresses = renameBy(pipe(contractFor(state), x => x.address));
+    const refsToAddresses = renameBy(
+      pipe(contractForRef(state), x => x.address)
+    );
     const eventAbis: Web3.AbiDefinition[] = pipe(
       values,
       map<any, Web3.AbiDefinition[]>(c => c.abi),
@@ -110,7 +119,7 @@ function userModelToFilter(state: State) {
       )(eventAbis);
 
     return pipe(
-      namesToAddresses,
+      refsToAddresses,
       mapObjIndexed(contract => {
         if (contract === "*") {
           return "*";

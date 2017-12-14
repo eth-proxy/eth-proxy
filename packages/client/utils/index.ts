@@ -1,8 +1,6 @@
 export * from "./decode-logs";
 import * as Web3 from "web3";
-import { map } from "rxjs/operators";
-import { pipe, concat } from "ramda";
-import { Observable } from "rxjs/Observable";
+import { ascend, sortWith, path } from "ramda";
 import 'rxjs/add/operator/let';
 
 export function createWeb3Instance(provider: Web3.Provider) {
@@ -31,39 +29,18 @@ export const networkNameFromId = (networkId: string) => {
   }
 };
 
+export const isString = (x): x is string => (typeof x === 'string' || x instanceof String);
+
 export const isMain = (networkId: string) =>
   networkNameFromId(networkId) === "Main";
 
-const createNetworkPrefix = (networkId: string) =>
-  isMain(networkId) ? "" : networkNameFromId(networkId);
-
-const createEtherscanBaseUrl = (networkPrefix: string) =>
-  `https://${networkPrefix}etherscan.io`;
-
-export function networkToTxUrl(tx: string, params?: string) {
-  return createEthersanUrl(`$/tx/${tx}?${params}`)
-}
-export function networkToAddressUrl(address: string, params?: string) {
-  return createEthersanUrl(`/address/${address}?${params}`)
-}
-export function networkToTokenUrl(token: string, params?: string) {
-  return createEthersanUrl(`/token/${token}?${params}`)
-}
-
-function createEthersanUrl(subPath: string) {
-  return (networkId: Observable<string>) =>
-    networkId.let(
-      map(
-        pipe(
-          baseUrl => concat(baseUrl, subPath),
-          createEtherscanBaseUrl,
-          createNetworkPrefix
-        )
-      )
-    );
-}
-
-
-export function idFromEvent({ transactionHash, transactionIndex, logIndex }: any) {
+export function idFromEvent({ meta: { transactionHash, transactionIndex, logIndex } }: any) {
   return transactionHash + transactionIndex + logIndex
 }
+
+
+export const sortEvents = sortWith<any>([
+  ascend(path(['meta', 'blockNumber'])),
+  ascend(path(['meta', 'transactionIndex'])),
+  ascend(path(['meta', 'logIndex']))
+]);

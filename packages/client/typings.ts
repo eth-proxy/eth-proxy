@@ -105,7 +105,7 @@ declare module "web3" {
     interface FilterObject {
       fromBlock?: number | string;
       toBlock?: number | string;
-      address?: string[];
+      address?: string | string[];
       topics?: string[];
     }
 
@@ -117,8 +117,8 @@ declare module "web3" {
 
     interface FilterResult {
       get<T>(callback: Callback<SolidityEvent<T>[]>): void;
-      watch<T>(callback: Callback<SolidityEvent<T>[]>): void;
-      stopWatching(): void;
+      watch<T>(callback: Callback<SolidityEvent<T>>): void;
+      stopWatching(callback: Callback<true>): void;
     }
 
     interface Block {

@@ -4,10 +4,9 @@ import { catchError, mergeMap, finalize, map } from "rxjs/operators";
 import * as Web3 from "web3";
 import { Reader, EventFilter } from "./model";
 import { Subject } from "rxjs/Subject";
-import { getEvents } from "@eth-proxy/rx-web3";
-import "rxjs/add/Observable/merge";
-import "rxjs/add/Observable/of";
+import { getEvents } from "@eth-proxy/rx-web3"
 import "rxjs/add/operator/let";
+import { merge } from "rxjs/observable/merge";
 
 const rangeSize = 10000;
 
@@ -59,7 +58,7 @@ export function createSplitReader(
       filter.toBlock
     ]);
 
-    return Observable.merge(
+    return merge(
       ...ranges.map(([fromBlock, toBlock]) =>
         queryRange({
           ...filter,

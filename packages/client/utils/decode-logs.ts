@@ -1,67 +1,57 @@
 import * as Web3 from "web3";
 import * as ethJSABI from "ethjs-abi";
 
-export const decodeLogs = abi => logs => {
+export const decodeLogs = abi => (logs: any[]) => {
   const events = eventsFromAbi(abi);
 
   return logs
     .filter(log => {
-      const logABI = events[log.topics[0]];
-
-      if (!logABI) {
-        return;
-      }
-
-      return !!logABI;
+      const eventAbi = events[log.topics[0]];
+      return !!eventAbi;
     })
     .map(log => {
-      const logABI = events[log.topics[0]];
+      const eventAbi = events[log.topics[0]];
 
-      var copy = { ...log };
+      var argTopics = eventAbi.anonymous ? log.topics : log.topics.slice(1);
 
-      var argTopics = logABI.anonymous ? copy.topics : copy.topics.slice(1);
       var indexedData =
         "0x" + argTopics.map(topics => topics.slice(2)).join("");
-
       var indexedParams = ethJSABI.decodeEvent(
-        partialABI(logABI, true),
+        partialABI(eventAbi, true),
         indexedData
       );
 
-      var notIndexedData = copy.data;
+      var notIndexedData = log.data;
       var notIndexedParams = ethJSABI.decodeEvent(
-        partialABI(logABI, false),
+        partialABI(eventAbi, false),
         notIndexedData
       );
+      const params = {
+        ...indexedParams,
+        ...notIndexedParams
+      };
 
-      copy.event = logABI.name;
-
-      copy.args = logABI.inputs.reduce((acc, current) => {
-        var val = indexedParams[current.name];
-
-        if (val === undefined) {
-          val = notIndexedParams[current.name];
-        }
-
-        acc[current.name] = val;
-        return acc;
+      const payload = eventAbi.inputs.reduce((acc, current) => {
+        return {
+          ...acc,
+          [current.name]: parseArg(current.type, params[current.name])
+        };
       }, {});
 
-      Object.keys(copy.args).forEach(key => {
-        var val = copy.args[key];
-
-        // We have BN. Convert it to BigNumber
-        if (val.constructor.isBN) {
-          copy.args[key] = new Web3().toBigNumber("0x" + val.toString(16));
-        }
-      });
-
-      delete copy.data;
-      delete copy.topics;
-
-      return copy;
+      return {
+        type: eventAbi.name,
+        payload,
+        meta: log
+      };
     });
 };
+
+function parseArg(type: string, value: string | number) {
+  if (type.startsWith("uint") || type.startsWith("int")) {
+    return new Web3().toBigNumber("0x" + (value as number).toString(16));
+  }
+  return value;
+}
 
 export function eventsFromAbi(abi) {
   return abi.filter(item => item.type === "event").reduce((current, item) => {
@@ -88,7 +78,7 @@ function partialABI(fullABI, indexed) {
   var inputs = fullABI.inputs.filter(i => i.indexed === indexed);
 
   return {
-    inputs: inputs,
+    inputs,
     name: fullABI.name,
     type: fullABI.type,
     anonymous: fullABI.anonymous

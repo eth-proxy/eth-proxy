@@ -15,7 +15,8 @@ import {
   FailedTransaction,
   ContractInfo,
   QueryArgs,
-  QueryModel
+  QueryModel,
+  InterfaceRef
 } from "../model";
 import * as Web3 from "web3";
 
@@ -24,8 +25,8 @@ export const { getNetworkId } = fromNetwork.getSelectors<State>(
 );
 
 export const {
-  getContractFromNameOrAddress,
-  getContractsFromNamesOrAddresses,
+  getContractFromRef,
+  getContractsFromRefs,
   getAllAbis,
   getContractsFromQueryModel,
   getHasContracts
@@ -46,12 +47,14 @@ export const { getLatestBlock, getLatestBlockNumber } = fromBlocks.getSelectors<
 export const {
   getAllEvents,
   getEventEntities,
-  getFiltersNotQueriedForMany
+  getEventQueries,
+  getEventsForAddresses,
+  getQueryResultFromAddresses
 } = fromEvents.getSelectors<State>(m => m.events);
 
 export const getDefaultTxParams = createStructuredSelector({
   from: getActiveAccount,
-  gas: always(600000)
+  gas: always(800000)
 });
 
 export const getLogDecoder = createSelector(getAllAbis, abis =>

@@ -1,6 +1,4 @@
 import {
-  TransactionConfirmed,
-  TransactionTypes,
   createTransactionFailed,
   createTransactionConfirmed,
   TX_GENERATED
@@ -8,10 +6,14 @@ import {
 import { ActionsObservable } from "redux-observable";
 import { mergeMap, retryWhen, delay, take, concat, map, withLatestFrom } from "rxjs/operators";
 import { getReceipt } from "@eth-proxy/rx-web3";
-import { Observable } from "rxjs/Observable";
 import { getLogDecoder } from "../selectors";
-import "rxjs/add/Observable/of";
-import { EpicContext, State } from "../model";
+import { EpicContext } from "../model";
+import { of } from "rxjs/observable/of";
+
+import {
+  TransactionConfirmed
+} from "../actions";
+import { Observable } from "rxjs/Observable";
 
 export const findReceiptEpic = (
   actions$: ActionsObservable<any>,
@@ -33,7 +35,7 @@ export const findReceiptEpic = (
             delay(1000),
             take(24),
             concat(_ =>
-              Observable.of(
+              of(
                 createTransactionFailed(
                   "Transaction was not processed within 240s",
                   tx

@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/client",
-  "version": "0.1.18-y.3",
+  "version": "0.1.18-y.48",
   "description": "Proxy for ethereum blockchain",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,11 +9,12 @@
   },
   "scripts": {
     "compile": "tsc -p tsconfig.build.json",
-    "prepublish": "npm run compile",
+    "prepublish": "rimraf dist && npm run compile",
     "postpublish": "rimraf dist"
   },
   "dependencies": {
-    "@eth-proxy/rx-web3": "^0.1.14",
+    "@eth-proxy/rx-web3": "^0.1.18-y.48",
+    "bignumber.js": "4.1.0",
     "ethjs-abi": "0.1.8",
     "ramda": "^0.25.0",
     "redux": "^3.7.2",
