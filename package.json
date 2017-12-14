@@ -6,7 +6,16 @@
 	"scripts": {
 		"bootstrap": "lerna bootstrap",
 		"test": "./node_modules/.bin/mocha --require ts-node/register ./src/**/*.spec.ts --watch-extensions ts",
-		"test:watch": "npm test -- --watch"
+		"test:watch": "npm test -- --watch",
+		"precommit": "lint-staged",
+		"format": "prettier --write \"**/**/*.ts\""
+	},
+	"lint-staged": {
+    "*.{ts,md}": ["prettier --write", "git add"]
+	},
+	"prettier": {
+    "singleQuote": true,
+    "tab-width": 2
 	},
 	"workspaces": [
 		"packages/*"
@@ -22,6 +31,9 @@
 		"rxjs-marbles": "^2.1.0",
 		"ts-node": "^3.3.0",
 		"tslint": "5.8.0",
-		"typescript": "2.6.1"
+		"typescript": "2.6.1",
+		"prettier": "1.9.2",
+		"lint-staged": "6.0.0",
+		"husky": "0.14.3"
 	}
 }
