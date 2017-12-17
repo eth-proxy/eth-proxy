@@ -20,7 +20,7 @@ export const processCallEpic = (
   return actions$.ofType(PROCESS_CALL).pipe(
     mergeMap(({ payload }: ProcessCall) => {
       return processCall(payload).pipe(
-        map(createProcessCallSuccess),
+        map(createProcessCallSuccess(payload.id)),
         catchError(err => {
           return of(
             createProcessCallFailed({

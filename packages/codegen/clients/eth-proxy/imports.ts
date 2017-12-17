@@ -2,19 +2,16 @@ export const imports = [
   {
     namedImports: [
       {
-        name: "TransactionResult"
-      },
-      {
-        name: "CallResult"
-      },
-      {
         name: "EventMetadata"
       },
       {
-        name: 'Request'
+        name: 'ContractsAggregation'
       },
       {
-        name: 'RequestOptions'
+        name: 'ContractDefinition'
+      },
+      {
+        name: 'RequestFactory'
       }
     ],
     moduleSpecifier: "@eth-proxy/client"

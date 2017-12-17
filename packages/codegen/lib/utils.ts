@@ -1,4 +1,4 @@
-import { pipe, flip, toUpper, concat, curry, CurriedFunction2 } from "ramda";
+import { pipe, flip, toUpper, concat, curry, CurriedFunction2, CurriedFunction3 } from "ramda";
 import { PropertySignatureStructure } from "ts-simple-ast";
 
 export function solidityToJsOutputType(contractType: string) {
@@ -30,7 +30,7 @@ export function solidityToJsInputType(contractType: string) {
 
 export const capitalize = (text: string) => text.replace(/^./, toUpper);
 
-const toName = curry(
+export const toName = curry(
   (postfix: string, contractName: string, name: string) =>
     `${contractName}${capitalize(name)}${postfix}`
 );

@@ -36,8 +36,17 @@ const commonSource = getCommonSource(contracts);
 
 const source = mergeDeepWith(concat, commonSource, targetSource)
 
+const instertedText = {
+  "eth-proxy": 
+`declare module '@eth-proxy/client' {
+  const C: RequestFactory<Contracts>;
+}
+`,
+  "truffle": ""
+};
+
 const sourceFile = new Ast()
   .addSourceFileFromStructure(outputDir, source)
-  .insertText(0, "/* tslint:disable */\n");
+  .insertText(0, "/* tslint:disable */\n" + instertedText[target]);
 
 sourceFile.save();

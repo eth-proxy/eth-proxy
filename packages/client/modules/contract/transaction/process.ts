@@ -24,9 +24,10 @@ export function processTransaction(
 ) {
   // inject dependencies
   const getParams = prepareTxParams(store);
-  const initId = genId();
   // user input
   return (transactionDef: RequestSpec<any, any, any>) => {
+    const initId = genId();
+
     const { address, method, payload } = transactionDef;
     return combineLatest(
       store.let(getContractFromRef$(transactionDef)),

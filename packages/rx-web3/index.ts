@@ -7,7 +7,7 @@ import { merge } from "rxjs/observable/merge";
 import { forkJoin } from "rxjs/observable/forkJoin";
 
 import { BigNumber } from "bignumber.js";
-import { CurriedFunction3 } from 'ramda';
+import { CurriedFunction2, CurriedFunction3 } from 'ramda';
 
 export function getNetwork(web3: Web3): Observable<string> {
   return bindNodeCallback<string>(web3.version.getNetwork.bind(web3))();

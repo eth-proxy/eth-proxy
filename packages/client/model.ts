@@ -1,9 +1,9 @@
 import * as Web3 from "web3";
 import { Observable } from "rxjs/Observable";
 import { RegisterContractOptions } from "./modules/register-contract";
-import { RequestHandlers } from "./modules/contract";
+import { RequestHandlers, ContractsAggregation } from "./modules/contract";
 
-export class EthProxy<T = {}> extends RequestHandlers<T> {
+export class EthProxy<T extends ContractsAggregation = {}> extends RequestHandlers<T> {
   registerContract: (abi, options: RegisterContractOptions) => void;
 
   query: (queryModel: QueryModel<T>) => Observable<any>;

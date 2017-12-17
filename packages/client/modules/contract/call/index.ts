@@ -16,9 +16,9 @@ export function processCall(
   store: ObservableStore<State>,
   genId: () => string
 ) {
-  const id = genId();
   // user input
   return (transactionDef: RequestSpec<any, any, any>) => {
+    const id = genId();    
     const { address, method, payload } = transactionDef;
     return store.let(getContractFromRef$(transactionDef)).pipe(
       first(),

@@ -34,7 +34,8 @@ import { identity } from "ramda";
 import {
   processTransaction,
   createWeb3RequestProcessor,
-  processCall
+  processCall,
+  ContractsAggregation
 } from './modules/contract'
 
 const defaultOptions = {
@@ -47,7 +48,7 @@ const defaultOptions = {
 let globalId = 0;
 const genId = () => (globalId++).toString();
 
-export function createProxy<T>(
+export function createProxy<T extends ContractsAggregation>(
   provider$: Observable<any>,
   userOptions: Partial<EthProxyOptions>
 ): EthProxy<T> {
