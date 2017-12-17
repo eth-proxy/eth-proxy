@@ -25,13 +25,13 @@ export function reducer(
       ];
 
       case actions.PROCESS_TRANSACTION_FAILED: {
-        const { initId } = action.payload;
+        const { initId, err } = action.payload;
   
         return map(t => {
           if (t.status !== "init" || t.initId !== initId) {
             return t;
           }
-          return Object.assign({}, t, { status: "failed" });
+          return Object.assign({}, t, { status: "failed", error: err });
         }, state);
       }
 

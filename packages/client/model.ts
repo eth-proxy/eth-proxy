@@ -3,7 +3,9 @@ import { Observable } from "rxjs/Observable";
 import { RegisterContractOptions } from "./modules/register-contract";
 import { RequestHandlers, ContractsAggregation } from "./modules/contract";
 
-export class EthProxy<T extends ContractsAggregation = {}> extends RequestHandlers<T> {
+export class EthProxy<
+  T extends ContractsAggregation = {}
+> extends RequestHandlers<T> {
   registerContract: (abi, options: RegisterContractOptions) => void;
 
   query: (queryModel: QueryModel<T>) => Observable<any>;
@@ -90,12 +92,26 @@ export interface ContractInfo {
   abi: Web3.AbiDefinition[];
 }
 
-export interface EthProxyInterceptors {
-  call: (obs: Observable<any>) => any;
-  transaction: (obs: Observable<any>) => any;
-  preQuery: (obs: Observable<any>) => any;
-  postQuery: (obs: Observable<any>) => any;
+export interface EthCallInterceptor {
+  ethCall: (obs: Observable<any>) => Observable<any>;
 }
+
+export interface TransactionInterceptor {
+  transaction: (obs: Observable<any>) => Observable<any>;
+}
+
+export interface PreQueryInterceptor {
+  preQuery: (obs: Observable<any>) => Observable<any>;
+}
+
+export interface PostQueryInterceptor {
+  postQuery: (obs: Observable<any>) => Observable<any>;
+}
+
+export type EthProxyInterceptors = EthCallInterceptor &
+  TransactionInterceptor &
+  PreQueryInterceptor &
+  PostQueryInterceptor;
 
 export interface EthProxyOptions {
   pollInterval: number;
@@ -159,16 +175,11 @@ export type ObservableTransactionResult<T> = Observable<
   TransationResultEvent<T>
 >;
 
-declare module "rxjs/Observable" {
-  // tslint:disable-next-line:interface-name no-shadowed-variable
-  interface Observable<T> {
-    once(this: Observable<any>, type: "tx" | "init", fn: Function): Observable<T>;
-    on(
-      this: Observable<any>,
-      type: "confirmation",
-      fn: Function
-    ): Observable<T>;
-  }
+export interface ContractDefaults {
+  from?: string;
+  gas?: string;
+  gasPrice?: string;
+  value?: string;
 }
 
 export type NameRef<T extends string> = T;

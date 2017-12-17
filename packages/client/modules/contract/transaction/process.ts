@@ -3,13 +3,14 @@ import { combineLatest } from "rxjs/observable/combineLatest";
 import { Observable } from "rxjs/Observable";
 
 import { prepareTxParams } from "./params";
-import { RequestSpec } from "../model";
+import { Request } from "../model";
 import {
   ObservableStore,
   State,
   getContractFromRef$,
   createProcessTransaction,
-  getTransactionFromInitId
+  getTransactionFromInitId,
+  getTransactionResultFromInitId$
 } from "../../../store";
 import {
   ConfirmedTransaction,
@@ -25,19 +26,19 @@ export function processTransaction(
   // inject dependencies
   const getParams = prepareTxParams(store);
   // user input
-  return (transactionDef: RequestSpec<any, any, any>) => {
+  return (request: Request<any, any, any>) => {
     const initId = genId();
 
-    const { address, method, payload } = transactionDef;
+    const { address, method, payload } = request;
     return combineLatest(
-      store.let(getContractFromRef$(transactionDef)),
-      getParams(transactionDef)
+      store.let(getContractFromRef$(request)),
+      getParams(request)
     ).pipe(
       first(),
       tap(([contract, txParams]) => {
         store.dispatch(
           createProcessTransaction({
-            contractName: transactionDef.interface,
+            contractName: request.interface,
             address: address || contract.address,
             method,
             txParams,
@@ -47,7 +48,7 @@ export function processTransaction(
           })
         );
       }),
-      mergeMapTo(store.select(getTransactionFromInitId(initId)))
+      mergeMapTo(store.let(getTransactionResultFromInitId$(initId)))
     );
   };
 }

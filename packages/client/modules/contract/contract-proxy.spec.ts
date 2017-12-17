@@ -1,16 +1,10 @@
 import { expect } from "chai";
-import {
-  C,
-  Request,
-  methodProxy,
-  at,
-  withOptions,
-  RequestFactory,
-  ContractsAggregation,
-  ContractDefinition
-} from "./contract";
+
 import { TransactionResult, EthProxy } from "../../model";
 import { pipe } from "ramda";
+import { ContractDefinition, ContractsAggregation, RequestFactory } from "./model";
+import { C } from "./contract-proxy";
+import { at, withOptions } from './utils';
 
 export type Events = any;
 

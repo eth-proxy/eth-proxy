@@ -1,5 +1,5 @@
 import * as Web3 from "web3";
-import { isNil } from "ramda";
+import { isNil, contains } from "ramda";
 
 export function formatPayload(userPayload, { inputs }: Web3.AbiDefinition) {
   return formatArgs(inputs, arraifyArgs(inputs, userPayload));
@@ -33,6 +33,9 @@ function formatArgs(inputs: Web3.FunctionParameter[], args: any[]) {
 }
 
 function formatArg(type, value: any) {
+  if(contains('[]', type)) {
+    return value.map(arg => formatArg(type.replace('[]', ''), arg))
+  }
   if (type === "bool") {
     return Boolean(value);
   }

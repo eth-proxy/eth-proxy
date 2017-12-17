@@ -20,7 +20,7 @@ export const processTransactionEpic = (
   return actions$.ofType(PROCESS_TRANSACTION).pipe(
     mergeMap(({ payload }: ProcessTransaction) => {
       return processTransaction(payload).pipe(
-        map(createTxGenerated),
+        map(createTxGenerated(payload.initId)),
         catchError(err => {
           return of(
             createProcessTransactionFailed({

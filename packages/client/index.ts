@@ -5,7 +5,11 @@ import { take } from "rxjs/operators/take";
 import { mergeMap } from "rxjs/operators/mergeMap";
 import { createEpicMiddleware } from "redux-observable";
 
-import { createObservableStore, getActiveAccount$, ProcessRequestArgs } from "./store";
+import {
+  createObservableStore,
+  getActiveAccount$,
+  ProcessRequestArgs
+} from "./store";
 import { createWeb3Instance } from "./utils";
 import {
   getNetwork,
@@ -22,11 +26,7 @@ import {
 } from "./store";
 import { registerContract } from "./modules/register-contract";
 import { rootEpic } from "./store/epics";
-import {
-  EthProxyOptions,
-  ContractRef,
-  EthProxy
-} from "./model";
+import { EthProxyOptions, ContractRef, EthProxy } from "./model";
 import { first } from "rxjs/operators";
 import { query } from "./modules/query";
 import * as Web3 from "web3";
@@ -35,8 +35,9 @@ import {
   processTransaction,
   createWeb3RequestProcessor,
   processCall,
-  ContractsAggregation
-} from './modules/contract'
+  ContractsAggregation,
+  Request
+} from "./modules/contract";
 
 const defaultOptions = {
   pollInterval: 1000,
@@ -84,11 +85,13 @@ export function createProxy<T extends ContractsAggregation>(
   });
 
   const store = createObservableStore(epicMiddleware, options.store);
-
+  const getInterceptor = (key: string) =>
+    (options.interceptors as any)[key] || identity;
   const interceptors = {
-    call: (options.interceptors as any).call || identity,
-    preQuery: (options.interceptors as any).preQuery || identity,
-    postQuery: (options.interceptors as any).postQuery || identity
+    transaction: getInterceptor("transaction"),
+    ethCall: getInterceptor("ethCall"),
+    preQuery: getInterceptor("preQuery"),
+    postQuery: getInterceptor("postQuery")
   };
 
   return {
@@ -106,12 +109,19 @@ export function createProxy<T extends ContractsAggregation>(
     getContractInfo: (ref: ContractRef) =>
       store.select(getContractFromRef(ref)).pipe(first(x => !!x)),
 
-    transaction: processTransaction(store, genId) as any,
-    ethCall: processCall(store, genId) as any
+    transaction: (request: Request<string, string, any>) =>
+      processTransaction(store, genId)(request).let(
+        interceptors.transaction
+      ),
+
+    ethCall: (request: Request<string, string, any>) =>
+      processCall(store, genId)(request).let(
+        interceptors.ethCall
+      )
   };
 }
 
 export * from "./model";
 export * from "./utils";
 export { ethProxyIntegrationReducer, State as EthProxyState } from "./store";
-export * from './modules/contract'
+export * from "./modules/contract";

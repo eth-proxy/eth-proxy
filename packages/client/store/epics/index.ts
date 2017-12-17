@@ -11,11 +11,11 @@ import { EpicContext } from "../model";
 import { Epic } from "redux-observable";
 
 export const rootEpic = combineEpics(
-  findReceiptEpic,
   watchAccount,
   watchLatestBlock,
   queryEvents,
   watchEvents,
   processTransactionEpic,
+  findReceiptEpic,
   processCallEpic
 );

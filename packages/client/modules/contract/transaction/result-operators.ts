@@ -1,13 +1,13 @@
 import { Observable } from "rxjs/Observable";
 import { map, filter } from "rxjs/operators";
 
-import { Transaction } from "../../../model";
+import { Transaction, TransactionConfirmation } from "../../../model";
 
-type PendingStatus = "init" | "tx";
+export type PendingStatus = "init" | "tx";
 const pendingStatuses = ["init", "tx"];
 
-export function once(obs: Observable<Transaction>) {
-  return (type: PendingStatus, fn) =>
+export function once (type: PendingStatus, fn: (arg: any) => any){
+  return (obs: Observable<Transaction>) =>
     obs.let(
       map(next => {
         if (!next || type !== next.status) {
@@ -26,14 +26,14 @@ export function once(obs: Observable<Transaction>) {
     );
 }
 
-export function on(obs: Observable<Transaction>) {
-  return (type: "confirmed", fn) =>
-    obs.pipe(
-      filter(next => {
-        return !(next && pendingStatuses.includes(next.status));
-      }),
-      map(next => {
-        return next.status === type ? fn(next) : next;
-      })
-    );
+export function on(type: "confirmation", fn: (confirmation: TransactionConfirmation<any>) => any) {
+  return (obs: Observable<any>) =>
+  obs.pipe(
+    filter(next => {
+      return !(next && pendingStatuses.includes(next.status));
+    }),
+    map(next => {
+      return next.status === 'confirmed' ? fn(next) : next;
+    })
+  );
 }

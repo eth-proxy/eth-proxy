@@ -1,4 +1,5 @@
 import { TransactionInfo } from "../../model";
+import { curry, CurriedFunction2 } from "ramda";
 
 export interface ProcessTransactionPayload {
   initId: string;
@@ -45,18 +46,23 @@ export const TX_GENERATED = "TX_GENERATED";
 
 export interface TxGenerated {
   type: "TX_GENERATED";
-  payload: TransactionInfo & {
-    tx: string;
+  payload: {
     initId: string;
+    tx: string;
   };
 }
 
-export const createTxGenerated = (
-  payload: TxGenerated["payload"]
-): TxGenerated => ({
-  type: TX_GENERATED,
-  payload
-});
+export const createTxGenerated = curry(
+  (initId: string, tx: string): TxGenerated => {
+    return {
+      type: TX_GENERATED,
+      payload: {
+        initId,
+        tx
+      }
+    };
+  }
+);
 
 export const TRANSACTION_FAILED = "TRANSACTION_FAILED";
 
