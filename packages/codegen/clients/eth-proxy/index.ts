@@ -11,6 +11,7 @@ import { getRootInterface } from "./root";
 import { transactionOptions } from "./transaction-options";
 import { getOutputInterfaces } from "./outputs";
 import { getInputInterfaces } from "./inputs";
+import { getMethodsInterfaces } from './methods';
 import { map, chain, assoc } from "ramda";
 
 export function getSourceFile(contracts: TruffleJson[]): SourceFileStructure {
@@ -19,10 +20,11 @@ export function getSourceFile(contracts: TruffleJson[]): SourceFileStructure {
     interfaces: [
       getRootInterface(contracts),
       ...map(getContractInterface, contracts),
+      ...chain(getMethodsInterfaces, contracts),
       ...chain(getInputInterfaces, contracts),
       ...chain(getOutputInterfaces, contracts),
-      transactionOptions,
-      ...createEventInterfaces(createEventInterface)(contracts)
+      ...createEventInterfaces(createEventInterface)(contracts),      
+      transactionOptions
     ].map(assoc("isExported", true))
   };
 }

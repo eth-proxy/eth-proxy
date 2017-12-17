@@ -2,7 +2,7 @@ import {
   State,
   ObservableStore,
   getDetectedNetwork$,
-  createRegisterConract
+  createRegisterContract
 } from "../store";
 import { map } from "rxjs/operators/map";
 import { TruffleJson } from "../model";
@@ -22,7 +22,7 @@ export function registerContract(store: ObservableStore<State>) {
       .pipe(map(networkId => presetAddress || json.networks[networkId] && json.networks[networkId].address))
       .subscribe(address =>
         store.dispatch(
-          createRegisterConract(json, {
+          createRegisterContract(json, {
             address,
             genesisBlock
           })

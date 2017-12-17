@@ -1,17 +1,15 @@
-import * as Web3 from "web3";
-import { Observable } from "rxjs/Observable";
-import { RegisterContractOptions } from "./modules/register-contract";
+import * as Web3 from 'web3';
+import { Observable } from 'rxjs/Observable';
+import { RegisterContractOptions } from './modules/register-contract';
+import { RequestHandlers, ContractsAggregation } from './modules/contract';
 
-export type Send<T> = <CK extends keyof T>(
-  nameOrAddress: ContractRef<CK>
-) => <MK extends keyof T[CK]>(method: MK) => T[CK][MK];
-
-export class EthProxy<T = {}> {
+export class EthProxy<
+  T extends ContractsAggregation = {}
+> extends RequestHandlers<T> {
   registerContract: (abi, options: RegisterContractOptions) => void;
 
-  send: Send<T>;
   query: (queryModel: QueryModel<T>) => Observable<any>;
-  
+
   // rxweb3
   getBalance: (account: string) => Observable<any>;
   getLatestBlock: () => Observable<Block>;
@@ -24,7 +22,6 @@ export class EthProxy<T = {}> {
   getContractInfo: (nameOrAddress: string) => Observable<ContractInfo>;
 }
 
-
 export interface InputDefinition {
   indexed: boolean;
   name: string;
@@ -35,7 +32,7 @@ export interface EventDefintion {
   anonymous: boolean;
   inputs: InputDefinition[];
   name: string;
-  type: "event";
+  type: 'event';
 }
 
 export interface NetworkDefinition {
@@ -58,22 +55,30 @@ export interface TransactionInfo {
   method: string;
   txParams: any;
   args: any;
-  tx: string;
+  initId?: string;
 }
 
+export interface InitializedTransaction extends TransactionInfo {
+  status: 'init';
+}
 export interface TransactionWithHash extends TransactionInfo {
-  status: "pending";
+  tx: string;
+  status: 'tx';
 }
 export interface FailedTransaction extends TransactionInfo {
+  tx: string;
   error: string;
-  status: "failed";
+  status: 'failed';
 }
 export interface ConfirmedTransaction extends TransactionInfo {
-  status: "confirmed";
+  tx: string;
+  status: 'confirmed';
   receipt: any;
+  logs: any;
 }
 
 export type Transaction =
+  | InitializedTransaction
   | TransactionWithHash
   | FailedTransaction
   | ConfirmedTransaction;
@@ -88,19 +93,33 @@ export interface ContractInfo {
   abi: Web3.AbiDefinition[];
 }
 
-export interface EthProxyInterceptors {
-  call: (obs: Observable<any>) => any;
-  transaction: (obs: Observable<any>) => any;
-  preQuery: (obs: Observable<any>) => any;
-  postQuery: (obs: Observable<any>) => any;
+export interface EthCallInterceptor {
+  ethCall: (obs: Observable<any>) => Observable<any>;
 }
+
+export interface TransactionInterceptor {
+  transaction: (obs: Observable<any>) => Observable<any>;
+}
+
+export interface PreQueryInterceptor {
+  preQuery: (obs: Observable<any>) => Observable<any>;
+}
+
+export interface PostQueryInterceptor {
+  postQuery: (obs: Observable<any>) => Observable<any>;
+}
+
+export type EthProxyInterceptors = EthCallInterceptor &
+  TransactionInterceptor &
+  PreQueryInterceptor &
+  PostQueryInterceptor;
 
 export interface EthProxyOptions {
   pollInterval: number;
   eventReader: (web3: Web3, options: Web3.FilterObject) => Observable<any[]>;
   store: {
-    dispatch: Function
-  },
+    dispatch: Function;
+  };
   interceptors: Partial<EthProxyInterceptors>;
 }
 
@@ -126,9 +145,9 @@ export interface QueryModel<T extends {} = {}> {
             | {
                 [inputName: string]: any;
               }
-            | "*";
+            | '*';
         }
-      | "*"
+      | '*'
   };
 }
 
@@ -137,7 +156,7 @@ export interface Web3Provider {
 }
 
 export interface TransationHashEvent {
-  type: "tx";
+  type: 'tx';
   value: string;
 }
 export interface TransactionConfirmation<T> {
@@ -146,7 +165,7 @@ export interface TransactionConfirmation<T> {
   tx: string;
 }
 export interface TransationConfirmationEvent<T> {
-  type: "confirmation";
+  type: 'confirmation';
   value: TransactionConfirmation<T>;
 }
 export type TransationResultEvent<T> =

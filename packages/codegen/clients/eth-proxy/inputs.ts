@@ -2,7 +2,7 @@ import {
   InterfaceDeclarationStructure,
   PropertySignatureStructure
 } from "ts-simple-ast";
-import { toInputName, solidityToJsInputType, getProperty } from "../../lib";
+import { toInputName, solidityToJsInputType, getInputProperty } from "../../lib";
 import { hasComplexInput } from "./utils";
 
 export function getInputInterfaces({
@@ -15,6 +15,6 @@ export function getInputInterfaces({
 
   return functionsWithExternalInputs.map(({ name, inputs }) => ({
     name: toInputName(contract_name)(name),
-    properties: inputs.map(getProperty)
+    properties: inputs.map(getInputProperty)
   }));
 }

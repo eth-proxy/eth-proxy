@@ -1,18 +1,56 @@
 /* tslint:disable */
+declare module '@eth-proxy/client' {
+  const C: RequestFactory<Contracts>;
+}
 import BigNumber from "bignumber.js";
-import {TransactionResult, CallResult, EventMetadata} from "@eth-proxy/client";
+import {EventMetadata, ContractsAggregation, ContractDefinition, RequestFactory} from "@eth-proxy/client";
 
-export interface Contracts {
+export interface Contracts extends ContractsAggregation {
     ERC20: ERC20;
 }
 
-export interface ERC20 {
-    approve(input: ERC20ApproveInput, options?: TransactionOptions): TransactionResult<ContractsEvents>;
-    totalSupply(options?: TransactionOptions): CallResult<BigNumber>;
-    transferFrom(input: ERC20TransferFromInput, options?: TransactionOptions): TransactionResult<ContractsEvents>;
-    balanceOf(who: string, options?: TransactionOptions): CallResult<BigNumber>;
-    transfer(input: ERC20TransferInput, options?: TransactionOptions): TransactionResult<ContractsEvents>;
-    allowance(input: ERC20AllowanceInput, options?: TransactionOptions): CallResult<BigNumber>;
+export interface ERC20 extends ContractDefinition {
+    approve: ERC20ApproveDefinition;
+    totalSupply: ERC20TotalSupplyDefinition;
+    transferFrom: ERC20TransferFromDefinition;
+    balanceOf: ERC20BalanceOfDefinition;
+    transfer: ERC20TransferDefinition;
+    allowance: ERC20AllowanceDefinition;
+}
+
+export interface ERC20ApproveDefinition {
+    in: ERC20ApproveInput;
+    out: boolean;
+    events: ContractsEvents;
+}
+
+export interface ERC20TotalSupplyDefinition {
+    out: BigNumber;
+    events: ContractsEvents;
+}
+
+export interface ERC20TransferFromDefinition {
+    in: ERC20TransferFromInput;
+    out: boolean;
+    events: ContractsEvents;
+}
+
+export interface ERC20BalanceOfDefinition {
+    in: string;
+    out: BigNumber;
+    events: ContractsEvents;
+}
+
+export interface ERC20TransferDefinition {
+    in: ERC20TransferInput;
+    out: boolean;
+    events: ContractsEvents;
+}
+
+export interface ERC20AllowanceDefinition {
+    in: ERC20AllowanceInput;
+    out: BigNumber;
+    events: ContractsEvents;
 }
 
 export interface ERC20ApproveInput {
@@ -36,11 +74,16 @@ export interface ERC20AllowanceInput {
     spender: string;
 }
 
-export interface TransactionOptions {
-    from?: string;
-    value?: number | BigNumber;
-    gas?: number | BigNumber;
-    gasPrice?: number | BigNumber;
+export interface ERC20ApprovalPayload {
+    owner: string;
+    spender: string;
+    value: BigNumber;
+}
+
+export interface ERC20ApprovalEvent {
+    type: "Approval";
+    payload: ERC20ApprovalPayload;
+    meta: EventMetadata;
 }
 
 export interface ERC20TransferPayload {
@@ -55,17 +98,12 @@ export interface ERC20TransferEvent {
     meta: EventMetadata;
 }
 
-export interface ERC20ApprovalPayload {
-    owner: string;
-    spender: string;
-    value: BigNumber;
+export interface TransactionOptions {
+    from?: string;
+    value?: number | BigNumber;
+    gas?: number | BigNumber;
+    gasPrice?: number | BigNumber;
 }
 
-export interface ERC20ApprovalEvent {
-    type: "Approval";
-    payload: ERC20ApprovalPayload;
-    meta: EventMetadata;
-}
-
+export type ERC20Events = ERC20ApprovalEvent | ERC20TransferEvent;
 export type ContractsEvents = ERC20Events;
-export type ERC20Events = ERC20TransferEvent | ERC20ApprovalEvent;

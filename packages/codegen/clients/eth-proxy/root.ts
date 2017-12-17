@@ -8,6 +8,7 @@ export function getRootInterface(
     properties: contracts.map(({ contract_name }) => ({
       name: contract_name,
       type: contract_name
-    }))
+    })),
+    extends: ['ContractsAggregation']
   };
 }

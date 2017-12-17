@@ -1,5 +1,5 @@
-import * as Web3 from "web3";
-import * as ethJSABI from "ethjs-abi";
+import * as Web3 from 'web3';
+import * as ethJSABI from 'ethjs-abi';
 
 export const decodeLogs = abi => (logs: any[]) => {
   const events = eventsFromAbi(abi);
@@ -15,7 +15,7 @@ export const decodeLogs = abi => (logs: any[]) => {
       var argTopics = eventAbi.anonymous ? log.topics : log.topics.slice(1);
 
       var indexedData =
-        "0x" + argTopics.map(topics => topics.slice(2)).join("");
+        '0x' + argTopics.map(topics => topics.slice(2)).join('');
       var indexedParams = ethJSABI.decodeEvent(
         partialABI(eventAbi, true),
         indexedData
@@ -47,17 +47,17 @@ export const decodeLogs = abi => (logs: any[]) => {
 };
 
 function parseArg(type: string, value: any) {
-  if (type.endsWith("[]")) {
-    return value.map(item => parseArg(type.replace("[]", ""), item));
+  if (type.endsWith('[]')) {
+    return value.map(item => parseArg(type.replace('[]', ''), item));
   }
-  if (type.startsWith("uint") || type.startsWith("int")) {
-    return new Web3().toBigNumber("0x" + value.toString(16));
+  if (type.startsWith('uint') || type.startsWith('int')) {
+    return new Web3().toBigNumber('0x' + value.toString(16));
   }
   return value;
 }
 
 export function eventsFromAbi(abi) {
-  return abi.filter(item => item.type === "event").reduce((current, item) => {
+  return abi.filter(item => item.type === 'event').reduce((current, item) => {
     const signature = eventAbiToSignature(item);
 
     return {
@@ -68,7 +68,7 @@ export function eventsFromAbi(abi) {
 }
 
 export function eventAbiToSignature(item: any) {
-  const args = item.inputs.map(x => x.type).join(",");
+  const args = item.inputs.map(x => x.type).join(',');
 
   return new Web3().sha3(`${item.name}(${args})`);
 }

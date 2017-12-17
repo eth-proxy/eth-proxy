@@ -17,8 +17,8 @@ export interface ObservableStore<T> extends Store<T> {
 }
 
 export function createObservableStore(
-  middleware: Middleware,
-  externalStore: any
+  middleware?: Middleware,
+  externalStore?: any
 ): ObservableStore<State> {
   const state$ = new BehaviorSubject<State>(reducer(undefined, { type: 'init' }));
   const select = <S>(selector?: Selector<State, S>) =>
@@ -26,7 +26,7 @@ export function createObservableStore(
 
   const redux = createStore(
     reducer,
-    applyMiddleware(middleware)
+    middleware ? applyMiddleware(middleware) : undefined
   ) as ObservableStore<State>;
   redux.select = select;
   redux.let = <S>(rxSelect: RxSelector<State, S>): Observable<S> => state$.pipe(

@@ -1,15 +1,15 @@
 import {
   InterfaceDeclarationStructure,
-  MethodSignatureStructure,
+  PropertySignatureStructure,
   ParameterDeclarationStructure
 } from "ts-simple-ast";
 import { map } from "ramda";
-import { hasComplexInput } from "./utils";
+import { hasComplexInput, toMethodDefinitionName } from "./utils";
 import {
   toOutputName,
   toInputName,
   solidityToJsOutputType,
-  solidityToJsInputType,
+  solidityToJsInputType
 } from "../../lib";
 
 export function getContractInterface({
@@ -20,64 +20,16 @@ export function getContractInterface({
   const getInputName = toInputName(contract_name);
   return {
     name: contract_name,
-    methods: map(getMethod(contract_name), functions)
+    properties: map(getMethodDefinition(contract_name), functions),
+    extends: ["ContractDefinition"]
   };
 }
 
-const getMethod = (contractName: string) => (
+const getMethodDefinition = (contractName: string) => (
   fun: FunctionDescription
-): MethodSignatureStructure => {
+): PropertySignatureStructure => {
   return {
     name: fun.name,
-    parameters: [
-      ...getParams(contractName, fun),
-      {
-        name: "options",
-        hasQuestionToken: true,
-        type: "TransactionOptions"
-      }
-    ],
-    returnType: getReturnType(contractName, fun)
+    type: toMethodDefinitionName(contractName, fun.name)
   };
 };
-
-const getReturnType = (contractName: string, fun: FunctionDescription) => {
-  if (fun.constant) {
-    const param =
-      fun.outputs.length > 1
-        ? toOutputName(contractName)(fun.name)
-        : solidityToJsOutputType(fun.outputs[0].type);
-    return `CallResult<${param}>`;
-  }
-  return `TransactionResult<ContractsEvents>`;
-};
-
-const getParams = (
-  contractName: string,
-  fun: FunctionDescription
-): ParameterDeclarationStructure[] => {
-  if (fun.inputs.length === 0) {
-    return [];
-  }
-  const externalInputInterface = hasComplexInput(fun);
-  if (externalInputInterface) {
-    return [
-      {
-        name: "input",
-        type: toInputName(contractName)(fun.name)
-      }
-    ];
-  } else {
-    return fun.inputs.map(getParam);
-  }
-};
-
-function getParam(
-  abi: FunctionParameter,
-  index: number
-): ParameterDeclarationStructure {
-  return {
-    name: abi.name || "anonymous" + index,
-    type: solidityToJsInputType(abi.type)
-  };
-}

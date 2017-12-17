@@ -12,7 +12,7 @@ export interface RegisterContract {
   payload: TruffleJson & RegisterContractOptions;
 }
 
-export const createRegisterConract = (
+export const createRegisterContract = (
   json: TruffleJson,
   options: RegisterContractOptions
 ): RegisterContract => ({

@@ -1,8 +1,8 @@
-import { ReaderResult } from "./model";
-import { map as rxMap, bufferWhen } from "rxjs/operators";
-import { Observable } from "rxjs/Observable";
-import { flatten } from "ramda";
-import { Subject } from "rxjs/Subject";
+import { ReaderResult } from './model';
+import { map as rxMap, bufferWhen } from 'rxjs/operators';
+import { Observable } from 'rxjs/Observable';
+import { flatten } from 'ramda';
+import { Subject } from 'rxjs/Subject';
 
 export function bufferResult({
   work$,
@@ -11,8 +11,8 @@ export function bufferResult({
   const complete$ = new Subject();
 
   work$.subscribe({
-    next: _ => complete$.error("Could not fulfill request, ranges not found"),
-    error: _ => complete$.error("Could not fulfill request"),
+    next: _ => complete$.error('Could not fulfill request, ranges not found'),
+    error: _ => complete$.error('Could not fulfill request'),
     complete: () => complete$.complete()
   });
 
