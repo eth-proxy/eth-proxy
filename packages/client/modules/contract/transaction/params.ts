@@ -1,10 +1,10 @@
-import { ObservableStore, State, getDefaultTxParams } from "../../../store";
-import { first, map } from "rxjs/operators";
-import { curry } from "ramda";
-import { pickTxParamsProps } from "../utils";
+import { ObservableStore, State, getDefaultTxParams } from '../../../store';
+import { first, map } from 'rxjs/operators';
+import { curry } from 'ramda';
+import { pickTxParamsProps } from '../utils';
 
-import { Observable } from "rxjs/Observable";
-import { CurriedFunction2 } from "ramda";
+import { Observable } from 'rxjs/Observable';
+import { CurriedFunction2 } from 'ramda';
 
 export function prepareTxParams(store: ObservableStore<State>) {
   return userParams =>

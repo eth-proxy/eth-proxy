@@ -1,5 +1,5 @@
-import { QueryModel } from "../../model";
-import { Observable } from "rxjs/Observable";
+import { QueryModel } from '../../model';
+import { Observable } from 'rxjs/Observable';
 import {
   map,
   tap,
@@ -8,17 +8,12 @@ import {
   first,
   delayWhen,
   mergeMapTo
-} from "rxjs/operators";
-import {
-  pick,
-  values,
-  flatten,
-  assoc
-} from "ramda";
-import { never } from "rxjs/observable/never";
+} from 'rxjs/operators';
+import { pick, values, flatten, assoc } from 'ramda';
+import { never } from 'rxjs/observable/never';
 
-import { getContext } from "./context";
-import { createQueries } from "./create-queries";
+import { getContext } from './context';
+import { createQueries } from './create-queries';
 import {
   State,
   ObservableStore,
@@ -26,10 +21,10 @@ import {
   createRemoveEventsWatch,
   createQueryEvents,
   getQueryResultFromAddresses
-} from "../../store";
-import { merge } from "rxjs/observable/merge";
-import { QueryState } from "../../store/reducers/events";
-import { of } from "rxjs/observable/of";
+} from '../../store';
+import { merge } from 'rxjs/observable/merge';
+import { QueryState } from '../../store/reducers/events';
+import { of } from 'rxjs/observable/of';
 
 let globalId = 0;
 
@@ -64,7 +59,7 @@ export const query = (store: ObservableStore<State>, interceptors) => (
 
         const result$ = store
           .select(getQueryResultFromAddresses(addresses))
-          .pipe(map(assoc("id", id)));
+          .pipe(map(assoc('id', id)));
 
         return queries$.pipe(
           delayWhen(() => loaded$),

@@ -1,13 +1,13 @@
-import * as actions from "../actions";
-import { createSelector } from "reselect";
-import { find } from "ramda";
+import * as actions from '../actions';
+import { createSelector } from 'reselect';
+import { find } from 'ramda';
 import {
   TransactionWithHash,
   ConfirmedTransaction,
   FailedTransaction,
   Transaction
-} from "../../model";
-import * as Web3 from "web3";
+} from '../../model';
+import * as Web3 from 'web3';
 
 export type State = {
   requests: {
@@ -41,7 +41,7 @@ export function reducer(
         requests: {
           ...state.requests,
           [id]: {
-            status: "init",
+            status: 'init',
             hash: hashRequestData(data)
           }
         }
@@ -59,7 +59,7 @@ export function reducer(
         requests: {
           ...state.requests,
           [id]: {
-            status: "success",
+            status: 'success',
             hash
           }
         }
@@ -74,7 +74,7 @@ export function reducer(
         requests: {
           ...state.requests,
           [id]: {
-            status: "failed",
+            status: 'failed',
             hash,
             err
           }
@@ -88,27 +88,22 @@ export function reducer(
 }
 
 export const getSelectors = <T>(getModule: (state: T) => State) => {
-  const getRequestsById = createSelector(
-    getModule,
-    m => m.requests
-  )
-  const getDataByHash = createSelector(
-    getModule,
-    m => m.data
-  )
+  const getRequestsById = createSelector(getModule, m => m.requests);
+  const getDataByHash = createSelector(getModule, m => m.data);
 
-  const getRequestById = (id: string) => createSelector(
-    getRequestsById,
-    getDataByHash,
-    (requestsById, dataByHash) => {
-      const request = requestsById[id];
-      const data = dataByHash[request.hash];
-      return {
-        ...request,
-        data
+  const getRequestById = (id: string) =>
+    createSelector(
+      getRequestsById,
+      getDataByHash,
+      (requestsById, dataByHash) => {
+        const request = requestsById[id];
+        const data = dataByHash[request.hash];
+        return {
+          ...request,
+          data
+        };
       }
-    }
-  )
+    );
 
   return {
     getRequestById

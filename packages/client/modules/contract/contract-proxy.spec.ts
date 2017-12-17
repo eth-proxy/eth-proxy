@@ -1,9 +1,13 @@
-import { expect } from "chai";
+import { expect } from 'chai';
 
-import { TransactionResult, EthProxy } from "../../model";
-import { pipe } from "ramda";
-import { ContractDefinition, ContractsAggregation, RequestFactory } from "./model";
-import { C } from "./contract-proxy";
+import { TransactionResult, EthProxy } from '../../model';
+import { pipe } from 'ramda';
+import {
+  ContractDefinition,
+  ContractsAggregation,
+  RequestFactory
+} from './model';
+import { C } from './contract-proxy';
 import { at, withOptions } from './utils';
 
 export type Events = any;
@@ -41,36 +45,36 @@ interface Contracts extends ContractsAggregation {
 
 const { Contract1 } = C as RequestFactory<Contracts>;
 
-describe("Create ", () => {
-  it("Creates request object", () => {
-    const request = Contract1.method1("213");
+describe('Create ', () => {
+  it('Creates request object', () => {
+    const request = Contract1.method1('213');
 
     expect(request).to.deep.eq({
-      interface: "Contract1",
-      method: "method1",
-      payload: "213"
+      interface: 'Contract1',
+      method: 'method1',
+      payload: '213'
     });
   });
 
-  it("At address", () => {
-    const contractAt = at(Contract1, "5678");
-    const request = contractAt.method1("12");
+  it('At address', () => {
+    const contractAt = at(Contract1, '5678');
+    const request = contractAt.method1('12');
 
     expect(request).to.deep.eq({
-      interface: "Contract1",
-      method: "method1",
-      payload: "12",
-      address: "5678"
+      interface: 'Contract1',
+      method: 'method1',
+      payload: '12',
+      address: '5678'
     });
   });
 
-  it("With options", () => {
-    const request = withOptions(Contract1.method1("12"), { gas: 12 });
-    
+  it('With options', () => {
+    const request = withOptions(Contract1.method1('12'), { gas: 12 });
+
     expect(request).to.deep.eq({
-      interface: "Contract1",
-      method: "method1",
-      payload: "12",
+      interface: 'Contract1',
+      method: 'method1',
+      payload: '12',
       gas: 12
     });
   });

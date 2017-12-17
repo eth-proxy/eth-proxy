@@ -1,12 +1,12 @@
-import * as Web3 from "web3";
-import { Observable } from "rxjs/Observable";
-import { map, concat, mergeMap, distinctUntilKeyChanged } from "rxjs/operators";
-import { head, curry, flatten } from "ramda";
-import { bindNodeCallback } from "rxjs/observable/bindNodeCallback";
-import { merge } from "rxjs/observable/merge";
-import { forkJoin } from "rxjs/observable/forkJoin";
+import * as Web3 from 'web3';
+import { Observable } from 'rxjs/Observable';
+import { map, concat, mergeMap, distinctUntilKeyChanged } from 'rxjs/operators';
+import { head, curry, flatten } from 'ramda';
+import { bindNodeCallback } from 'rxjs/observable/bindNodeCallback';
+import { merge } from 'rxjs/observable/merge';
+import { forkJoin } from 'rxjs/observable/forkJoin';
 
-import { BigNumber } from "bignumber.js";
+import { BigNumber } from 'bignumber.js';
 import { CurriedFunction2, CurriedFunction3 } from 'ramda';
 
 export function getNetwork(web3: Web3): Observable<string> {
@@ -48,14 +48,14 @@ export function getBalance(account: string) {
     ) => void;
 
     return bindNodeCallback(callback)(account).pipe(
-      map(wei => new Web3().fromWei(wei, "ether"))
+      map(wei => new Web3().fromWei(wei, 'ether'))
     );
   };
 }
 
 export function getLatestBlockHash(web3): Observable<string> {
   return Observable.create(observer => {
-    const filter = web3.eth.filter("latest");
+    const filter = web3.eth.filter('latest');
     filter.watch((err, blockHash) => {
       if (err) {
         observer.error(err);
@@ -68,15 +68,15 @@ export function getLatestBlockHash(web3): Observable<string> {
 }
 
 export function getLatestBlock(web3): Observable<Web3.Block> {
-  return getBlock("latest")(web3).pipe(
+  return getBlock('latest')(web3).pipe(
     concat(
       getLatestBlockHash(web3).pipe(mergeMap(hash => getBlock(hash)(web3)))
     ),
-    distinctUntilKeyChanged("hash")
+    distinctUntilKeyChanged('hash')
   );
 }
 
-export function getBlock(blockHashOrNumber: "latest" | string | number) {
+export function getBlock(blockHashOrNumber: 'latest' | string | number) {
   return (web3): Observable<any> =>
     Observable.create(observer => {
       web3.eth.getBlock(blockHashOrNumber, (err, block) => {

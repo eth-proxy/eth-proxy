@@ -1,16 +1,16 @@
-import { map } from "rxjs/operators/map";
-import { Observable } from "rxjs/Observable";
-import { shareReplay } from "rxjs/operators/shareReplay";
-import { take } from "rxjs/operators/take";
-import { mergeMap } from "rxjs/operators/mergeMap";
-import { createEpicMiddleware } from "redux-observable";
+import { map } from 'rxjs/operators/map';
+import { Observable } from 'rxjs/Observable';
+import { shareReplay } from 'rxjs/operators/shareReplay';
+import { take } from 'rxjs/operators/take';
+import { mergeMap } from 'rxjs/operators/mergeMap';
+import { createEpicMiddleware } from 'redux-observable';
 
 import {
   createObservableStore,
   getActiveAccount$,
   ProcessRequestArgs
-} from "./store";
-import { createWeb3Instance } from "./utils";
+} from './store';
+import { createWeb3Instance } from './utils';
 import {
   getNetwork,
   getBalance,
@@ -18,26 +18,26 @@ import {
   getBlock,
   getEvents,
   watchEvents
-} from "@eth-proxy/rx-web3";
+} from '@eth-proxy/rx-web3';
 import {
   createSetNetwork,
   getDetectedNetwork$,
   getContractFromRef
-} from "./store";
-import { registerContract } from "./modules/register-contract";
-import { rootEpic } from "./store/epics";
-import { EthProxyOptions, ContractRef, EthProxy } from "./model";
-import { first } from "rxjs/operators";
-import { query } from "./modules/query";
-import * as Web3 from "web3";
-import { identity } from "ramda";
+} from './store';
+import { registerContract } from './modules/register-contract';
+import { rootEpic } from './store/epics';
+import { EthProxyOptions, ContractRef, EthProxy } from './model';
+import { first } from 'rxjs/operators';
+import { query } from './modules/query';
+import * as Web3 from 'web3';
+import { identity } from 'ramda';
 import {
   processTransaction,
   createWeb3RequestProcessor,
   processCall,
   ContractsAggregation,
   Request
-} from "./modules/contract";
+} from './modules/contract';
 
 const defaultOptions = {
   pollInterval: 1000,
@@ -88,10 +88,10 @@ export function createProxy<T extends ContractsAggregation>(
   const getInterceptor = (key: string) =>
     (options.interceptors as any)[key] || identity;
   const interceptors = {
-    transaction: getInterceptor("transaction"),
-    ethCall: getInterceptor("ethCall"),
-    preQuery: getInterceptor("preQuery"),
-    postQuery: getInterceptor("postQuery")
+    transaction: getInterceptor('transaction'),
+    ethCall: getInterceptor('ethCall'),
+    preQuery: getInterceptor('preQuery'),
+    postQuery: getInterceptor('postQuery')
   };
 
   return {
@@ -110,18 +110,14 @@ export function createProxy<T extends ContractsAggregation>(
       store.select(getContractFromRef(ref)).pipe(first(x => !!x)),
 
     transaction: (request: Request<string, string, any>) =>
-      processTransaction(store, genId)(request).let(
-        interceptors.transaction
-      ),
+      processTransaction(store, genId)(request).let(interceptors.transaction),
 
     ethCall: (request: Request<string, string, any>) =>
-      processCall(store, genId)(request).let(
-        interceptors.ethCall
-      )
+      processCall(store, genId)(request).let(interceptors.ethCall)
   };
 }
 
-export * from "./model";
-export * from "./utils";
-export { ethProxyIntegrationReducer, State as EthProxyState } from "./store";
-export * from "./modules/contract";
+export * from './model';
+export * from './utils';
+export { ethProxyIntegrationReducer, State as EthProxyState } from './store';
+export * from './modules/contract';

@@ -3,14 +3,14 @@ import {
   ProcessCall,
   createProcessCallSuccess,
   createProcessCallFailed
-} from "../actions";
-import { ActionsObservable } from "redux-observable";
-import { mergeMap, map, catchError } from "rxjs/operators";
-import { EpicContext } from "../model";
-import { of } from "rxjs/observable/of";
+} from '../actions';
+import { ActionsObservable } from 'redux-observable';
+import { mergeMap, map, catchError } from 'rxjs/operators';
+import { EpicContext } from '../model';
+import { of } from 'rxjs/observable/of';
 
-import { Observable } from "rxjs/Observable";
-import { TxGenerated, ProcessCallFailed, ProcessCallSuccess } from "../actions";
+import { Observable } from 'rxjs/Observable';
+import { TxGenerated, ProcessCallFailed, ProcessCallSuccess } from '../actions';
 
 export const processCallEpic = (
   actions$: ActionsObservable<any>,

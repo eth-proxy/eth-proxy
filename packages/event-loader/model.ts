@@ -1,4 +1,4 @@
-import { Observable } from "rxjs/Observable";
+import { Observable } from 'rxjs/Observable';
 import * as Web3 from 'web3';
 
 export interface ReaderResult {

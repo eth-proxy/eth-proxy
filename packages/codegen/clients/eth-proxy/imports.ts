@@ -2,7 +2,7 @@ export const imports = [
   {
     namedImports: [
       {
-        name: "EventMetadata"
+        name: 'EventMetadata'
       },
       {
         name: 'ContractsAggregation'
@@ -14,6 +14,6 @@ export const imports = [
         name: 'RequestFactory'
       }
     ],
-    moduleSpecifier: "@eth-proxy/client"
+    moduleSpecifier: '@eth-proxy/client'
   }
 ];

@@ -1,5 +1,5 @@
-declare module "web3" {
-  import BigNumber from "bignumber.js";
+declare module 'web3' {
+  import BigNumber from 'bignumber.js';
   type Callback<T> = (err: Error | null, value: T) => void;
 
   class Web3 {
@@ -71,7 +71,7 @@ declare module "web3" {
     type AbiDefinition = FunctionDescription | EventDescription;
 
     interface FunctionDescription {
-      type: "function" | "constructor" | "fallback";
+      type: 'function' | 'constructor' | 'fallback';
       name?: string;
       inputs: Array<FunctionParameter>;
       outputs?: Array<FunctionParameter>;
@@ -86,7 +86,7 @@ declare module "web3" {
     }
 
     interface EventDescription {
-      type: "event";
+      type: 'event';
       name: string;
       inputs: Array<EventParameter>;
       anonymous: boolean;
@@ -154,4 +154,3 @@ declare module "web3" {
   export = Web3;
   /* tslint:enable */
 }
-

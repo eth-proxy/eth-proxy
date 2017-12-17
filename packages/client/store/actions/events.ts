@@ -1,9 +1,9 @@
-import { QueryArgs, QueryResult } from "../../model";
+import { QueryArgs, QueryResult } from '../../model';
 
-export const QUERY_EVENTS = "QUERY_EVENTS";
+export const QUERY_EVENTS = 'QUERY_EVENTS';
 
 export interface QueryEvents {
-  type: "QUERY_EVENTS";
+  type: 'QUERY_EVENTS';
   payload: QueryArgs[];
 }
 
@@ -12,10 +12,10 @@ export const createQueryEvents = (payload: QueryArgs[]) => ({
   payload
 });
 
-export const QUERY_EVENTS_SUCCESS = "QUERY_EVENTS_SUCCESS";
+export const QUERY_EVENTS_SUCCESS = 'QUERY_EVENTS_SUCCESS';
 
 export interface QueryEventsSuccess {
-  type: "QUERY_EVENTS_SUCCESS";
+  type: 'QUERY_EVENTS_SUCCESS';
   payload: QueryResult[];
 }
 
@@ -24,10 +24,10 @@ export const createQueryEventsSuccess = (payload: QueryResult[]) => ({
   payload
 });
 
-export const QUERY_EVENTS_FAILED = "QUERY_EVENTS_FAILED";
+export const QUERY_EVENTS_FAILED = 'QUERY_EVENTS_FAILED';
 
 export interface QueryEventsFailed {
-  type: "QUERY_EVENTS_FAILED";
+  type: 'QUERY_EVENTS_FAILED';
   payload: QueryArgs[];
 }
 
@@ -36,10 +36,10 @@ export const createQueryEventsFailed = (payload: QueryArgs[]) => ({
   payload
 });
 
-export const EVENTS_LOADED = "EVENTS_LOADED";
+export const EVENTS_LOADED = 'EVENTS_LOADED';
 
 export interface EventsLoaded {
-  type: "EVENTS_LOADED";
+  type: 'EVENTS_LOADED';
   payload: any[];
 }
 
@@ -48,10 +48,10 @@ export const createEventsLoaded = (payload: any[]) => ({
   payload
 });
 
-export const ADD_EVENTS_WATCH = "ADD_EVENTS_WATCH";
+export const ADD_EVENTS_WATCH = 'ADD_EVENTS_WATCH';
 
 export interface AddEventsWatch {
-  type: "ADD_EVENTS_WATCH";
+  type: 'ADD_EVENTS_WATCH';
   payload: {
     id: number;
     fromBlock: number;
@@ -64,10 +64,10 @@ export const createAddEventsWatch = (payload: AddEventsWatch['payload']) => ({
   payload
 });
 
-export const REMOVE_EVENTS_WATCH = "REMOVE_EVENTS_WATCH";
+export const REMOVE_EVENTS_WATCH = 'REMOVE_EVENTS_WATCH';
 
 export interface RemoveEventsWatch {
-  type: "REMOVE_EVENTS_WATCH";
+  type: 'REMOVE_EVENTS_WATCH';
   payload: number;
 }
 

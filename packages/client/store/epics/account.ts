@@ -1,11 +1,16 @@
-import { Observable } from "rxjs/Observable";
-import { mergeMapTo, mergeMap, distinctUntilChanged, map } from "rxjs/operators";
-import { ActionsObservable } from "redux-observable";
-import { timer } from "rxjs/observable/timer";
+import { Observable } from 'rxjs/Observable';
+import {
+  mergeMapTo,
+  mergeMap,
+  distinctUntilChanged,
+  map
+} from 'rxjs/operators';
+import { ActionsObservable } from 'redux-observable';
+import { timer } from 'rxjs/observable/timer';
 
-import { getDefaultAccount } from "@eth-proxy/rx-web3";
-import { createSetActiveAccount } from "../actions";
-import { EpicContext } from "../model";
+import { getDefaultAccount } from '@eth-proxy/rx-web3';
+import { createSetActiveAccount } from '../actions';
+import { EpicContext } from '../model';
 
 export const watchAccount = (
   _: ActionsObservable<any>,
@@ -17,5 +22,5 @@ export const watchAccount = (
     mergeMap(getDefaultAccount),
     distinctUntilChanged(),
     map(createSetActiveAccount)
-  )
+  );
 };

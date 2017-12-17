@@ -1,7 +1,7 @@
-import { Observable } from "rxjs/Observable";
-import { State } from "./model";
-import { map as rxMap, filter, tap } from "rxjs/operators";
-import { first } from "rxjs/operators/first";
+import { Observable } from 'rxjs/Observable';
+import { State } from './model';
+import { map as rxMap, filter, tap } from 'rxjs/operators';
+import { first } from 'rxjs/operators/first';
 import {
   getNetworkId,
   getHasContracts,
@@ -9,9 +9,9 @@ import {
   getActiveAccount,
   getContractFromRef,
   getTransactionFromInitId
-} from "./selectors";
-import { keys } from "ramda";
-import * as Web3 from "web3";
+} from './selectors';
+import { keys } from 'ramda';
+import * as Web3 from 'web3';
 import {
   TransactionWithHash,
   ConfirmedTransaction,
@@ -19,7 +19,7 @@ import {
   QueryModel,
   InterfaceRef,
   InitializedTransaction
-} from "../model";
+} from '../model';
 
 export function getDetectedNetwork$(state$: Observable<State>) {
   return state$.pipe(rxMap(getNetworkId), first(x => !!x));
@@ -47,7 +47,7 @@ export const getTransactionResultFromInitId$ = (id: string) => (
   state$.pipe(
     rxMap(getTransactionFromInitId(id)),
     tap(x => {
-      if (x.status === "failed") {
+      if (x.status === 'failed') {
         throw x.error;
       }
     })

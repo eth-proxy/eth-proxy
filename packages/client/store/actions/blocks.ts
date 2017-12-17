@@ -1,10 +1,10 @@
-import { Block } from "web3";
-import { pipe, reject, isNil, uniq } from "ramda";
+import { Block } from 'web3';
+import { pipe, reject, isNil, uniq } from 'ramda';
 
-export const UPDATE_LATEST_BLOCK = "UPDATE_LATEST_BLOCK";
+export const UPDATE_LATEST_BLOCK = 'UPDATE_LATEST_BLOCK';
 
 export interface UpdateLatestBlock {
-  type: "UPDATE_LATEST_BLOCK";
+  type: 'UPDATE_LATEST_BLOCK';
   payload: Block;
 }
 

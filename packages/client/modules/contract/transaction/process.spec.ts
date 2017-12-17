@@ -1,25 +1,25 @@
-import { processTransaction } from "./process";
+import { processTransaction } from './process';
 import {
   createObservableStore,
   ObservableStore,
   State,
   DEFAULT_GAS
-} from "client/store";
-import * as actions from "client/store/actions";
-import { NetworkDefinition } from "client/model";
-import { AnyAction } from "redux";
-import { expect } from "chai";
-import { Observable } from "rxjs/Observable";
+} from 'client/store';
+import * as actions from 'client/store/actions';
+import { NetworkDefinition } from 'client/model';
+import { AnyAction } from 'redux';
+import { expect } from 'chai';
+import { Observable } from 'rxjs/Observable';
 
-const account = "123";
+const account = '123';
 
-const interfaceName = "Contract1";
-const methodName = "Method1";
-const address = "678";
-const networkId = "test";
+const interfaceName = 'Contract1';
+const methodName = 'Method1';
+const address = '678';
+const networkId = 'test';
 const abi = [
   {
-    type: "function",
+    type: 'function',
     name: methodName,
     inputs: []
   } as FunctionDescription
@@ -27,7 +27,7 @@ const abi = [
 const contractJSON = {
   contract_name: interfaceName,
   abi,
-  unlinked_binary: "",
+  unlinked_binary: '',
   networks: {
     [networkId]: {
       address
@@ -38,7 +38,7 @@ const args = {
   a: 12
 };
 
-const id = "111";
+const id = '111';
 const genId = () => id;
 
 const txParams = {
@@ -61,7 +61,7 @@ type TestStore = ObservableStore<State> & {
   lastDispatched: AnyAction;
 };
 
-describe("Initialize transaction", () => {
+describe('Initialize transaction', () => {
   let store: TestStore;
   beforeEach(() => {
     store = createObservableStore() as TestStore;
@@ -75,7 +75,7 @@ describe("Initialize transaction", () => {
     };
   });
 
-  it("Dispatches process action", () => {
+  it('Dispatches process action', () => {
     store.dispatch(actions.createSetActiveAccount(account));
     store.dispatch(
       actions.createRegisterContract(contractJSON, {
@@ -94,10 +94,10 @@ describe("Initialize transaction", () => {
     expect(store.lastDispatched).to.deep.equal(expectedAction);
   });
 
-  describe("Controls the flow", () => {
+  describe('Controls the flow', () => {
     const expectedAction = actions.createProcessTransaction(transactionData);
 
-    it("Waits for contract to be registered", () => {
+    it('Waits for contract to be registered', () => {
       store.dispatch(actions.createSetActiveAccount(account));
 
       processTransaction(store, genId)({
@@ -115,7 +115,7 @@ describe("Initialize transaction", () => {
       expect(store.lastDispatched).to.deep.equal(expectedAction);
     });
 
-    it("Waits for active account", () => {
+    it('Waits for active account', () => {
       store.dispatch(
         actions.createRegisterContract(contractJSON, {
           address
@@ -133,7 +133,7 @@ describe("Initialize transaction", () => {
     });
   });
 
-  describe("Reports result", () => {
+  describe('Reports result', () => {
     let result$: Observable<any>;
     beforeEach(() => {
       store.dispatch(
@@ -149,12 +149,12 @@ describe("Initialize transaction", () => {
         payload: args
       });
     });
-    it("Emits init status", () => {
+    it('Emits init status', () => {
       let result;
       result$.subscribe(x => {
-        result = x
+        result = x;
       });
-      
+
       expect(result).to.deep.eq({
         address,
         args,
@@ -163,8 +163,7 @@ describe("Initialize transaction", () => {
         initId: id,
         status: 'init',
         txParams
-      })
+      });
     });
   });
-
 });

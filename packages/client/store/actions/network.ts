@@ -1,7 +1,7 @@
-export const SET_NETWORK = "SET_NEWORK";
+export const SET_NETWORK = 'SET_NEWORK';
 
 export interface SetNetwork {
-  type: "SET_NEWORK";
+  type: 'SET_NEWORK';
   payload;
 }
 

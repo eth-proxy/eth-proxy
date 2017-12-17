@@ -1,12 +1,12 @@
-import * as actions from "../actions";
-import { createSelector } from "reselect";
-import { find, map, omit } from "ramda";
+import * as actions from '../actions';
+import { createSelector } from 'reselect';
+import { find, map, omit } from 'ramda';
 import {
   TransactionWithHash,
   ConfirmedTransaction,
   FailedTransaction,
   Transaction
-} from "../../model";
+} from '../../model';
 
 export type State = Transaction[];
 
@@ -20,28 +20,28 @@ export function reducer(
         ...state,
         {
           ...omit(['abi'], action.payload),
-          status: "init"
+          status: 'init'
         } as any
       ];
 
-      case actions.PROCESS_TRANSACTION_FAILED: {
-        const { initId, err } = action.payload;
-  
-        return map(t => {
-          if (t.status !== "init" || t.initId !== initId) {
-            return t;
-          }
-          return Object.assign({}, t, { status: "failed", error: err });
-        }, state);
-      }
+    case actions.PROCESS_TRANSACTION_FAILED: {
+      const { initId, err } = action.payload;
+
+      return map(t => {
+        if (t.status !== 'init' || t.initId !== initId) {
+          return t;
+        }
+        return Object.assign({}, t, { status: 'failed', error: err });
+      }, state);
+    }
 
     case actions.TX_GENERATED:
       return map(t => {
-        if (t.status !== "init" || t.initId !== action.payload.initId) {
+        if (t.status !== 'init' || t.initId !== action.payload.initId) {
           return t;
         }
         return Object.assign({}, t, {
-          status: "tx",
+          status: 'tx',
           tx: action.payload.tx
         });
       }, state);
@@ -51,20 +51,20 @@ export function reducer(
       const { transactionHash } = receipt;
 
       return map(t => {
-        if (t.status === "init" || t.tx !== transactionHash) {
+        if (t.status === 'init' || t.tx !== transactionHash) {
           return t;
         }
-        return Object.assign({}, t, { status: "confirmed", receipt, logs });
+        return Object.assign({}, t, { status: 'confirmed', receipt, logs });
       }, state);
     }
     case actions.TRANSACTION_FAILED: {
       const { tx } = action.payload;
 
       return map(t => {
-        if (t.status === "init" || t.tx !== tx) {
+        if (t.status === 'init' || t.tx !== tx) {
           return t;
         }
-        return Object.assign({}, t, { status: "failed" });
+        return Object.assign({}, t, { status: 'failed' });
       }, state);
     }
     default:
@@ -74,13 +74,10 @@ export function reducer(
 
 export const getSelectors = <T>(getModule: (state: T) => State) => {
   const getTransactionByTx = (tx: string) =>
-    createSelector(getModule, find(t => t.status !== "init" && t.tx === tx));
+    createSelector(getModule, find(t => t.status !== 'init' && t.tx === tx));
 
   const getTransactionFromInitId = (initId: string) =>
-    createSelector(
-      getModule,
-      find(t => t.initId === initId)
-    );
+    createSelector(getModule, find(t => t.initId === initId));
 
   return {
     getTransactionByTx,

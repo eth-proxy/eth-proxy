@@ -2,21 +2,21 @@ import {
   InterfaceDeclarationStructure,
   PropertySignatureStructure,
   ParameterDeclarationStructure
-} from "ts-simple-ast";
-import { map } from "ramda";
-import { hasComplexInput, toMethodDefinitionName } from "./utils";
+} from 'ts-simple-ast';
+import { map } from 'ramda';
+import { hasComplexInput, toMethodDefinitionName } from './utils';
 import {
   toOutputName,
   toInputName,
   solidityToJsOutputType,
   solidityToJsInputType
-} from "../../lib";
+} from '../../lib';
 
 export function getMethodsInterfaces({
   contract_name,
   abi
 }: TruffleJson): InterfaceDeclarationStructure[] {
-  const functions = abi.filter(({ type }) => type === "function");
+  const functions = abi.filter(({ type }) => type === 'function');
   const getInputName = toInputName(contract_name);
   return functions.map(getMethodDefinition(contract_name));
 }
@@ -28,14 +28,14 @@ const getMethodDefinition = (contractName: string) => (
     fun.outputs.length > 1
       ? toOutputName(contractName)(fun.name)
       : fun.outputs.length === 0
-        ? "undefined"
+        ? 'undefined'
         : solidityToJsOutputType(fun.outputs[0].type);
 
   const optionalProperties =
     fun.inputs.length > 0
       ? [
           {
-            name: "in",
+            name: 'in',
             type:
               fun.inputs.length > 1
                 ? toInputName(contractName)(fun.name)
@@ -49,14 +49,13 @@ const getMethodDefinition = (contractName: string) => (
     properties: [
       ...optionalProperties,
       {
-        name: "out",
+        name: 'out',
         type: callOutputName
       },
       {
-        name: "events",
-        type: "ContractsEvents"
+        name: 'events',
+        type: 'ContractsEvents'
       }
     ]
   };
 };
-

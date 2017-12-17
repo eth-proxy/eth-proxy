@@ -2,13 +2,13 @@ import {
   InterfaceDeclarationStructure,
   PropertySignatureStructure,
   TypeAliasDeclarationStructure
-} from "ts-simple-ast";
+} from 'ts-simple-ast';
 import {
   solidityToJsOutputType,
   toEventPayloadName,
   toEventName,
   CreateEventDeclaraton
-} from "../../../lib";
+} from '../../../lib';
 
 export const createEventInterface: CreateEventDeclaraton = (
   { name, inputs }: EventDescription,
@@ -26,16 +26,16 @@ export const createEventInterface: CreateEventDeclaraton = (
       name: toEventName(contract_name, name),
       properties: [
         {
-          name: "type",
+          name: 'type',
           type: `"${name}"`
         },
         {
-          name: "payload",
+          name: 'payload',
           type: toEventPayloadName(contract_name, name)
         },
         {
-          name: "meta",
-          type: "EventMetadata"
+          name: 'meta',
+          type: 'EventMetadata'
         }
       ]
     }
