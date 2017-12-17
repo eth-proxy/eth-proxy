@@ -1,9 +1,9 @@
-import { first, tap, mergeMapTo } from "rxjs/operators";
-import { combineLatest } from "rxjs/observable/combineLatest";
-import { Observable } from "rxjs/Observable";
+import { first, tap, mergeMapTo } from 'rxjs/operators';
+import { combineLatest } from 'rxjs/observable/combineLatest';
+import { Observable } from 'rxjs/Observable';
 
-import { prepareTxParams } from "./params";
-import { Request } from "../model";
+import { prepareTxParams } from './params';
+import { Request } from '../model';
 import {
   ObservableStore,
   State,
@@ -11,13 +11,13 @@ import {
   createProcessTransaction,
   getTransactionFromInitId,
   getTransactionResultFromInitId$
-} from "../../../store";
+} from '../../../store';
 import {
   ConfirmedTransaction,
   FailedTransaction,
   InitializedTransaction,
   TransactionWithHash
-} from "../../../model";
+} from '../../../model';
 
 export function processTransaction(
   store: ObservableStore<State>,

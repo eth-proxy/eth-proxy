@@ -1,6 +1,6 @@
-import { TruffleJson } from "../../model";
+import { TruffleJson } from '../../model';
 
-export const REGISTER_CONTRACT = "REGISTER_CONTRACT";
+export const REGISTER_CONTRACT = 'REGISTER_CONTRACT';
 
 export interface RegisterContractOptions {
   address: string;
@@ -8,7 +8,7 @@ export interface RegisterContractOptions {
 }
 
 export interface RegisterContract {
-  type: "REGISTER_CONTRACT";
+  type: 'REGISTER_CONTRACT';
   payload: TruffleJson & RegisterContractOptions;
 }
 

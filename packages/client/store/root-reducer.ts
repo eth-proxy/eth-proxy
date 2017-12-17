@@ -1,14 +1,14 @@
-import * as fromNetwork from "./reducers/network";
-import * as fromContracts from "./reducers/contracts";
-import * as fromAccounts from "./reducers/accounts";
-import * as fromTransactions from "./reducers/transactions";
-import * as fromBlocks from "./reducers/blocks";
-import * as fromEvents from "./reducers/events";
-import * as fromCalls from "./reducers/calls";
+import * as fromNetwork from './reducers/network';
+import * as fromContracts from './reducers/contracts';
+import * as fromAccounts from './reducers/accounts';
+import * as fromTransactions from './reducers/transactions';
+import * as fromBlocks from './reducers/blocks';
+import * as fromEvents from './reducers/events';
+import * as fromCalls from './reducers/calls';
 
-import { combineReducers, AnyAction } from "redux";
+import { combineReducers, AnyAction } from 'redux';
 
-import { State } from "./model";
+import { State } from './model';
 
 export const reducer = combineReducers<State>({
   networkId: fromNetwork.reducer,
@@ -19,9 +19,9 @@ export const reducer = combineReducers<State>({
   events: fromEvents.reducer,
   calls: fromCalls.reducer
 });
-const initialState = reducer(undefined, { type: "" });
+const initialState = reducer(undefined, { type: '' });
 
 export const ethProxyIntegrationReducer = (
   state: State = initialState as State,
   action
-) => (action.type === "SET_ETH-PROXY_STATE" ? action.payload : state);
+) => (action.type === 'SET_ETH-PROXY_STATE' ? action.payload : state);

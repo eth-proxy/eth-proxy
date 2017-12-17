@@ -1,9 +1,9 @@
 import {
   InterfaceDeclarationStructure,
   PropertySignatureStructure
-} from "ts-simple-ast";
-import { toOutputName, getOutputProperty } from "../../lib";
-import { hasComplexOutput } from "./utils";
+} from 'ts-simple-ast';
+import { toOutputName, getOutputProperty } from '../../lib';
+import { hasComplexOutput } from './utils';
 
 export function getOutputInterfaces({
   contract_name,

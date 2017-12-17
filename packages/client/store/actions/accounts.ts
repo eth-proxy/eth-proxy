@@ -1,7 +1,7 @@
-export const SET_ACTIVE_ACCOUNT = "SET_ACTIVE_ACCOUNT";
+export const SET_ACTIVE_ACCOUNT = 'SET_ACTIVE_ACCOUNT';
 
 export interface SetActiveAccount {
-  type: "SET_ACTIVE_ACCOUNT";
+  type: 'SET_ACTIVE_ACCOUNT';
   payload: string | null;
 }
 

@@ -1,10 +1,13 @@
-import * as actions from "../actions";
-import { createSelector } from "reselect";
+import * as actions from '../actions';
+import { createSelector } from 'reselect';
 
 export type State = {
   activeAccount?: string | null;
 };
-export function reducer(state: State = {}, action: actions.AccountTypes): State {
+export function reducer(
+  state: State = {},
+  action: actions.AccountTypes
+): State {
   switch (action.type) {
     case actions.SET_ACTIVE_ACCOUNT:
       return {
@@ -21,4 +24,3 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
     getActiveAccount: createSelector(getModule, m => m.activeAccount)
   };
 };
-

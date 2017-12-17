@@ -1,5 +1,5 @@
-import { TransactionInfo } from "../../model";
-import { curry, CurriedFunction2 } from "ramda";
+import { TransactionInfo } from '../../model';
+import { curry, CurriedFunction2 } from 'ramda';
 
 export interface ProcessTransactionPayload {
   initId: string;
@@ -11,10 +11,10 @@ export interface ProcessTransactionPayload {
   abi: any;
 }
 
-export const PROCESS_TRANSACTION = "PROCESS_TRANSACTION";
+export const PROCESS_TRANSACTION = 'PROCESS_TRANSACTION';
 
 export interface ProcessTransaction {
-  type: "PROCESS_TRANSACTION";
+  type: 'PROCESS_TRANSACTION';
   payload: ProcessTransactionPayload;
 }
 
@@ -25,10 +25,10 @@ export const createProcessTransaction = (
   payload
 });
 
-export const PROCESS_TRANSACTION_FAILED = "PROCESS_TRANSACTION_FAILED";
+export const PROCESS_TRANSACTION_FAILED = 'PROCESS_TRANSACTION_FAILED';
 
 export interface ProcessTransactionFailed {
-  type: "PROCESS_TRANSACTION_FAILED";
+  type: 'PROCESS_TRANSACTION_FAILED';
   payload: {
     initId: string;
     err: any;
@@ -36,16 +36,16 @@ export interface ProcessTransactionFailed {
 }
 
 export const createProcessTransactionFailed = (
-  payload: ProcessTransactionFailed["payload"]
+  payload: ProcessTransactionFailed['payload']
 ): ProcessTransactionFailed => ({
   type: PROCESS_TRANSACTION_FAILED,
   payload
 });
 
-export const TX_GENERATED = "TX_GENERATED";
+export const TX_GENERATED = 'TX_GENERATED';
 
 export interface TxGenerated {
-  type: "TX_GENERATED";
+  type: 'TX_GENERATED';
   payload: {
     initId: string;
     tx: string;
@@ -64,10 +64,10 @@ export const createTxGenerated = curry(
   }
 );
 
-export const TRANSACTION_FAILED = "TRANSACTION_FAILED";
+export const TRANSACTION_FAILED = 'TRANSACTION_FAILED';
 
 export interface TransactionFailed {
-  type: "TRANSACTION_FAILED";
+  type: 'TRANSACTION_FAILED';
   payload: {
     tx: string;
     error: Error;
@@ -85,10 +85,10 @@ export const createTransactionFailed = (
   }
 });
 
-export const TRANSACTION_CONFIRMED = "TRANSACTION_CONFIRMED";
+export const TRANSACTION_CONFIRMED = 'TRANSACTION_CONFIRMED';
 
 export interface TransactionConfirmed {
-  type: "TRANSACTION_CONFIRMED";
+  type: 'TRANSACTION_CONFIRMED';
   payload: {
     receipt;
     logs;
@@ -96,7 +96,7 @@ export interface TransactionConfirmed {
 }
 
 export const createTransactionConfirmed = (
-  payload: TransactionConfirmed["payload"]
+  payload: TransactionConfirmed['payload']
 ): TransactionConfirmed => ({
   type: TRANSACTION_CONFIRMED,
   payload

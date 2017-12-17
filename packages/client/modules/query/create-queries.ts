@@ -1,7 +1,7 @@
-import { BlockRange } from "../../model";
-import { map, reduce, min, chain } from "ramda";
-import { ExecuteQueryContext } from "./context";
-import { filterOutDone } from "./utils/filter-out-done";
+import { BlockRange } from '../../model';
+import { map, reduce, min, chain } from 'ramda';
+import { ExecuteQueryContext } from './context';
+import { filterOutDone } from './utils/filter-out-done';
 
 import { QueryArgs } from '../../model';
 
@@ -26,9 +26,9 @@ export const createQueries = ({
   );
 
   return chain(address => {
-      return omittedAlreadyDone.map(range => ({
-        address,
-        range
-      }));
-    }, addresses)
+    return omittedAlreadyDone.map(range => ({
+      address,
+      range
+    }));
+  }, addresses);
 };

@@ -1,15 +1,15 @@
-import { Observable } from "rxjs/Observable";
+import { Observable } from 'rxjs/Observable';
 import {
   ObservableStore,
   State,
   getLatestBlockNumber,
   getEventQueries,
   getContractsFromModel$
-} from "../../store";
-import { first, combineLatest, map, withLatestFrom } from "rxjs/operators";
-import { QueryModel, ContractInfo } from "../../model";
-import { zipObj, unnest, curry, CurriedFunction2 } from "ramda";
-import { EventsQueryState } from "../../store/reducers/events";
+} from '../../store';
+import { first, combineLatest, map, withLatestFrom } from 'rxjs/operators';
+import { QueryModel, ContractInfo } from '../../model';
+import { zipObj, unnest, curry, CurriedFunction2 } from 'ramda';
+import { EventsQueryState } from '../../store/reducers/events';
 
 export interface ExecuteQueryContext {
   contracts: ContractInfo[];
@@ -29,7 +29,7 @@ export const getContext = curry(
         withLatestFrom(store.select(getEventQueries)),
         map(unnest),
         first(args => args.every(x => !!x)),
-        map<any, any>(zipObj(["contracts", "latestBlockNumber", "queries"]))
+        map<any, any>(zipObj(['contracts', 'latestBlockNumber', 'queries']))
       );
   }
 );

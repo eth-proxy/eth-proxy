@@ -1,8 +1,11 @@
-import { EventsQueryState } from "../../../store/reducers/events";
-import { QueryArgs, BlockRange } from "../../../model";
-import { chain, uniq, all, propEq } from "ramda";
+import { EventsQueryState } from '../../../store/reducers/events';
+import { QueryArgs, BlockRange } from '../../../model';
+import { chain, uniq, all, propEq } from 'ramda';
 
-export const filterOutDone = (state: EventsQueryState, toFilter: QueryArgs[]) => {
+export const filterOutDone = (
+  state: EventsQueryState,
+  toFilter: QueryArgs[]
+) => {
   const addresess = toFilter.map(x => x.address);
   const addressRanges = chain(
     address => (state[address] || []).map(x => x.range),
@@ -11,7 +14,7 @@ export const filterOutDone = (state: EventsQueryState, toFilter: QueryArgs[]) =>
 
   const commonRanges = uniq(addressRanges).filter(range =>
     all(
-      address => !!(state[address] || []).find(propEq("range", range)),
+      address => !!(state[address] || []).find(propEq('range', range)),
       addresess
     )
   );
@@ -51,6 +54,6 @@ export function filterNotDone(
     return [[wantFrom, hasFrom], [hasTo, wantTo]];
   }
   throw Error(
-    "Range not found, " + JSON.stringify({ hasFrom, wantFrom, hasTo, wantTo })
+    'Range not found, ' + JSON.stringify({ hasFrom, wantFrom, hasTo, wantTo })
   );
 }

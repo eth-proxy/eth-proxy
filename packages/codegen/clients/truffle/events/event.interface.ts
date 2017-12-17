@@ -2,14 +2,14 @@ import {
   InterfaceDeclarationStructure,
   PropertySignatureStructure,
   TypeAliasDeclarationStructure
-} from "ts-simple-ast";
-import { chain, map, filter } from "ramda";
+} from 'ts-simple-ast';
+import { chain, map, filter } from 'ramda';
 import {
   solidityToJsOutputType,
   toEventPayloadName,
   toEventName,
   CreateEventDeclaraton
-} from "../../../lib";
+} from '../../../lib';
 
 export const createEventDeclaration: CreateEventDeclaraton = (
   { name, inputs }: EventDescription,
@@ -27,15 +27,15 @@ export const createEventDeclaration: CreateEventDeclaraton = (
       name: toEventName(contract_name, name),
       properties: [
         {
-          name: "event",
+          name: 'event',
           type: `"${name}"`
         },
         {
-          name: "args",
+          name: 'args',
           type: toEventPayloadName(contract_name, name)
         }
       ],
-      extends: ["EventMetadata"]
+      extends: ['EventMetadata']
     }
   ];
 };

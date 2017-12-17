@@ -4,21 +4,21 @@ import {
   takeUntil,
   mergeMap,
   filter
-} from "rxjs/operators";
-import { map } from "rxjs/operators";
-import { ActionsObservable } from "redux-observable";
+} from 'rxjs/operators';
+import { map } from 'rxjs/operators';
+import { ActionsObservable } from 'redux-observable';
 
-import { EpicContext } from "../model";
+import { EpicContext } from '../model';
 import {
   AddEventsWatch,
   createEventsLoaded,
   ADD_EVENTS_WATCH,
   REMOVE_EVENTS_WATCH,
   RemoveEventsWatch
-} from "../actions";
-import { getLogDecoder } from "../selectors";
+} from '../actions';
+import { getLogDecoder } from '../selectors';
 
-import { Observable } from "rxjs/Observable";
+import { Observable } from 'rxjs/Observable';
 
 // DONT WATCH SAME CONTRACTS MORE THEN ONCE
 export const watchEvents = (

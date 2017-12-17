@@ -1,9 +1,8 @@
-
 import {
   createSelector,
   defaultMemoize,
   createSelectorCreator
-} from "reselect";
+} from 'reselect';
 import {
   indexBy,
   reduce,
@@ -19,12 +18,12 @@ import {
   concat,
   evolve,
   equals
-} from "ramda";
+} from 'ramda';
 
-import * as actions from "../actions";
-import { BlockRange } from "../../model";
-import { combineReducers, AnyAction } from "redux";
-import { idFromEvent, sortEvents } from "../../utils";
+import * as actions from '../actions';
+import { BlockRange } from '../../model';
+import { combineReducers, AnyAction } from 'redux';
+import { idFromEvent, sortEvents } from '../../utils';
 
 export interface QueryState {
   loading: boolean;
@@ -93,7 +92,7 @@ export function eventsQueryReducer(
                       range,
                       eventIds: [],
                       loading: false,
-                      error: "Could not load"
+                      error: 'Could not load'
                     }
                   : result
             )
@@ -188,24 +187,25 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
     getEventsByAddress,
     getFailedQueriedByAddresses,
     (eventsByAddress, failedQueries) => {
-      return mapObjIndexed((queries, address) => ({
-        failedQueries: queries,
-        events: eventsByAddress[address] || []
-      }), failedQueries)
+      return mapObjIndexed(
+        (queries, address) => ({
+          failedQueries: queries,
+          events: eventsByAddress[address] || []
+        }),
+        failedQueries
+      );
     }
   );
-  
-  const getQueryResultFromAddresses = (addresses: string[]) => createSelector(
-    getQueryResultsByAddress,
-    (resultsByAddress) => {
+
+  const getQueryResultFromAddresses = (addresses: string[]) =>
+    createSelector(getQueryResultsByAddress, resultsByAddress => {
       return pipe(
         pick(addresses),
         values,
         reduce(mergeWith(concat), {}),
-        evolve({ events : sortEvents })
+        evolve({ events: sortEvents })
       )(resultsByAddress) as any;
-    }
-  )
+    });
 
   return {
     getAllEvents,

@@ -1,11 +1,11 @@
-import { CallResult, TransactionResult } from "../../model";
-import { curry, CurriedFunction2 } from "ramda";
-import { BigNumber } from "bignumber.js";
+import { CallResult, TransactionResult } from '../../model';
+import { curry, CurriedFunction2 } from 'ramda';
+import { BigNumber } from 'bignumber.js';
 
 export interface RequestOptions {
   gas?: number | string | BigNumber;
-  gasPrice?: number | string | BigNumber
-  value?: number | string | BigNumber
+  gasPrice?: number | string | BigNumber;
+  value?: number | string | BigNumber;
   from?: string;
   address?: string;
 }
@@ -24,9 +24,9 @@ export interface Request<I extends string, M extends string, P>
 }
 
 export type ObjHas<Obj extends {}, K extends string> = ({
-  [K in keyof Obj]: "1"
+  [K in keyof Obj]: '1'
 } & {
-  [k: string]: "0";
+  [k: string]: '0';
 })[K];
 
 export type CreateRequestWithPayload<C extends string, M extends string, P> = (
@@ -43,9 +43,9 @@ export type CreateRequest<
   C extends string,
   M extends string
 > = {
-  1: CreateRequestWithPayload<C, M, T[C][M]["in"]>;
+  1: CreateRequestWithPayload<C, M, T[C][M]['in']>;
   0: CreateRequestWithoutPayload<C, M>;
-}[ObjHas<T[C][M], "in">];
+}[ObjHas<T[C][M], 'in'>];
 
 export type RequestFactory<T extends ContractsAggregation> = {
   [C in keyof T]: { [M in keyof T[C]]: CreateRequest<T, C, M> }
@@ -65,10 +65,10 @@ export interface ContractsAggregation {
 
 export class RequestHandlers<T extends ContractsAggregation> {
   ethCall: <I extends keyof T, M extends keyof T[I]>(
-    request: Request<I, M, T[I][M]["in"]>
-  ) => CallResult<T[I][M]["out"]>;
+    request: Request<I, M, T[I][M]['in']>
+  ) => CallResult<T[I][M]['out']>;
 
   transaction: <I extends keyof T, M extends keyof T[I], V extends T[I][M]>(
-    request: Request<I, M, T[I][M]["in"]>
-  ) => TransactionResult<T[I][M]["events"]>;
+    request: Request<I, M, T[I][M]['in']>
+  ) => TransactionResult<T[I][M]['events']>;
 }

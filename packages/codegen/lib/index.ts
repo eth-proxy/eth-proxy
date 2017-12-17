@@ -1,10 +1,10 @@
-import { SourceFileStructure } from "ts-simple-ast";
+import { SourceFileStructure } from 'ts-simple-ast';
 import {
   getRootContractsEventsAlias,
   getContractEventsAliases
-} from "./events";
-import { assoc } from "ramda";
-import { numberLike } from "./common/numberlike";
+} from './events';
+import { assoc } from 'ramda';
+import { numberLike } from './common/numberlike';
 
 export const getCommonSource = (
   contracts: TruffleJson[]
@@ -14,15 +14,15 @@ export const getCommonSource = (
       ...getContractEventsAliases(contracts),
       getRootContractsEventsAlias(contracts),
       numberLike()
-    ].map(assoc("isExported", true)),
+    ].map(assoc('isExported', true)),
     imports: [
       {
-        defaultImport: "BigNumber",
-        moduleSpecifier: "bignumber.js"
+        defaultImport: 'BigNumber',
+        moduleSpecifier: 'bignumber.js'
       }
     ]
   };
 };
 
-export * from "./events";
+export * from './events';
 export * from './utils';

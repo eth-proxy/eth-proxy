@@ -1,4 +1,4 @@
-declare module "*.json" {
+declare module '*.json' {
   const value: any;
   export default value;
 }
@@ -9,7 +9,7 @@ type ContractAbi = Array<AbiDefinition>;
 type AbiDefinition = FunctionDescription | EventDescription;
 
 interface FunctionDescription {
-  type: "function" | "constructor" | "fallback";
+  type: 'function' | 'constructor' | 'fallback';
   name?: string;
   inputs: Array<FunctionParameter>;
   outputs: Array<FunctionParameter>;
@@ -24,7 +24,7 @@ interface EventParameter {
 }
 
 interface EventDescription {
-  type: "event";
+  type: 'event';
   name: string;
   inputs: Array<EventParameter>;
   anonymous: boolean;
