@@ -13,4 +13,18 @@ export const createUpdateLatestBlock = (payload: Block): UpdateLatestBlock => ({
   payload
 });
 
-export type Types = UpdateLatestBlock;
+export const UPDATE_LATEST_BLOCK_FAILED = 'UPDATE_LATEST_BLOCK_FAILED';
+
+export interface UpdateLatestBlockFailed {
+  type: 'UPDATE_LATEST_BLOCK_FAILED';
+  payload: Error;
+}
+
+export const createUpdateLatestBlockFailed = (
+  payload: Error
+): UpdateLatestBlockFailed => ({
+  type: UPDATE_LATEST_BLOCK_FAILED,
+  payload
+});
+
+export type Types = UpdateLatestBlock | UpdateLatestBlockFailed;
