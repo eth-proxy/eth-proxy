@@ -1,6 +1,26 @@
 /* tslint:disable */
 import BigNumber from 'bignumber.js';
 
+export interface TransactionOptions {
+  from?: string;
+  value?: NumberLike;
+  gas?: NumberLike;
+  gasPrice?: NumberLike;
+}
+
+export interface ERC20 extends TruffleContractInstance {
+  approve(spender: string, value: NumberLike): Promise<TransactionResult>;
+  totalSupply(): Promise<BigNumber>;
+  transferFrom(
+    from: string,
+    to: string,
+    value: NumberLike
+  ): Promise<TransactionResult>;
+  balanceOf(who: string): Promise<BigNumber>;
+  transfer(to: string, value: NumberLike): Promise<TransactionResult>;
+  allowance(owner: string, spender: string): Promise<BigNumber>;
+}
+
 export interface ERC20ApprovalPayload {
   owner: string;
   spender: string;
@@ -33,5 +53,50 @@ export interface EventMetadata {
   blockNumber: number;
 }
 
+export interface TransactionResult {
+  logs: ContractsEvents[];
+  receipt: Receipt;
+  tx: string;
+}
+
+export interface TruffleContractInstance {
+  allEvents: any;
+  address: string;
+  abi: any[];
+  contract: any;
+}
+
+export interface Receipt {
+  blockHash: string;
+  blockNumber: number;
+  transactionHash: string;
+  transactionIndex: number;
+  from: string;
+  to: string;
+  cumulativeGasUsed: number;
+  gasUsed: number;
+  contractAddress: string | null;
+  logs: any[];
+}
+
+export interface TruffleContractAbstraction<T extends TruffleContractInstance> {
+  new (...args: any[]): Promise<T>;
+  abi: any[];
+  networks: any[];
+  network: any;
+  at(address: string): Promise<T>;
+  setProvider(provider: any): void;
+  deployed(): Promise<T>;
+  link<V extends TruffleContractInstance>(
+    contract: TruffleContractAbstraction<V>
+  ): void;
+  link<V extends TruffleContractInstance>(name: string, address: string): void;
+  setNetwork(networkId: string): void;
+  hasNetwork(networkId: string): boolean;
+  defaults(defaults: TransactionOptions): void;
+  clone(networkId: string): TruffleContractAbstraction<T>;
+}
+
 export type ERC20Events = ERC20ApprovalEvent | ERC20TransferEvent;
 export type ContractsEvents = ERC20Events;
+export type NumberLike = BigNumber | string | number;

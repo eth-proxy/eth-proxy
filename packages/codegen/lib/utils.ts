@@ -9,29 +9,25 @@ import {
 } from 'ramda';
 import { PropertySignatureStructure } from 'ts-simple-ast';
 
-export function solidityToJsOutputType(contractType: string): string {
-  if (contractType.includes('[]')) {
-    const itemType = contractType.replace('[]', '');
+export function solidityToJsOutputType(type: string): string {
+  if (type.includes('[]')) {
+    const itemType = type.replace('[]', '');
     const jsItemType = solidityToJsOutputType(itemType);
     return jsItemType + '[]';
   }
-  if (contractType.startsWith('uint') || contractType.startsWith('int')) {
+  if (type.startsWith('uint') || type.startsWith('int')) {
     return 'BigNumber';
   }
-  if (
-    contractType.startsWith('bytes') ||
-    contractType === 'address' ||
-    contractType === 'string'
-  ) {
+  if (type.startsWith('bytes') || type === 'address' || type === 'string') {
     return 'string';
   }
-  if (contractType === 'bool') {
+  if (type === 'bool') {
     return 'boolean';
   }
 }
 
-export function solidityToJsInputType(contractType: string) {
-  const strictType = solidityToJsOutputType(contractType);
+export function solidityToJsInputType(type: string) {
+  const strictType = solidityToJsOutputType(type);
   return strictType.replace('BigNumber', 'NumberLike');
 }
 

@@ -10,6 +10,13 @@ import {
   RequestFactory
 } from '@eth-proxy/client';
 
+export interface TransactionOptions {
+  from?: string;
+  value?: NumberLike;
+  gas?: NumberLike;
+  gasPrice?: NumberLike;
+}
+
 export interface Contracts extends ContractsAggregation {
   ERC20: ERC20;
 }
@@ -60,18 +67,18 @@ export interface ERC20AllowanceDefinition {
 
 export interface ERC20ApproveInput {
   spender: string;
-  value: BigNumber | number | string;
+  value: NumberLike;
 }
 
 export interface ERC20TransferFromInput {
   from: string;
   to: string;
-  value: BigNumber | number | string;
+  value: NumberLike;
 }
 
 export interface ERC20TransferInput {
   to: string;
-  value: BigNumber | number | string;
+  value: NumberLike;
 }
 
 export interface ERC20AllowanceInput {
@@ -103,12 +110,6 @@ export interface ERC20TransferEvent {
   meta: EventMetadata;
 }
 
-export interface TransactionOptions {
-  from?: string;
-  value?: number | BigNumber;
-  gas?: number | BigNumber;
-  gasPrice?: number | BigNumber;
-}
-
 export type ERC20Events = ERC20ApprovalEvent | ERC20TransferEvent;
 export type ContractsEvents = ERC20Events;
+export type NumberLike = BigNumber | string | number;

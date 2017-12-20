@@ -5,11 +5,13 @@ import {
 } from './events';
 import { assoc } from 'ramda';
 import { numberLike } from './common/numberlike';
+import { transactionOptions } from './transaction';
 
 export const getCommonSource = (
   contracts: TruffleJson[]
 ): SourceFileStructure => {
   return {
+    interfaces: [transactionOptions].map(assoc('isExported', true)),
     typeAliases: [
       ...getContractEventsAliases(contracts),
       getRootContractsEventsAlias(contracts),
@@ -26,3 +28,5 @@ export const getCommonSource = (
 
 export * from './events';
 export * from './utils';
+export * from './contract';
+export * from './transaction';
