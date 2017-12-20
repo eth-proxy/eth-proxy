@@ -9,21 +9,19 @@ import {
   toOutputName,
   toInputName,
   solidityToJsOutputType,
-  solidityToJsInputType
+  solidityToJsInputType,
+  createContractInterfaces
 } from '../../lib';
 
-export function getContractInterface({
-  contract_name,
-  abi
-}: TruffleJson): InterfaceDeclarationStructure {
-  const functions = abi.filter(({ type }) => type === 'function');
-  const getInputName = toInputName(contract_name);
-  return {
-    name: contract_name,
-    properties: map(getMethodDefinition(contract_name), functions),
-    extends: ['ContractDefinition']
-  };
-}
+export const createEthProxyContractInterfaces = createContractInterfaces(
+  ({ contract_name }, functions) => {
+    return {
+      name: contract_name,
+      properties: map(getMethodDefinition(contract_name), functions),
+      extends: ['ContractDefinition']
+    };
+  }
+);
 
 const getMethodDefinition = (contractName: string) => (
   fun: FunctionDescription

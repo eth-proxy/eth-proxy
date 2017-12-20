@@ -10,17 +10,17 @@ export const transactionOptions: InterfaceDeclarationStructure = {
     },
     {
       name: 'value',
-      type: 'number | BigNumber',
+      type: 'NumberLike',
       hasQuestionToken: true
     },
     {
       name: 'gas',
-      type: 'number | BigNumber',
+      type: 'NumberLike',
       hasQuestionToken: true
     },
     {
       name: 'gasPrice',
-      type: 'number | BigNumber',
+      type: 'NumberLike',
       hasQuestionToken: true
     }
   ]

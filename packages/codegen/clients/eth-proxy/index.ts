@@ -1,6 +1,6 @@
 import { SourceFileStructure } from 'ts-simple-ast';
 import { imports } from './imports';
-import { getContractInterface } from './contract';
+import { createEthProxyContractInterfaces } from './contract';
 import { createEventInterface } from './events';
 import {
   getRootContractsEventsAlias,
@@ -8,7 +8,6 @@ import {
   createEventInterfaces
 } from '../../lib';
 import { getRootInterface } from './root';
-import { transactionOptions } from './transaction-options';
 import { getOutputInterfaces } from './outputs';
 import { getInputInterfaces } from './inputs';
 import { getMethodsInterfaces } from './methods';
@@ -19,12 +18,11 @@ export function getSourceFile(contracts: TruffleJson[]): SourceFileStructure {
     imports,
     interfaces: [
       getRootInterface(contracts),
-      ...map(getContractInterface, contracts),
+      ...createEthProxyContractInterfaces(contracts),
       ...chain(getMethodsInterfaces, contracts),
       ...chain(getInputInterfaces, contracts),
       ...chain(getOutputInterfaces, contracts),
-      ...createEventInterfaces(createEventInterface)(contracts),
-      transactionOptions
+      ...createEventInterfaces(createEventInterface)(contracts)
     ].map(assoc('isExported', true))
   };
 }
