@@ -80,8 +80,10 @@ export function getBlock(blockHashOrNumber: 'latest' | string | number) {
   return (web3): Observable<any> =>
     Observable.create(observer => {
       web3.eth.getBlock(blockHashOrNumber, (err, block) => {
-        if (err || !block) {
+        if (err) {
           observer.error(err);
+        } else if (!block) {
+          observer.error('Invalid block');
         } else {
           observer.next(block);
           observer.complete();

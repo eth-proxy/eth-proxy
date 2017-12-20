@@ -2,7 +2,7 @@ import { Observable } from 'rxjs/Observable';
 import {
   ObservableStore,
   State,
-  getLatestBlockNumber,
+  getLatestBlockNumberOrFail,
   getEventQueries,
   getContractsFromModel$
 } from '../../store';
@@ -25,7 +25,7 @@ export const getContext = curry(
     return store
       .let(getContractsFromModel$(queryModel))
       .pipe(
-        combineLatest(store.select(getLatestBlockNumber)),
+        combineLatest(store.select(getLatestBlockNumberOrFail)),
         withLatestFrom(store.select(getEventQueries)),
         map(unnest),
         first(args => args.every(x => !!x)),

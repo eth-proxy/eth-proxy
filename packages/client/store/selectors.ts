@@ -46,9 +46,10 @@ export const {
 
 export const { getRequestById } = fromCalls.getSelectors<State>(m => m.calls);
 
-export const { getLatestBlock, getLatestBlockNumber } = fromBlocks.getSelectors<
-  State
->(m => m.blocks);
+export const {
+  getLatestBlock,
+  getLatestBlockNumberOrFail
+} = fromBlocks.getSelectors<State>(m => m.blocks);
 
 export const {
   getAllEvents,
