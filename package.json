@@ -11,11 +11,14 @@
 		"format": "prettier --write \"**/**/*.ts\""
 	},
 	"lint-staged": {
-    "*.{ts,md}": ["prettier --write", "git add"]
+		"*.{ts,md}": [
+			"prettier --write",
+			"git add"
+		]
 	},
 	"prettier": {
-    "singleQuote": true,
-    "tab-width": 2
+		"singleQuote": true,
+		"tab-width": 2
 	},
 	"workspaces": [
 		"packages/*"

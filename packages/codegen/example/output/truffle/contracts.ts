@@ -1,5 +1,5 @@
 /* tslint:disable */
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 
 export interface TransactionOptions {
   from?: string;
@@ -9,16 +9,29 @@ export interface TransactionOptions {
 }
 
 export interface ERC20 extends TruffleContractInstance {
-  approve(spender: string, value: NumberLike): Promise<TransactionResult>;
-  totalSupply(): Promise<BigNumber>;
+  approve(
+    spender: string,
+    value: NumberLike,
+    options?: TransactionOptions
+  ): Promise<TransactionResult>;
+  totalSupply(options?: TransactionOptions): Promise<BigNumber>;
   transferFrom(
     from: string,
     to: string,
-    value: NumberLike
+    value: NumberLike,
+    options?: TransactionOptions
   ): Promise<TransactionResult>;
-  balanceOf(who: string): Promise<BigNumber>;
-  transfer(to: string, value: NumberLike): Promise<TransactionResult>;
-  allowance(owner: string, spender: string): Promise<BigNumber>;
+  balanceOf(who: string, options?: TransactionOptions): Promise<BigNumber>;
+  transfer(
+    to: string,
+    value: NumberLike,
+    options?: TransactionOptions
+  ): Promise<TransactionResult>;
+  allowance(
+    owner: string,
+    spender: string,
+    options?: TransactionOptions
+  ): Promise<BigNumber>;
 }
 
 export interface ERC20ApprovalPayload {
