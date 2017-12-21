@@ -1,6 +1,11 @@
 /* tslint:disable */
 import BigNumber from 'bignumber.js';
 
+export interface EventsByType {
+  Approval: ERC20ApprovalEvent;
+  Transfer: ERC20TransferEvent;
+}
+
 export interface TransactionOptions {
   from?: string;
   value?: NumberLike;
