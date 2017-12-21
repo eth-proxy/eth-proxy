@@ -1,7 +1,8 @@
 import { SourceFileStructure } from 'ts-simple-ast';
 import {
   getRootContractsEventsAlias,
-  getContractEventsAliases
+  getContractEventsAliases,
+  getEventsByType
 } from './events';
 import { assoc } from 'ramda';
 import { numberLike } from './common/numberlike';
@@ -11,7 +12,9 @@ export const getCommonSource = (
   contracts: TruffleJson[]
 ): SourceFileStructure => {
   return {
-    interfaces: [transactionOptions].map(assoc('isExported', true)),
+    interfaces: [getEventsByType(contracts), transactionOptions].map(
+      assoc('isExported', true)
+    ),
     typeAliases: [
       ...getContractEventsAliases(contracts),
       getRootContractsEventsAlias(contracts),
