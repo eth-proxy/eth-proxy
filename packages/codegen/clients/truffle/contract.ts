@@ -38,12 +38,18 @@ const createMethod = (
         type: solidityToJsInputType(type)
       };
     });
+    funDesc.constant;
 
     const returnType = funDesc.constant ? returnTypeArgs : 'TransactionResult';
+    const transactionOptions = {
+      name: 'options',
+      type: 'TransactionOptions',
+      hasQuestionToken: true
+    };
 
     return {
       name: funDesc.name,
-      parameters,
+      parameters: [...parameters, transactionOptions],
       returnType: `Promise<${returnType}>`
     };
   }

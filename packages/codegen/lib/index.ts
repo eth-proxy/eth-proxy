@@ -19,7 +19,7 @@ export const getCommonSource = (
     ].map(assoc('isExported', true)),
     imports: [
       {
-        defaultImport: 'BigNumber',
+        namedImports: [{ name: 'BigNumber' }],
         moduleSpecifier: 'bignumber.js'
       }
     ]
