@@ -2,7 +2,7 @@
 declare module '@eth-proxy/client' {
   const C: RequestFactory<Contracts>;
 }
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import {
   EventMetadata,
   ContractsAggregation,
