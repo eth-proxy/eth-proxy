@@ -11,6 +11,10 @@ import {
 } from '@eth-proxy/client';
 
 export interface EventsByType {
+  ERC20: ERC20EventsByType;
+}
+
+export interface ERC20EventsByType {
   Approval: ERC20ApprovalEvent;
   Transfer: ERC20TransferEvent;
 }
