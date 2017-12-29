@@ -11,14 +11,16 @@ import {
   take,
   concat,
   map,
-  withLatestFrom
+  withLatestFrom,
+  catchError
 } from 'rxjs/operators';
 import { getReceipt } from '@eth-proxy/rx-web3';
 import { getLogDecoder } from '../selectors';
 import { EpicContext } from '../model';
 import { of } from 'rxjs/observable/of';
+import { _throw } from 'rxjs/observable/throw';
 
-import { TransactionConfirmed } from '../actions';
+import { TransactionConfirmed, TransactionFailed } from '../actions';
 import { Observable } from 'rxjs/Observable';
 
 export const findReceiptEpic = (
@@ -40,17 +42,11 @@ export const findReceiptEpic = (
         retryWhen(err =>
           err.pipe(
             delay(1000),
-            take(24),
-            concat(_ =>
-              of(
-                createTransactionFailed(
-                  'Transaction was not processed within 240s',
-                  tx
-                )
-              )
-            )
+            take(720),
+            concat(_throw('Transaction was not processed within 720s'))
           )
-        )
+        ),
+        catchError(err => of(createTransactionFailed(tx, err)))
       )
     )
   );
