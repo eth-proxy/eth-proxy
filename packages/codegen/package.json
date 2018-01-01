@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/codegen",
-  "version": "0.2.1-y.6",
+  "version": "0.2.1-y.7",
   "description": "Contracts code generation for @eth-proxy/client",
   "main": "dist/index.js",
   "bin": "dist/index.js",
@@ -25,9 +25,9 @@
     "ts-simple-ast": "^0.90.0"
   },
   "devDependencies": {
-    "@types/glob": "5.0.33",
+    "@types/glob": "5.0.34",
     "@types/minimist": "1.2.0",
-    "@types/node": "8.0.51",
-    "@types/ramda": "0.25.5"
+    "@types/node": "8.5.2",
+    "@types/ramda": "0.25.12"
   }
 }
