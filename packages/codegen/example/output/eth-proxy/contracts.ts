@@ -17,6 +17,11 @@ export interface ERC20EventsByType {
   Transfer: ERC20TransferEvent;
 }
 
+export interface EventsByType {
+  Approval: ERC20ApprovalEvent;
+  Transfer: ERC20TransferEvent;
+}
+
 export interface TransactionOptions {
   from?: string;
   value?: NumberLike;
