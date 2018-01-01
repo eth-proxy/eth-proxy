@@ -21,9 +21,14 @@ import {
 } from 'ramda';
 
 import * as actions from '../actions';
-import { BlockRange } from '../../model';
+import { BlockRange, EventMetadata, BlockchainEvent } from '../../model';
 import { combineReducers, AnyAction } from 'redux';
-import { idFromEvent, sortEvents } from '../../utils';
+import {
+  idFromEvent,
+  sortEvents,
+  createLengthEqualSelector,
+  createDeepEqualSelector
+} from '../../utils';
 
 export interface QueryState {
   loading: boolean;
@@ -112,7 +117,7 @@ function rangeEqual([a1, a2]: BlockRange, [b1, b2]: BlockRange) {
 }
 
 export interface EventsByHash {
-  [hash: string]: any;
+  [hash: string]: BlockchainEvent;
 }
 
 export function eventEntitiesReducer(
@@ -135,10 +140,7 @@ export function eventEntitiesReducer(
     case actions.TRANSACTION_CONFIRMED: {
       const { logs } = action.payload;
 
-      return {
-        ...state,
-        ...indexBy(idFromEvent, logs)
-      };
+      return Object.assign({}, state, indexBy(idFromEvent, logs));
     }
     default:
       return state;
@@ -155,20 +157,12 @@ export const reducer = combineReducers<State>({
   queries: eventsQueryReducer
 });
 
-export const createLengthEqualSelector = createSelectorCreator(
-  defaultMemoize,
-  (x, y) => x && y && x.length === y.length
-);
-
-export const createDeepEqualSelector = createSelectorCreator(
-  defaultMemoize,
-  equals
-);
-
 export const getSelectors = <T>(getModule: (state: T) => State) => {
   const getEventEntities = createSelector(getModule, m => m.entities);
   const getEventQueries = createSelector(getModule, m => m.queries);
   const getAllEvents = createSelector(getEventEntities, values);
+  const getAllEventsSorted = createSelector(getAllEvents, sortEvents);
+
   const getEventsByAddress = createLengthEqualSelector(
     getAllEvents,
     groupBy((x: any) => x.meta.address)
@@ -209,6 +203,7 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
 
   return {
     getAllEvents,
+    getAllEventsSorted,
     getEventEntities,
     getEventQueries,
     getEventsForAddresses,

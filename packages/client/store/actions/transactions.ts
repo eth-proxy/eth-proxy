@@ -1,4 +1,4 @@
-import { TransactionInfo } from '../../model';
+import { TransactionInfo, BlockchainEvent } from '../../model';
 import { curry, CurriedFunction2 } from 'ramda';
 
 export interface ProcessTransactionPayload {
@@ -91,7 +91,7 @@ export interface TransactionConfirmed {
   type: 'TRANSACTION_CONFIRMED';
   payload: {
     receipt;
-    logs;
+    logs: BlockchainEvent[];
   };
 }
 

@@ -1,14 +1,12 @@
 /* tslint:disable */
 declare module '@eth-proxy/client' {
   const C: RequestFactory<Contracts>;
+  function entity<T>(
+    model: EntityModel<T, EventsByType, Contracts>
+  ): EntityModel<T, EventsByType, Contracts>;
 }
 import { BigNumber } from 'bignumber.js';
-import {
-  EventMetadata,
-  ContractsAggregation,
-  ContractDefinition,
-  RequestFactory
-} from '@eth-proxy/client';
+import { EventMetadata, RequestFactory, EntityModel } from '@eth-proxy/client';
 
 export interface EventsByType {
   ERC20: ERC20EventsByType;
@@ -26,11 +24,11 @@ export interface TransactionOptions {
   gasPrice?: NumberLike;
 }
 
-export interface Contracts extends ContractsAggregation {
+export interface Contracts {
   ERC20: ERC20;
 }
 
-export interface ERC20 extends ContractDefinition {
+export interface ERC20 {
   approve: ERC20ApproveDefinition;
   totalSupply: ERC20TotalSupplyDefinition;
   transferFrom: ERC20TransferFromDefinition;

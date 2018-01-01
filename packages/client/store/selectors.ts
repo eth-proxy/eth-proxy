@@ -17,7 +17,9 @@ import {
   QueryArgs,
   QueryModel,
   InterfaceRef,
-  InitializedTransaction
+  InitializedTransaction,
+  EventMetadata,
+  BlockchainEvent
 } from '../model';
 import { State } from './model';
 import { decodeLogs } from '../utils';
@@ -55,7 +57,6 @@ export const {
   getAllEvents,
   getEventEntities,
   getEventQueries,
-  getEventsForAddresses,
   getQueryResultFromAddresses
 } = fromEvents.getSelectors<State>(m => m.events);
 

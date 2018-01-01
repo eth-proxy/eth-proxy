@@ -49,7 +49,7 @@ const defaultOptions = {
 let globalId = 0;
 const genId = () => (globalId++).toString();
 
-export function createProxy<T extends ContractsAggregation>(
+export function createProxy<T extends {}>(
   provider$: Observable<any>,
   userOptions: Partial<EthProxyOptions>
 ): EthProxy<T> {
@@ -121,3 +121,8 @@ export * from './model';
 export * from './utils';
 export { ethProxyIntegrationReducer, State as EthProxyState } from './store';
 export * from './modules/contract';
+export * from './modules/entity';
+
+export function entity(arg) {
+  return arg;
+}
