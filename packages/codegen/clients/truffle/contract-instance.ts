@@ -18,6 +18,10 @@ export const contractInstance: InterfaceDeclarationStructure = {
     {
       name: 'contract',
       type: 'any'
+    },
+    {
+      name: 'constructor',
+      type: `{ currentProvider: any; }`
     }
   ]
 };

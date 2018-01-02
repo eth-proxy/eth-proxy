@@ -15,13 +15,17 @@ export const contractAbstracion: InterfaceDeclarationStructure = {
     {
       name: 'network',
       type: 'any'
+    },
+    {
+      name: 'new',
+      type: '(...args: any[]) => Promise<T>'
     }
   ],
   methods: [
     {
       name: 'at',
       parameters: [{ name: 'address', type: 'string' }],
-      returnType: 'Promise<T>'
+      returnType: 'T'
     },
     {
       name: 'setProvider',
@@ -45,7 +49,6 @@ export const contractAbstracion: InterfaceDeclarationStructure = {
     },
     {
       name: 'link',
-      typeParameters: [{ name: 'V', constraint: 'TruffleContractInstance' }],
       parameters: [
         {
           name: 'name',
@@ -98,11 +101,11 @@ export const contractAbstracion: InterfaceDeclarationStructure = {
       ],
       returnType: 'TruffleContractAbstraction<T>'
     }
-  ],
-  constructSignatures: [
-    {
-      parameters: [{ name: 'args', type: 'any[]', isRestParameter: true }],
-      returnType: 'Promise<T>'
-    }
   ]
+  // constructSignatures: [
+  //   {
+  //     parameters: [{ name: 'args', type: 'any[]', isRestParameter: true }],
+  //     returnType: 'Promise<T>'
+  //   }
+  // ]
 };
