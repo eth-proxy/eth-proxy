@@ -3,9 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import { RegisterContractOptions } from './modules/register-contract';
 import { RequestHandlers, ContractsAggregation } from './modules/contract';
 
-export class EthProxy<
-  T extends ContractsAggregation = {}
-> extends RequestHandlers<T> {
+export class EthProxy<T extends {} = {}> extends RequestHandlers<T> {
   registerContract: (abi, options: RegisterContractOptions) => void;
 
   query: (queryModel: QueryModel<T>) => Observable<any>;
@@ -220,6 +218,12 @@ export interface Block {
 
 export interface Provider {
   sendAsync: any;
+}
+
+export interface BlockchainEvent {
+  type: string;
+  payload?: any;
+  meta: EventMetadata;
 }
 
 export interface EventMetadata {

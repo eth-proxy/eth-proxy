@@ -43,6 +43,8 @@ export const toOutputName = toName('Output');
 export const toEventPayloadName = toName('Payload');
 export const toEventName = toName('Event');
 export const toContractEventsName = toName('Events');
+export const toEventsByTypeName = (contractName: string) =>
+  contractName + 'EventsByType';
 
 export function getInputProperty(
   { name, type }: FunctionParameter,

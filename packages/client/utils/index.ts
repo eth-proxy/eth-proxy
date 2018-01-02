@@ -1,7 +1,13 @@
 export * from './decode-logs';
 import * as Web3 from 'web3';
-import { ascend, sortWith, path } from 'ramda';
+import { ascend, sortWith, path, equals } from 'ramda';
+import {
+  createSelectorCreator,
+  defaultMemoize,
+  createSelector
+} from 'reselect';
 import 'rxjs/add/operator/let';
+import { EventMetadata, BlockchainEvent } from '../model';
 
 export function createWeb3Instance(provider: Web3.Provider) {
   const web3 = new Web3();
@@ -37,11 +43,11 @@ export const isMain = (networkId: string) =>
 
 export function idFromEvent({
   meta: { transactionHash, transactionIndex, logIndex }
-}: any) {
+}: BlockchainEvent) {
   return transactionHash + transactionIndex + logIndex;
 }
 
-export const sortEvents = sortWith<any>([
+export const sortEvents = sortWith<BlockchainEvent>([
   ascend(path(['meta', 'blockNumber'])),
   ascend(path(['meta', 'transactionIndex'])),
   ascend(path(['meta', 'logIndex']))
@@ -50,3 +56,13 @@ export const sortEvents = sortWith<any>([
 export function getMethodAbi(abi: Web3.AbiDefinition[], method: string) {
   return abi.find(({ name }) => caseInsensitiveCompare(name, method));
 }
+
+export const createLengthEqualSelector = createSelectorCreator(
+  defaultMemoize,
+  (x, y) => x && y && x.length === y.length
+);
+
+export const createDeepEqualSelector = createSelectorCreator(
+  defaultMemoize,
+  equals
+);

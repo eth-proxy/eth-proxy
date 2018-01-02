@@ -5,13 +5,10 @@ export const imports = [
         name: 'EventMetadata'
       },
       {
-        name: 'ContractsAggregation'
-      },
-      {
-        name: 'ContractDefinition'
-      },
-      {
         name: 'RequestFactory'
+      },
+      {
+        name: 'EntityModel'
       }
     ],
     moduleSpecifier: '@eth-proxy/client'
