@@ -1,7 +1,7 @@
 import * as Web3 from 'web3';
 import { Observable } from 'rxjs/Observable';
 import { map, concat, mergeMap, distinctUntilKeyChanged } from 'rxjs/operators';
-import { head, curry, flatten } from 'ramda';
+import { head, curry, flatten, clone } from 'ramda';
 import { bindNodeCallback } from 'rxjs/observable/bindNodeCallback';
 import { merge } from 'rxjs/observable/merge';
 import { forkJoin } from 'rxjs/observable/forkJoin';
@@ -15,7 +15,7 @@ export function getNetwork(web3: Web3): Observable<string> {
 
 export const executeMethod = curry(
   <T>(web3Method: any, args = [], tx_params) => {
-    return bindNodeCallback<T>(web3Method)(...args, tx_params);
+    return bindNodeCallback<T>(web3Method)(...clone(args), clone(tx_params));
   }
 );
 

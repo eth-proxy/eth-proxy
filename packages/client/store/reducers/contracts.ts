@@ -1,6 +1,6 @@
 import * as actions from '../actions';
 import { createSelector } from 'reselect';
-import { pipe, values, flatten, map, keys, all } from 'ramda';
+import { pipe, values, flatten, map, keys, all, identity } from 'ramda';
 import { ContractInfo, QueryModel, ContractRef } from '../../model';
 import { isString } from '../../utils';
 
@@ -44,6 +44,7 @@ const contractForRef = (state: State) => (ref: ContractRef) => {
 };
 
 export const getSelectors = <T>(getModule: (state: T) => State) => {
+  const getContractsByInterface = createSelector(getModule, identity);
   const getContractForRef = createSelector(getModule, contractForRef);
 
   const getContractsFromRefs = (refs: ContractRef[]) =>
@@ -60,6 +61,7 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
     );
 
   return {
+    getContractsByInterface,
     getContractFromRef: (contractRef: ContractRef) => (state: T) =>
       getContractForRef(state)(contractRef),
     getContractsFromRefs,

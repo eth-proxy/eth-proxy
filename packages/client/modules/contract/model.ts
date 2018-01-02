@@ -39,7 +39,7 @@ export type CreateRequestWithoutPayload<
 > = () => Request<C, M, never>;
 
 export type CreateRequest<
-  T extends ContractsAggregation,
+  T extends ContractsAggregation<any>,
   C extends string,
   M extends string
 > = {
@@ -47,23 +47,23 @@ export type CreateRequest<
   0: CreateRequestWithoutPayload<C, M>;
 }[ObjHas<T[C][M], 'in'>];
 
-export type RequestFactory<T extends ContractsAggregation> = {
+export type RequestFactory<T extends {}> = {
   [C in keyof T]: { [M in keyof T[C]]: CreateRequest<T, C, M> }
 };
 
-export interface ContractDefinition {
-  [method: string]: {
+export type ContractDefinition<T> = {
+  [M in keyof T]: {
     in?: any;
     out: any;
     events: any;
-  };
-}
+  }
+};
 
-export interface ContractsAggregation {
-  [interfaceName: string]: ContractDefinition;
-}
+export type ContractsAggregation<T extends {}> = {
+  [I in keyof T]: ContractDefinition<T[I]>
+};
 
-export class RequestHandlers<T extends ContractsAggregation> {
+export class RequestHandlers<T extends {}> {
   ethCall: <I extends keyof T, M extends keyof T[I]>(
     request: Request<I, M, T[I][M]['in']>
   ) => CallResult<T[I][M]['out']>;

@@ -1,21 +1,43 @@
 import { InterfaceDeclarationStructure } from 'ts-simple-ast';
-import { toContractEventsName, toEventName } from '../utils';
-import { map, chain } from 'ramda';
+import {
+  toContractEventsName,
+  toEventName,
+  toEventsByTypeName
+} from '../utils';
+import { map, chain, converge } from 'ramda';
+import { concat } from 'ramda';
 
-export function getEventsByType(
+export const getEventsByTypeIntefaces = (jsons: TruffleJson[]) => [
+  getEventsByContract(jsons),
+  ...getContractEventsByType(jsons)
+];
+
+function getEventsByContract(
   jsons: TruffleJson[]
 ): InterfaceDeclarationStructure {
-  const properties = chain(
-    ({ abi, contract_name }) =>
-      abi.filter(a => a.type === 'event').map(({ name }) => ({
-        name,
-        type: toEventName(contract_name, name)
-      })),
-    jsons
-  );
-
   return {
     name: 'EventsByType',
-    properties
+    properties: map(
+      ({ abi, contract_name }) => ({
+        name: contract_name,
+        type: toEventsByTypeName(contract_name)
+      }),
+      jsons
+    )
   };
+}
+
+function getContractEventsByType(
+  jsons: TruffleJson[]
+): InterfaceDeclarationStructure[] {
+  return map(
+    ({ contract_name, abi }) => ({
+      name: toEventsByTypeName(contract_name),
+      properties: abi.filter(a => a.type === 'event').map(({ name }) => ({
+        name,
+        type: toEventName(contract_name, name)
+      }))
+    }),
+    jsons
+  );
 }

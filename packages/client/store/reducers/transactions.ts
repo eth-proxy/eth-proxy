@@ -1,11 +1,12 @@
 import * as actions from '../actions';
 import { createSelector } from 'reselect';
-import { find, map, omit } from 'ramda';
+import { find, map, omit, filter } from 'ramda';
 import {
   TransactionWithHash,
   ConfirmedTransaction,
   FailedTransaction,
-  Transaction
+  Transaction,
+  InitializedTransaction
 } from '../../model';
 
 export type State = Transaction[];
@@ -79,7 +80,16 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
   const getTransactionFromInitId = (initId: string) =>
     createSelector(getModule, find(t => t.initId === initId));
 
+  const getPendingTransactions = createSelector(
+    getModule,
+    m =>
+      filter(x => x.status === 'init' || x.status === 'tx', m) as (
+        | InitializedTransaction
+        | TransactionWithHash)[]
+  );
+
   return {
+    getPendingTransactions,
     getTransactionByTx,
     getTransactionFromInitId
   };

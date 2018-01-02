@@ -17,8 +17,7 @@ export const createEthProxyContractInterfaces = createContractInterfaces(
   ({ contract_name }, functions) => {
     return {
       name: contract_name,
-      properties: map(getMethodDefinition(contract_name), functions),
-      extends: ['ContractDefinition']
+      properties: map(getMethodDefinition(contract_name), functions)
     };
   }
 );

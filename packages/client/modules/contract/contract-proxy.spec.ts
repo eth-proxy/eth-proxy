@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 
-import { TransactionResult, EthProxy } from '../../model';
+import { TransactionResult } from '../../model';
+import { EthProxy } from '../../index';
 import { pipe } from 'ramda';
 import {
   ContractDefinition,
@@ -12,7 +13,7 @@ import { at, withOptions } from './utils';
 
 export type Events = any;
 
-interface Contract extends ContractDefinition {
+interface Contract {
   method1: {
     in: string;
     out: number;
@@ -25,7 +26,7 @@ interface Contract extends ContractDefinition {
   };
 }
 
-interface Contract2 extends ContractDefinition {
+interface Contract2 {
   method12: {
     in: string;
     out: number;
@@ -38,12 +39,12 @@ interface Contract2 extends ContractDefinition {
   };
 }
 
-interface Contracts extends ContractsAggregation {
+interface Contracts {
   Contract1: Contract;
   Contract2: Contract2;
 }
 
-const { Contract1 } = C as RequestFactory<Contracts>;
+const { Contract1, Contract2 } = C as RequestFactory<Contracts>;
 
 describe('Create ', () => {
   it('Creates request object', () => {

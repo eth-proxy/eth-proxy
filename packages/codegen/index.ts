@@ -49,6 +49,7 @@ const source = mergeDeepWith(concat, commonSource, targetSource);
 const instertedText = {
   'eth-proxy': `declare module '@eth-proxy/client' {
   const C: RequestFactory<Contracts>;
+  function entity <T>(model: EntityModel<T, EventsByType, Contracts>): EntityModel<T, EventsByType, Contracts>
 }
 `,
   truffle: ''
