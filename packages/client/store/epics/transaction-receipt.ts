@@ -1,6 +1,6 @@
 import {
-  createTransactionFailed,
-  createTransactionConfirmed,
+  createGetReceiptFailed,
+  createLoadReceiptSuccess,
   TX_GENERATED
 } from '../actions';
 import { ActionsObservable, ofType } from 'redux-observable';
@@ -20,7 +20,7 @@ import { EpicContext } from '../model';
 import { of } from 'rxjs/observable/of';
 import { _throw } from 'rxjs/observable/throw';
 
-import { TransactionConfirmed, TransactionFailed } from '../actions';
+import { LoadReceiptSuccess, LoadReceiptFailed } from '../actions';
 import { Observable } from 'rxjs/Observable';
 
 export const findReceiptEpic = (
@@ -34,7 +34,7 @@ export const findReceiptEpic = (
     mergeMap(([{ payload: { tx } }, web3]) =>
       getReceipt(web3, tx).pipe(
         map(receipt =>
-          createTransactionConfirmed({
+          createLoadReceiptSuccess({
             receipt,
             logs: getLogDecoder(store.getState())(receipt.logs)
           })
@@ -46,7 +46,7 @@ export const findReceiptEpic = (
             concat(_throw('Transaction was not processed within 720s'))
           )
         ),
-        catchError(err => of(createTransactionFailed(tx, err)))
+        catchError(err => of(createGetReceiptFailed(tx, err)))
       )
     )
   );

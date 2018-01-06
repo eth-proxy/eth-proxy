@@ -1,13 +1,15 @@
 import * as actions from '../actions';
 import { createSelector } from 'reselect';
-import { find, map, omit, filter } from 'ramda';
+import { find, map, omit, filter, equals, anyPass, isNil } from 'ramda';
 import {
   TransactionWithHash,
   ConfirmedTransaction,
   FailedTransaction,
   Transaction,
-  InitializedTransaction
+  InitializedTransaction,
+  TransactionResultCode
 } from '../../model';
+import * as Web3 from 'web3';
 
 export type State = Transaction[];
 
@@ -47,7 +49,7 @@ export function reducer(
         });
       }, state);
 
-    case actions.TRANSACTION_CONFIRMED: {
+    case actions.LOAD_RECEIPT_SUCCESS: {
       const { receipt, logs } = action.payload;
       const { transactionHash } = receipt;
 
@@ -55,10 +57,20 @@ export function reducer(
         if (t.status === 'init' || t.tx !== transactionHash) {
           return t;
         }
-        return Object.assign({}, t, { status: 'confirmed', receipt, logs });
+        // IsNill is passing to support old implementaions, should be removed at some point.
+        const isConfirmed = anyPass([
+          isNil,
+          equals(TransactionResultCode.Success)
+        ])(receipt.status);
+
+        return Object.assign({}, t, {
+          status: isConfirmed ? 'confirmed' : 'failed',
+          receipt,
+          logs
+        });
       }, state);
     }
-    case actions.TRANSACTION_FAILED: {
+    case actions.LOAD_RECEIPT_FAILED: {
       const { tx } = action.payload;
 
       return map(t => {

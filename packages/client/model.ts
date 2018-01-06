@@ -71,8 +71,8 @@ export interface FailedTransaction extends TransactionInfo {
 export interface ConfirmedTransaction extends TransactionInfo {
   tx: string;
   status: 'confirmed';
-  receipt: any;
-  logs: any;
+  receipt: Web3.TransactionReceipt;
+  logs: BlockchainEvent[];
 }
 
 export type Transaction =
@@ -159,7 +159,7 @@ export interface TransationHashEvent {
 }
 export interface TransactionConfirmation<T> {
   logs: T[];
-  receipt: any;
+  receipt: Web3.TransactionReceipt;
   tx: string;
 }
 export interface TransationConfirmationEvent<T> {
@@ -234,4 +234,9 @@ export interface EventMetadata {
   type: string;
   blockHash: string;
   blockNumber: number;
+}
+
+export enum TransactionResultCode {
+  Failure = 0,
+  Success = 1
 }

@@ -1,5 +1,6 @@
 import { TransactionInfo, BlockchainEvent } from '../../model';
 import { curry, CurriedFunction2 } from 'ramda';
+import * as Web3 from 'web3';
 
 export interface ProcessTransactionPayload {
   initId: string;
@@ -64,47 +65,47 @@ export const createTxGenerated = curry(
   }
 );
 
-export const TRANSACTION_FAILED = 'TRANSACTION_FAILED';
+export const LOAD_RECEIPT_FAILED = 'LOAD_RECEIPT_FAILED';
 
-export interface TransactionFailed {
-  type: 'TRANSACTION_FAILED';
+export interface LoadReceiptFailed {
+  type: 'LOAD_RECEIPT_FAILED';
   payload: {
     tx: string;
     error: Error;
   };
 }
 
-export const createTransactionFailed = (
+export const createGetReceiptFailed = (
   tx: string,
   error
-): TransactionFailed => ({
-  type: TRANSACTION_FAILED,
+): LoadReceiptFailed => ({
+  type: LOAD_RECEIPT_FAILED,
   payload: {
     tx,
     error
   }
 });
 
-export const TRANSACTION_CONFIRMED = 'TRANSACTION_CONFIRMED';
+export const LOAD_RECEIPT_SUCCESS = 'LOAD_RECEIPT_SUCCESS';
 
-export interface TransactionConfirmed {
-  type: 'TRANSACTION_CONFIRMED';
+export interface LoadReceiptSuccess {
+  type: 'LOAD_RECEIPT_SUCCESS';
   payload: {
-    receipt;
+    receipt: Web3.TransactionReceipt;
     logs: BlockchainEvent[];
   };
 }
 
-export const createTransactionConfirmed = (
-  payload: TransactionConfirmed['payload']
-): TransactionConfirmed => ({
-  type: TRANSACTION_CONFIRMED,
+export const createLoadReceiptSuccess = (
+  payload: LoadReceiptSuccess['payload']
+): LoadReceiptSuccess => ({
+  type: LOAD_RECEIPT_SUCCESS,
   payload
 });
 
 export type TransactionTypes =
   | TxGenerated
   | ProcessTransactionFailed
-  | TransactionConfirmed
-  | TransactionFailed
+  | LoadReceiptFailed
+  | LoadReceiptSuccess
   | ProcessTransaction;

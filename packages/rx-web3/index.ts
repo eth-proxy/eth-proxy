@@ -1,7 +1,7 @@
 import * as Web3 from 'web3';
 import { Observable } from 'rxjs/Observable';
 import { map, concat, mergeMap, distinctUntilKeyChanged } from 'rxjs/operators';
-import { head, curry, flatten, clone } from 'ramda';
+import { head, curry, flatten, clone, evolve } from 'ramda';
 import { bindNodeCallback } from 'rxjs/observable/bindNodeCallback';
 import { merge } from 'rxjs/observable/merge';
 import { forkJoin } from 'rxjs/observable/forkJoin';
@@ -18,6 +18,9 @@ export const executeMethod = curry(
     return bindNodeCallback<T>(web3Method)(...clone(args), clone(tx_params));
   }
 );
+// It should be probably done by web3, same way like rest of receipt, but as for (0.20.3) its not done
+const decodeStatus = (status: string) =>
+  new Web3().toBigNumber(status.replace(/^0x/, '')).toNumber();
 
 export function getReceipt(web3: Web3, tx): Observable<any> {
   return Observable.create(observer => {
@@ -26,7 +29,7 @@ export function getReceipt(web3: Web3, tx): Observable<any> {
         observer.error(err);
         return;
       }
-      observer.next(receipt);
+      observer.next(evolve({ status: decodeStatus }, receipt));
       observer.complete();
     });
   });
