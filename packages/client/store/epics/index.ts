@@ -1,5 +1,5 @@
 import { combineEpics } from 'redux-observable';
-import { findReceiptEpic } from './transation';
+import { findReceiptEpic } from './transaction-receipt';
 import { watchAccount } from './account';
 import { watchLatestBlock } from './blocks';
 import { queryEvents } from './query-events';

@@ -137,7 +137,7 @@ export function eventEntitiesReducer(
         ...indexBy(idFromEvent, action.payload)
       };
     }
-    case actions.TRANSACTION_CONFIRMED: {
+    case actions.LOAD_RECEIPT_SUCCESS: {
       const { logs } = action.payload;
 
       return Object.assign({}, state, indexBy(idFromEvent, logs));
