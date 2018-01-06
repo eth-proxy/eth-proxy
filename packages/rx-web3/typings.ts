@@ -105,7 +105,7 @@ declare module 'web3' {
     interface FilterObject {
       fromBlock?: number | string;
       toBlock?: number | string;
-      address?: string[];
+      address?: string | string[];
       topics?: string[];
     }
 
@@ -117,7 +117,7 @@ declare module 'web3' {
 
     interface FilterResult {
       get<T>(callback: Callback<SolidityEvent<T>[]>): void;
-      watch<T>(callback: Callback<SolidityEvent<T>[]>): void;
+      watch<T>(callback: Callback<SolidityEvent<T>>): void;
       stopWatching(callback: Callback<true>): void;
     }
 
@@ -148,6 +148,19 @@ declare module 'web3' {
 
     interface Provider {
       sendAsync: any;
+    }
+
+    interface TransactionReceipt {
+      transactionHash: string;
+      transactionIndex: number;
+      blockHash: string;
+      blockNumber: number;
+      cumulativeGasUsed: number;
+      gasUsed: number;
+      contractAddress: string | null;
+      logs: SolidityEvent<any>[];
+      logsBloom: string;
+      status: 0 | 1 | null;
     }
   }
   /* tslint:disable */
