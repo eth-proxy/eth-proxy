@@ -2,31 +2,32 @@ import { createSelector } from 'reselect';
 import {
   filter,
   keys,
-  chain,
   indexBy,
   pipe,
   mapObjIndexed,
   values,
   flatten,
-  omit,
-  identity
+  omit
 } from 'ramda';
 import * as Web3 from 'web3';
 
 import { State } from '../../store';
 import { getSelectors as getEventsSelectors } from '../../store/reducers/events';
 import { getSelectors as getTransactionSelectors } from '../../store/reducers/transactions';
-import { getSelectors as getContractsSelectors } from '../../store/reducers/contracts';
-
-import { sortEvents } from '../../utils';
 import {
+  LoadingRecord,
+  ErrorRecord,
   InitializedTransaction,
   TransactionWithHash,
   ConfirmedTransaction,
   FailedTransaction,
   EventMetadata,
-  BlockchainEvent
-} from '../../model';
+  BlockchainEvent,
+  ContractInfo,
+  getSelectors as getInternalSelectors
+} from '../../store';
+
+import { sortEvents } from '../../utils';
 
 export const getSelectors = <App>(getModule: (state: App) => State) => {
   const { getAllEventsSorted } = getEventsSelectors(
@@ -50,9 +51,7 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
       )
     );
 
-  const { getContractsFromRefs } = getContractsSelectors(
-    createSelector(getModule, m => m.contracts)
-  );
+  const { getContractsFromRefs } = getInternalSelectors<App>(getModule);
   interface EventType {
     type: string;
     address: string;
@@ -62,14 +61,14 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
       getContractsFromRefs(keys(model)),
       getAllEventsSorted,
       (contracts, allEvents) => {
-        if (contracts.some(x => !x)) {
+        if (contracts.some((x: any) => !x || x.loading || x.error)) {
           return {};
         }
-        const byAddress = indexBy(x => x.address, contracts);
+        const byAddress = indexBy(x => x.address, contracts as ContractInfo[]);
 
         const eventTypes = pipe(
           mapObjIndexed((handlers, interfaceName) => {
-            const { address, abi } = contracts.find(
+            const { address, abi } = (contracts as ContractInfo[]).find(
               x => x.name === interfaceName
             );
             return keys(handlers)
@@ -123,10 +122,9 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
     const hasRoot = handlers.some((x: any) => x.root);
 
     return createSelector(
-      getContractsFromRefs(keys(model)),
       getEntitiesFromModel(model),
       getPendingTransactionsOfType(transactionTypes),
-      (contracts, entities, transactions): { [id: string]: T } => {
+      (entities, transactions): { [id: string]: T } => {
         return transactions.reduce((state: any, t) => {
           const handler = model[t.contractName][t.method];
           const id = handler.identity(t.args, t);

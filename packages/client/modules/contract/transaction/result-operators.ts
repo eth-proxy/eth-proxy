@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs/Observable';
 import { map, filter } from 'rxjs/operators';
 
-import { Transaction, TransactionConfirmation } from '../../../model';
+import { Transaction, TransactionConfirmation } from '../../../store';
 
 export type PendingStatus = 'init' | 'tx';
 const pendingStatuses = ['init', 'tx'];

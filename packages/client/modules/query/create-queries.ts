@@ -1,10 +1,13 @@
-import { BlockRange } from '../../model';
+import { BlockRange, ContractInfo, QueryArgs } from '../../store';
 import { map, reduce, min, chain } from 'ramda';
-import { ExecuteQueryContext } from './context';
 import { filterOutDone } from './utils/filter-out-done';
+import { EventsQueryState } from '../../store/reducers/events';
 
-import { QueryArgs } from '../../model';
-
+export interface ExecuteQueryContext {
+  contracts: ContractInfo[];
+  latestBlockNumber: number;
+  queries: EventsQueryState;
+}
 export const createQueries = ({
   contracts,
   latestBlockNumber,

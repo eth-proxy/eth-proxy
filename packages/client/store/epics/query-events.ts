@@ -1,6 +1,6 @@
 import { forkJoin } from 'rxjs/observable/forkJoin';
 import { map as rxMap, catchError, mergeMap } from 'rxjs/operators';
-import { flatten, filter, pathEq, min, max } from 'ramda';
+import { flatten, filter, pathEq, min, max, isNil } from 'ramda';
 import { map } from 'rxjs/operators';
 import { ActionsObservable } from 'redux-observable';
 import { of } from 'rxjs/observable/of';
@@ -13,9 +13,8 @@ import {
   QueryEvents
 } from '../actions';
 import { getLogDecoder } from '../selectors';
-import { BlockRange } from '../../model';
+import { BlockRange, QueryResult, QueryArgs } from '../model';
 
-import { QueryResult, QueryArgs } from '../../model';
 import { Observable } from 'rxjs/Observable';
 
 export const queryEvents = (
@@ -32,13 +31,13 @@ export const queryEvents = (
       const decodeLogs = getLogDecoder(store.getState());
 
       return forkJoin(
-        payload.map(({ range: [fromBlock, toBlock], address }) =>
-          getEvents({
+        payload.map(({ range: [fromBlock, toBlock], address }) => {
+          return getEvents({
             toBlock,
             fromBlock,
             address
-          })
-        )
+          });
+        })
       ).pipe(
         rxMap(flatten),
         rxMap(decodeLogs),

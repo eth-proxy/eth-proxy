@@ -34,15 +34,15 @@ proxy.transaction({
 })
 ```
 
-Once request object is provided ethProxy will wait until contract with matching interface name is registered.
+Once request object is provided ethProxy will wait until contract is resolved.
 Interface, method and payload will be type checked with generated Aggregated Contracts Interface.
 
 Despite the fact that this will be type checked, currently Typescript can only provide intellisense for interface property.
 To Improve expirience of request creation, suggested approach would be to use Semantic Request Factory.
 
-# Semantic Request Factory
+# Request Factory
 
-Semantic Request Factory is object patched using ES6 proxy, that overwites js 'get' behavior.
+Request Factory is object patched using ES6 proxy, that overwites js 'get' behavior.
 First it takes contract name as property 'get' accessor,
 If it where a native js object it would return undefined
 

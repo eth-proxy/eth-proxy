@@ -2,33 +2,52 @@ import {
   PROCESS_CALL,
   ProcessCall,
   createProcessCallSuccess,
-  createProcessCallFailed
+  createProcessCallFailed,
+  CallPayload
 } from '../actions';
 import { ActionsObservable } from 'redux-observable';
 import { mergeMap, map, catchError } from 'rxjs/operators';
-import { EpicContext } from '../model';
+import { EpicContext, ProcessRequestArgs, ContractInfo } from '../model';
 import { of } from 'rxjs/observable/of';
 
 import { Observable } from 'rxjs/Observable';
 import { TxGenerated, ProcessCallFailed, ProcessCallSuccess } from '../actions';
+import { getLoadedContractFromRef$ } from '../rx-selectors';
+
+function prepareRequestArgs(
+  { txParams, args, address, method }: CallPayload,
+  contract: ContractInfo
+): ProcessRequestArgs {
+  return {
+    abi: contract.abi,
+    address: address || contract.address,
+    args,
+    method,
+    txParams
+  };
+}
 
 export const processCallEpic = (
   actions$: ActionsObservable<any>,
   _,
-  { processCall }: EpicContext
+  { processCall, contractLoader }: EpicContext
 ) => {
   return actions$.ofType(PROCESS_CALL).pipe(
     mergeMap(({ payload }: ProcessCall) => {
-      return processCall(payload).pipe(
-        map(createProcessCallSuccess(payload.id)),
-        catchError(err => {
-          return of(
-            createProcessCallFailed({
-              id: payload.id,
-              err
+      return contractLoader(payload.contractName).pipe(
+        mergeMap(contract =>
+          processCall(prepareRequestArgs(payload, contract)).pipe(
+            map(createProcessCallSuccess(payload.id)),
+            catchError(err => {
+              return of(
+                createProcessCallFailed({
+                  id: payload.id,
+                  err
+                })
+              );
             })
-          );
-        })
+          )
+        )
       );
     })
   );

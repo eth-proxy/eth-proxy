@@ -4,13 +4,6 @@ import { shareReplay } from 'rxjs/operators/shareReplay';
 import { take } from 'rxjs/operators/take';
 import { mergeMap } from 'rxjs/operators/mergeMap';
 import { createEpicMiddleware } from 'redux-observable';
-
-import {
-  createObservableStore,
-  getActiveAccount$,
-  ProcessRequestArgs
-} from './store';
-import { createWeb3Instance } from './utils';
 import {
   getNetwork,
   getBalance,
@@ -19,25 +12,32 @@ import {
   getEvents,
   watchEvents
 } from '@eth-proxy/rx-web3';
-import {
-  createSetNetwork,
-  getDetectedNetwork$,
-  getContractFromRef
-} from './store';
-import { registerContract } from './modules/register-contract';
-import { rootEpic } from './store/epics';
-import { EthProxyOptions, ContractRef, EthProxy } from './model';
-import { first } from 'rxjs/operators';
-import { query } from './modules/query';
 import * as Web3 from 'web3';
 import { identity } from 'ramda';
+
 import {
   processTransaction,
   createWeb3RequestProcessor,
-  processCall,
-  ContractsAggregation,
-  Request
+  processCall
 } from './modules/contract';
+import {
+  createObservableStore,
+  getActiveAccount$,
+  ProcessRequestArgs,
+  State,
+  Request
+} from './store';
+import { createWeb3Instance } from './utils';
+import {
+  createSetNetwork,
+  getDetectedNetwork$,
+  EthProxyOptions
+} from './store';
+import { rootEpic } from './store/epics';
+import { EthProxy } from './model';
+import { query } from './modules/query';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { createSchemaLoader } from './modules/schema';
 
 const defaultOptions = {
   pollInterval: 1000,
@@ -51,7 +51,7 @@ const genId = () => (globalId++).toString();
 
 export function createProxy<T extends {}>(
   provider$: Observable<any>,
-  userOptions: Partial<EthProxyOptions>
+  userOptions: EthProxyOptions
 ): EthProxy<T> {
   const options = { ...defaultOptions, ...userOptions };
   const replayProvider$ = provider$.pipe(shareReplay(1), take(1));
@@ -72,6 +72,9 @@ export function createProxy<T extends {}>(
       map(createWeb3RequestProcessor),
       mergeMap(processor => processor(args))
     );
+  const contractLoader = (name: string) => createSchemaLoader(store)(name);
+
+  const state$ = new BehaviorSubject<State>(null);
 
   const epicMiddleware = createEpicMiddleware(rootEpic, {
     dependencies: {
@@ -80,11 +83,16 @@ export function createProxy<T extends {}>(
       getEvents,
       watchEvents: appWatchEvents,
       processTransaction: web3RequestProcessor,
-      processCall: web3RequestProcessor
+      processCall: web3RequestProcessor,
+      state$,
+      contractSchemaResolver: options.contractSchemaResolver,
+      contractLoader
     }
   });
 
-  const store = createObservableStore(epicMiddleware, options.store);
+  var store = createObservableStore(epicMiddleware, options.store);
+  store.select(x => x).subscribe(state$);
+
   const getInterceptor = (key: string) =>
     (options.interceptors as any)[key] || identity;
   const interceptors = {
@@ -96,9 +104,7 @@ export function createProxy<T extends {}>(
 
   return {
     provider$: replayProvider$,
-    registerContract: registerContract(store),
-
-    query: query(store, interceptors),
+    query: query(store, genId, interceptors),
 
     network$: store.let(getDetectedNetwork$),
     defaultAccount$: store.let(getActiveAccount$),
@@ -106,8 +112,8 @@ export function createProxy<T extends {}>(
     getBalance: account => web3Proxy$.pipe(mergeMap(getBalance(account))),
     getLatestBlock: () => web3Proxy$.pipe(mergeMap(getLatestBlock)),
     getBlock: arg => web3Proxy$.pipe(mergeMap(getBlock(arg))),
-    getContractInfo: (ref: ContractRef) =>
-      store.select(getContractFromRef(ref)).pipe(first(x => !!x)),
+
+    loadContractSchema: contractLoader,
 
     transaction: (request: Request<string, string, any>) =>
       processTransaction(store, genId)(request).let(interceptors.transaction),

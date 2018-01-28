@@ -1,12 +1,5 @@
 import * as actions from '../actions';
 import { createSelector } from 'reselect';
-import { find } from 'ramda';
-import {
-  TransactionWithHash,
-  ConfirmedTransaction,
-  FailedTransaction,
-  Transaction
-} from '../../model';
 import * as Web3 from 'web3';
 
 export type State = {

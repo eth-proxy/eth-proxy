@@ -1,6 +1,6 @@
 import { pick } from 'ramda';
 import { methodProxy } from './contract-proxy';
-import { RequestOptions } from './model';
+import { RequestOptions } from '../../store';
 
 const paramsKeys = ['from', 'to', 'gas', 'gasPrice', 'value'];
 export const pickTxParamsProps = pick(paramsKeys);

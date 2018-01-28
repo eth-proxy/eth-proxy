@@ -1,10 +1,4 @@
-import {
-  withLatestFrom,
-  catchError,
-  takeUntil,
-  mergeMap,
-  filter
-} from 'rxjs/operators';
+import { catchError, takeUntil, mergeMap, filter } from 'rxjs/operators';
 import { map } from 'rxjs/operators';
 import { ActionsObservable } from 'redux-observable';
 
@@ -26,7 +20,7 @@ export const watchEvents = (
   store,
   { watchEvents }: EpicContext
 ) => {
-  const takeUnilRemoved = (id: number) =>
+  const takeUnilRemoved = (id: string) =>
     takeUntil(
       action$
         .ofType(REMOVE_EVENTS_WATCH)
