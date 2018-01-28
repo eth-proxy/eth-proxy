@@ -1,15 +1,14 @@
-import { TransactionInfo, BlockchainEvent } from '../../model';
 import { curry, CurriedFunction2 } from 'ramda';
 import * as Web3 from 'web3';
+import { TransactionInfo, BlockchainEvent } from '../model';
 
 export interface ProcessTransactionPayload {
   initId: string;
   contractName: string;
-  address: string;
+  address?: string;
   method: string;
   txParams: any;
   args: any;
-  abi: any;
 }
 
 export const PROCESS_TRANSACTION = 'PROCESS_TRANSACTION';

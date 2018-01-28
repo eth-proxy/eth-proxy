@@ -1,6 +1,70 @@
-import { CallResult, TransactionResult } from '../../model';
-import { curry, CurriedFunction2 } from 'ramda';
+import * as Web3 from 'web3';
+import { Observable } from 'rxjs/Observable';
+import { BlockchainEvent } from './events';
 import { BigNumber } from 'bignumber.js';
+
+export interface TransactionInfo {
+  contractName: string;
+  address: string;
+  method: string;
+  txParams: any;
+  args: any;
+  initId?: string;
+}
+
+export interface InitializedTransaction extends TransactionInfo {
+  status: 'init';
+}
+export interface TransactionWithHash extends TransactionInfo {
+  tx: string;
+  status: 'tx';
+}
+export interface FailedTransaction extends TransactionInfo {
+  tx: string;
+  error: string;
+  status: 'failed';
+}
+export interface ConfirmedTransaction extends TransactionInfo {
+  tx: string;
+  status: 'confirmed';
+  receipt: Web3.TransactionReceipt;
+  logs: BlockchainEvent[];
+}
+
+export type Transaction =
+  | InitializedTransaction
+  | TransactionWithHash
+  | FailedTransaction
+  | ConfirmedTransaction;
+
+export interface TransationHashEvent {
+  type: 'tx';
+  value: string;
+}
+export interface TransactionConfirmation<T> {
+  logs: T[];
+  receipt: Web3.TransactionReceipt;
+  tx: string;
+}
+export interface TransationConfirmationEvent<T> {
+  type: 'confirmation';
+  value: TransactionConfirmation<T>;
+}
+export type TransationResultEvent<T> =
+  | TransationHashEvent
+  | TransationConfirmationEvent<T>;
+
+export type ObservableTransactionResult<T> = Observable<
+  TransationResultEvent<T>
+>;
+
+export enum TransactionResultCode {
+  Failure = 0,
+  Success = 1
+}
+
+export type TransactionResult<T> = Observable<Transaction>;
+export type CallResult<T> = Observable<T>;
 
 export interface RequestOptions {
   gas?: number | string | BigNumber;

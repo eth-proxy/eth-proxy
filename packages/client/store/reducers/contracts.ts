@@ -1,13 +1,22 @@
-import * as actions from '../actions';
 import { createSelector } from 'reselect';
-import { pipe, values, flatten, map, keys, all, identity } from 'ramda';
-import { ContractInfo, QueryModel, ContractRef } from '../../model';
+import { pipe, values, flatten, map, keys, all, propOr } from 'ramda';
+
+import * as actions from '../actions';
+import {
+  ContractInfo,
+  QueryModel,
+  ContractRef,
+  LoadingRecord,
+  ErrorRecord
+} from '../models';
 import { isString } from '../../utils';
 
-import * as Web3 from 'web3';
-
 export interface State {
-  [contractName: string]: ContractInfo;
+  [contractName: string]:
+    | ContractInfo
+    | LoadingRecord<ContractInfo>
+    | ErrorRecord<ContractInfo>
+    | undefined;
 }
 
 export function reducer(
@@ -15,7 +24,23 @@ export function reducer(
   action: actions.ContractTypes
 ): State {
   switch (action.type) {
-    case actions.REGISTER_CONTRACT:
+    case actions.LOAD_CONTRACT_SCHEMA: {
+      return {
+        ...state,
+        [action.payload.name]: {
+          loading: true
+        }
+      };
+    }
+    case actions.LOAD_CONTRACT_SCHEMA_FAILED: {
+      return {
+        ...state,
+        [action.payload.name]: {
+          error: action.payload.err
+        }
+      };
+    }
+    case actions.LOAD_CONTRACT_SCHEMA_SUCCESS: {
       const { address, abi, contract_name, genesisBlock } = action.payload;
       return {
         ...state,
@@ -26,25 +51,19 @@ export function reducer(
           genesisBlock
         }
       };
+    }
+
     default:
       return state;
   }
 }
 
 const contractForRef = (state: State) => (ref: ContractRef) => {
-  const name = isString(ref) ? ref : ref.interface;
-  const contract = state[name];
-
-  if (!contract) {
-    return undefined;
-  }
-  return {
-    ...contract
-  };
+  return state[isString(ref) ? ref : ref.interface];
 };
 
 export const getSelectors = <T>(getModule: (state: T) => State) => {
-  const getContractsByInterface = createSelector(getModule, identity);
+  const getContractsByName = createSelector(getModule, m => m);
   const getContractForRef = createSelector(getModule, contractForRef);
 
   const getContractsFromRefs = (refs: ContractRef[]) =>
@@ -57,19 +76,19 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
 
   const getHasContracts = (res: ContractRef[]) =>
     createSelector(getContractForRef, getContract =>
-      pipe(map(getContract), all(x => !!x))(res)
+      pipe(map(getContract), all((x: any) => !!x && !x.loading))(res)
     );
 
   return {
-    getContractsByInterface,
     getContractFromRef: (contractRef: ContractRef) => (state: T) =>
       getContractForRef(state)(contractRef),
     getContractsFromRefs,
     getAllAbis: createSelector(
       getModule,
-      pipe(values, map(c => c.abi), flatten)
+      pipe(values, map(propOr([], 'abi')), flatten)
     ),
     getContractsFromQueryModel,
-    getHasContracts
+    getHasContracts,
+    getContractsByName
   };
 };

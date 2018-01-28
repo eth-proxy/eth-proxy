@@ -4,9 +4,8 @@ import {
   ObservableStore,
   State,
   DEFAULT_GAS
-} from 'client/store';
-import * as actions from 'client/store/actions';
-import { NetworkDefinition } from 'client/model';
+} from '../../../store';
+import * as actions from '../../../store/actions';
 import { AnyAction } from 'redux';
 import { expect } from 'chai';
 import { Observable } from 'rxjs/Observable';
@@ -15,25 +14,7 @@ const account = '123';
 
 const interfaceName = 'Contract1';
 const methodName = 'Method1';
-const address = '678';
-const networkId = 'test';
-const abi = [
-  {
-    type: 'function',
-    name: methodName,
-    inputs: []
-  } as FunctionDescription
-];
-const contractJSON = {
-  contract_name: interfaceName,
-  abi,
-  unlinked_binary: '',
-  networks: {
-    [networkId]: {
-      address
-    } as NetworkDefinition
-  }
-};
+
 const args = {
   a: 12
 };
@@ -47,8 +28,7 @@ const txParams = {
 };
 
 const transactionData = {
-  abi: contractJSON.abi,
-  address,
+  address: undefined,
   args,
   contractName: interfaceName,
   initId: id,
@@ -75,73 +55,40 @@ describe('Initialize transaction', () => {
     };
   });
 
-  it('Dispatches process action', () => {
+  it('Dispatches process action', done => {
     store.dispatch(actions.createSetActiveAccount(account));
-    store.dispatch(
-      actions.createRegisterContract(contractJSON, {
-        address
-      } as any)
-    );
 
     processTransaction(store, genId)({
       interface: interfaceName,
       method: methodName,
       payload: args
-    }).subscribe();
+    }).subscribe(() => {
+      const expectedAction = actions.createProcessTransaction(transactionData);
 
-    const expectedAction = actions.createProcessTransaction(transactionData);
-
-    expect(store.lastDispatched).to.deep.equal(expectedAction);
+      expect(store.lastDispatched).to.deep.equal(expectedAction);
+      done();
+    });
   });
 
   describe('Controls the flow', () => {
     const expectedAction = actions.createProcessTransaction(transactionData);
 
-    it('Waits for contract to be registered', () => {
-      store.dispatch(actions.createSetActiveAccount(account));
-
+    it('Waits for active account', done => {
       processTransaction(store, genId)({
         interface: interfaceName,
         method: methodName,
         payload: args
-      }).subscribe();
-
-      store.dispatch(
-        actions.createRegisterContract(contractJSON, {
-          address
-        } as any)
-      );
-
-      expect(store.lastDispatched).to.deep.equal(expectedAction);
-    });
-
-    it('Waits for active account', () => {
-      store.dispatch(
-        actions.createRegisterContract(contractJSON, {
-          address
-        } as any)
-      );
-
-      processTransaction(store, genId)({
-        interface: interfaceName,
-        method: methodName,
-        payload: args
-      }).subscribe();
-
+      }).subscribe(() => {
+        expect(store.lastDispatched).to.deep.equal(expectedAction);
+        done();
+      });
       store.dispatch(actions.createSetActiveAccount(account));
-      expect(store.lastDispatched).to.deep.equal(expectedAction);
     });
   });
 
-  describe('Reports result', () => {
+  describe('Returns result', () => {
     let result$: Observable<any>;
     beforeEach(() => {
-      store.dispatch(
-        actions.createRegisterContract(contractJSON, {
-          address
-        } as any)
-      );
-
       store.dispatch(actions.createSetActiveAccount(account));
       result$ = processTransaction(store, genId)({
         interface: interfaceName,
@@ -149,20 +96,18 @@ describe('Initialize transaction', () => {
         payload: args
       });
     });
-    it('Emits init status', () => {
-      let result;
-      result$.subscribe(x => {
-        result = x;
-      });
-
-      expect(result).to.deep.eq({
-        address,
-        args,
-        contractName: interfaceName,
-        method: methodName,
-        initId: id,
-        status: 'init',
-        txParams
+    it('Emits init status', done => {
+      result$.subscribe(result => {
+        expect(result).to.deep.eq({
+          address: undefined,
+          args,
+          contractName: interfaceName,
+          method: methodName,
+          initId: id,
+          status: 'init',
+          txParams
+        });
+        done();
       });
     });
   });

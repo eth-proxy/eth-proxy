@@ -1,7 +1,7 @@
 import { Block } from 'web3';
 import * as actions from '../actions/blocks';
 import { createSelector } from 'reselect';
-import { indexBy, prop, isNil } from 'ramda';
+import { isNil } from 'ramda';
 
 export interface State {
   latest?: number;

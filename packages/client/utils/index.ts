@@ -7,7 +7,7 @@ import {
   createSelector
 } from 'reselect';
 import 'rxjs/add/operator/let';
-import { EventMetadata, BlockchainEvent } from '../model';
+import { EventMetadata, BlockchainEvent } from '../store';
 
 export function createWeb3Instance(provider: Web3.Provider) {
   const web3 = new Web3();

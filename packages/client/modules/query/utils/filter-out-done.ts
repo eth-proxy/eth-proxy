@@ -1,5 +1,5 @@
 import { EventsQueryState } from '../../../store/reducers/events';
-import { QueryArgs, BlockRange } from '../../../model';
+import { QueryArgs, BlockRange } from '../../../store';
 import { chain, uniq, all, propEq } from 'ramda';
 
 export const filterOutDone = (

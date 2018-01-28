@@ -1,54 +1,47 @@
-import { first, tap, mergeMapTo } from 'rxjs/operators';
+import { tap, mergeMap } from 'rxjs/operators';
 import { combineLatest } from 'rxjs/observable/combineLatest';
-import { Observable } from 'rxjs/Observable';
+import { defer } from 'rxjs/observable/defer';
 
 import { prepareTxParams } from './params';
-import { Request } from '../model';
 import {
   ObservableStore,
   State,
-  getContractFromRef$,
   createProcessTransaction,
-  getTransactionFromInitId,
-  getTransactionResultFromInitId$
-} from '../../../store';
-import {
+  getTransactionResultFromInitId$,
   ConfirmedTransaction,
   FailedTransaction,
   InitializedTransaction,
-  TransactionWithHash
-} from '../../../model';
+  TransactionWithHash,
+  Request
+} from '../../../store';
+
+import { Observable } from 'rxjs/Observable';
 
 export function processTransaction(
   store: ObservableStore<State>,
   genId: () => string
 ) {
-  // inject dependencies
   const getParams = prepareTxParams(store);
-  // user input
-  return (request: Request<any, any, any>) => {
-    const initId = genId();
 
-    const { address, method, payload } = request;
+  return (request: Request<any, any, any>) => {
     return combineLatest(
-      store.let(getContractFromRef$(request)),
+      defer(() => Promise.resolve().then(genId)),
       getParams(request)
     ).pipe(
-      first(),
-      tap(([contract, txParams]) => {
+      tap(([initId, txParams]) => {
+        const { address, method, payload } = request;
         store.dispatch(
           createProcessTransaction({
             contractName: request.interface,
-            address: address || contract.address,
+            address,
             method,
             txParams,
             args: payload,
-            initId,
-            abi: contract.abi
+            initId
           })
         );
       }),
-      mergeMapTo(store.let(getTransactionResultFromInitId$(initId)))
+      mergeMap(([initId]) => store.let(getTransactionResultFromInitId$(initId)))
     );
   };
 }

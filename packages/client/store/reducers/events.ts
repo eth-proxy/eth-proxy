@@ -1,8 +1,4 @@
-import {
-  createSelector,
-  defaultMemoize,
-  createSelectorCreator
-} from 'reselect';
+import { createSelector } from 'reselect';
 import {
   indexBy,
   reduce,
@@ -12,16 +8,17 @@ import {
   mapObjIndexed,
   filter,
   groupBy,
-  pipe,
   pick,
-  mergeWith,
-  concat,
-  evolve,
-  equals
+  any
 } from 'ramda';
 
 import * as actions from '../actions';
-import { BlockRange, EventMetadata, BlockchainEvent } from '../../model';
+import {
+  BlockRange,
+  BlockchainEvent,
+  QueryModel,
+  AggregatedQueryResult
+} from '../model';
 import { combineReducers, AnyAction } from 'redux';
 import {
   idFromEvent,
@@ -34,7 +31,7 @@ export interface QueryState {
   loading: boolean;
   range: BlockRange;
   eventIds: string[];
-  error?: string;
+  error?: any;
 }
 
 export interface EventsQueryState {
@@ -147,14 +144,36 @@ export function eventEntitiesReducer(
   }
 }
 
+export interface ModelsState {
+  [id: string]: QueryModel;
+}
+
+export function modelsReducer(
+  state: ModelsState = {},
+  action: actions.EventsActionTypes
+): ModelsState {
+  switch (action.type) {
+    case actions.COMPOSE_QUERY_FROM_MODEL: {
+      return {
+        ...state,
+        [action.payload.id]: action.payload.model
+      };
+    }
+    default:
+      return state;
+  }
+}
+
 export interface State {
   entities: EventsByHash;
   queries: EventsQueryState;
+  modelsToCompose: ModelsState;
 }
 
 export const reducer = combineReducers<State>({
   entities: eventEntitiesReducer,
-  queries: eventsQueryReducer
+  queries: eventsQueryReducer,
+  modelsToCompose: modelsReducer
 });
 
 export const getSelectors = <T>(getModule: (state: T) => State) => {
@@ -174,32 +193,39 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
 
   const getFailedQueriedByAddresses = createDeepEqualSelector(
     getEventQueries,
-    mapObjIndexed<QueryState[], QueryState[]>(qs => filter(x => !!x.error, qs))
+    mapObjIndexed((qs: QueryState[], address) =>
+      filter(x => !!x.error, qs).map(({ range, error }) => ({
+        address,
+        range,
+        error
+      }))
+    )
+  );
+  const getIsLoadingByAddresses = createDeepEqualSelector(
+    getEventQueries,
+    mapObjIndexed<QueryState[], boolean>(qs => any(x => x.loading, qs))
   );
 
   const getQueryResultsByAddress = createSelector(
     getEventsByAddress,
     getFailedQueriedByAddresses,
-    (eventsByAddress, failedQueries) => {
+    getIsLoadingByAddresses,
+    (eventsByAddress, failedQueries, isLoading) => {
       return mapObjIndexed(
-        (queries, address) => ({
-          failedQueries: queries,
-          events: eventsByAddress[address] || []
-        }),
+        (_, address) =>
+          ({
+            failedQueries: failedQueries[address],
+            loading: isLoading[address],
+            events: eventsByAddress[address] || []
+          } as AggregatedQueryResult),
         failedQueries
       );
     }
   );
 
-  const getQueryResultFromAddresses = (addresses: string[]) =>
-    createSelector(getQueryResultsByAddress, resultsByAddress => {
-      return pipe(
-        pick(addresses),
-        values,
-        reduce(mergeWith(concat), {}),
-        evolve({ events: sortEvents })
-      )(resultsByAddress) as any;
-    });
+  const getModelsById = createSelector(getModule, m => m.modelsToCompose);
+  const getModelFromId = (id: string) =>
+    createSelector(getModelsById, byId => byId[id]);
 
   return {
     getAllEvents,
@@ -207,6 +233,25 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
     getEventEntities,
     getEventQueries,
     getEventsForAddresses,
-    getQueryResultFromAddresses
+    getQueryResultsByAddress,
+    getModelFromId,
+    getIsLoadingByAddresses
   };
 };
+
+const emptyResult = {
+  failedQueries: [],
+  events: [],
+  loading: false
+} as AggregatedQueryResult;
+
+export const aggregateQueryResults = reduce<
+  AggregatedQueryResult,
+  AggregatedQueryResult
+>((state, result) => {
+  return {
+    failedQueries: [...state.failedQueries, ...result.failedQueries],
+    events: sortEvents([...state.events, ...result.events]),
+    loading: state.loading || result.loading
+  };
+}, emptyResult);

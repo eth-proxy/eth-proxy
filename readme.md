@@ -1,114 +1,149 @@
-Motivation.
+# Project Motivation.
 
-Eth proxy is higher abstraction for interaction with blockchain written to lower complexity of dapps. 
+Eth proxy is higher abstraction for interaction with blockchain written to lower complexity of dapps.
+
 * It manages flow control so that developers dont run into raise conditions.
 * It manages native ethereum entities, like blocks and transactions, to reduce boilerplate for something that most dapps needs.
 * It allows developers to be more declarative in their code, and focus on domain entities not topics and hashes.
+* It leverages rxjs observables to tackle highly asynchronius nature of blockchain interaction, and allow for multiple results from single request.
 
-In order to iteract with blochain through metamask you need to:
-- Hold your application bootsrapping until you get 'load' event, and then inject provider:
+In order to iteract with blochain through lets say metamask you need to:
+
+1. Hold your application bootsrapping until you get 'load' event, and then inject provider:
+
 ```
 window.addEventListener('load', function() {
   if (typeof web3 !== 'undefined') {
-    window.web3 = new Web3(web3.currentProvider);
+    web3 = new Web3(web3.currentProvider);
   } else {
-    window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
   }
   startApp()
 })
 ```
-This is far from ideal, from MDN - "The load event is fired when a resource and its dependent resources have finished loading."
+
+This is not ideal, from MDN - "The load event is fired when a resource and its dependent resources have finished loading."
 So we have delay in app bootstrapping and not very useful boilerplate code which evey app need to duplicate.
 
-To solve this ethProxy factory takes an observable of provider, and manage it once it resolves, so we dont need to stop application bootstrap anymore, 
+To solve this ethProxy factory takes an observable of provider, and waits until it resolves, so we dont need to stop application bootstrap anymore.
+
 ```
 import { createProxy } from '@eth-proxy/client';
 const provider$ = Observable.fromEvent(window, "load").map(() => window.web3.currentProvider);
 const proxy = createProxy(provider$);
 ```
+
 To reduce boilerplate there is a client for browser which does this for you.
+
 ```
 import { browserProxyFactory } from '@eth-proxy/platform-browser';
 const proxy = browserProxyFactory(options);
 ```
-Lets compare interaction with contracts, and how truffle-contract does that.
+
+Now, lets compare interaction with contracts, and how it is different frin truffle-contract.
+
+Truffle-contract:
+
 ```
 --- bootstrap ----
 var provider = new Web3.providers.HttpProvider("http://localhost:8545");
 var contract = require("truffle-contract");
 var MyContract = contract(truffleJSON);
 MyContract.setProvider(provider);
-```
+
 --- usage ---
-```
 MyContract.deployed().then(function(instance) {
   var deployed = instance;
-  return instance.someFunction(5);
+  return instance.someFunction(5, 'text');
 }).then(function(result) {
   // Do something with the result or continue with more transactions.
 });
 ```
-Problems: 
-- we need to pass provider to each contract we interact with
-- when contract is triggering events on other contracts we have to do MyContract.link(instance) for each of those contracts
-- we need to call deployed each time, or keep the contract instance stored as a variable
-- we dont get transaction hash, which is critical for good user expirience
-- when we want to read events we have 2 options: all contract events or single event
+
+Problems:
+
+* we need to pass provider to each contract we interact with
+* when contract is triggering events on other contracts we have to do MyContract.link(instance) for each of those contracts
+* we need to call deployed each time, or keep the contract instance stored as a variable
+* we dont get transaction hash, which is critical for good user expirience
+* when we want to get events we have 2 options: all contract events or single event
+* JSON contract abstractions can get quite big, and you might need multiple of them. So it will also bloat your bundle.
 
 This is really causing a pain when app starts to grow, lets see how eth-proxy helps us solve those problems.
 
-We already have an instance of a proxy, so we have to let it know about our contract. So lets register it:
-```
-proxy.registerContract(truffleJSON);
-```
-We have to do it only once and in truffle json there is alot of information that we can use. For example contract name, its methods and events.
-So to execute the same logic as on example before we just have to do:
-```
-proxy.exec('MyContract', 'someFunction', { someArgument: 5 });
-```
-That looks quite different lets break it down, exec is a method on proxy that will execute transaction, it takes up to 4 argumens.
-```
-exec(
-  contractName: string must equal contract name, 
-  methodName: string must equal one of contract methods name, 
-  arguments as an array or named : [] | {},
-  options: gas etc..
-)
-```
-This is quite different, we dont create any instance, we dont pass provider around and we drop other boilerplate like deployed, linking, and promise ressolve.
-Instead we define what we want to execute, and the arguments, and thats exactly want we want. 
+To send a transaction or call with eth-proxy you need to prepare a request object, it has the following interface:
 
-But there is another benefit not clearly visible at first. Lets say we have decomposed application, and one part does a transaction, and somewhere else contract is defined, it can easily cause raise condition causing exec to fail, since it does not have an contractJSON yet. No worries, eth-proxy easily handles that for you, it will wait until all preconditions are satisfied before executing. Same goes for calls and queries.
 ```
-// Will work just fine
-proxy.exec('MyContract', 'someFunction', { someArgument: 5 });
-proxy.registerContract(truffleJSON);
+  interface Request {
+    interface: string;
+    method: string;
+    payload: any;
+    gas?: number | string | BigNumber;
+    gasPrice?: number | string | BigNumber
+    value?: number | string | BigNumber
+    from?: string;
+    address?: string;
+  }
+```
 
-// As well will work just fine. transaction will be executed after provider is delivered and contract registered
-const proxy = createProxy(
-  Observable.delay(5000)
-  .do(() => proxy.registerContract(truffleJSON))
-  .map(() => window.web3.currentProvider)
-);
-proxy.exec('MyContract', 'someFunction', { someArgument: 5 });
+Sample of sending same would looks like this:
+
 ```
-So we already got rid of managing contract instances, boilerplate is gone, as a bonus we also can provide arguments as a dictionary, 
-Linking is dead, since we interact only with eth-proxy instance it will decode events for all contracts that are registered.
+ethProxy.transaction({
+  interface: 'MyContract',
+  method: 'someFunction',
+  payload: {
+    amount: 5,
+    otherArgument: 'text'
+  }
+})
+```
+
+This transaction will be queued up, but there is one piece missing. We still need to provide contract JSON schema in order to be able to validate and execute this request.
+
+Instead of passing json schema to each contract instance, eth-proxy accepts contractSchemaResolver as part of configuration.
+Schema resolver is just a function with following interface:
+
+```
+type ContractSchemaResolver = (
+  args: { name: string }
+) => SubscribableOrPromise<ResolvedContractSchema>;
+```
+
+Once contract is necessary to fulfill the request, eth-proxy will call this function.
+If you are using truffle, you probably have a folder with json files. Here is how resolver could look like:
+
+```
+const appContractSchemaResolver = ({ name }) => import(`assets/contracts/${name}.json`);
+```
+
+Keep it mind this is example for typescript with module target esnext, depending on your build process and folder structure it might look sligtly different but the idea is the same, lazy load schemas once they are required.
+
+As you notices primary difference is that we dont create any contract instances and we dont need to do any asynchronious action before calling the contract. We can do this transaction request before web3 is injected, network is detected, and it will be queued up and resolved when all preconditions are met. If some of preconditions wont be met transaction will fail. Same behaviour is applied to calls and queries.
+
+Sending transaction is one thing, but also we need to observe its state and act accordingly.
 
 Truffle contract returns a promise, thats why it resolved only once, with full transaction result. Much better fit here it an Observable,
-which can emit multiple times. There are also operators provided by eth-proxy to handle just this case. 
+which can emit multiple times. There are also operators provided by eth-proxy to handle just this case.
 Full example of transaction would look like:
+
 ```
-proxy.exec('MyContract', 'someFunction', { someArgument: 5 })
-  .once('tx', (tx) => { toastr.info('tx generated!!', tx) })
-  .on('confirmation', (confirmation) => { otherLogic(confirmation) })
-  .error(
-    (err) => {
-      toastr.error('something went wrong');
-      return Observable.of(err);
-    }
-  )
+const request = {
+  interface: 'MyContract',
+  method: 'someFunction',
+  payload: {
+    amount: 5,
+    otherArgument: 'text'
+  }
+}
+ethProxy.transaction(request)
+.once('tx', (tx) => { toastr.info('tx generated!', tx) })
+.on('confirmation', (confirmation) => { otherLogic(confirmation) })
+.error(
+// handle error
+)
 ```
+
 Reading events its also something that is really hard to do. We have to choose between single event or single contract.
 Thats really bad. if we decide to do any filtering we will find this in documentation:
 
@@ -116,58 +151,28 @@ topics: Array of Strings - An array of values which must each appear in the log 
 
 This is really not want we want. We want to think in terms of entities no topics, thats why eth-proxy take an entity model and reurns events,
 which are part of it. Here is an example:
+
 ```
 const allItemsQuery: QueryModel = {
-  name: 'allItems',
-  deps: {
-    Contract1 : {
-      Event1: '*',
-      Event2: {
-        id: 12
-      },
-      Event3: {
-        id: 12
-      }
-    },
-    Contract2: {
-      Event4: '*'
-    },
-    Contract3: '*',
-  },
+name: 'allItems',
+deps: {
+Contract1 : {
+Event1: '_',
+Event2: {
+id: 12
+},
+Event3: {
+id: 12
+}
+},
+Contract2: {
+Event4: '_'
+},
+Contract3: '\*',
+},
 }
 ```
-This is a query model, to search for events we have to do proxy.query(allItemsQuery), 
-we will recive event stream of all events that are matching the query. 
+
+This is a query model, to search for events we have to do proxy.query(allItemsQuery),
+we will recive event stream of all events that are matching the query.
 Also thanks to event caching, if we execute it twice, only new mined blocks will be fetched, what we already fetched will be taken from memory.
-
-Typescript interfaces
-
-EthProxy can takes a generic parameter with definition of app contracts which should look like
-```
-interface Contracts {
-  Contract1 : {
-    does1(nb: number): Observable<12>;
-    doesNot1(nb: string): Observable<"12">;
-  },
-  Contract2: {
-    does3(nb: number): Observable<12>;
-    doesNot4(nb: string): Observable<"12">;
-  }
-}
-```
-When using exec or call it will check if types are correct
-
-```
-proxy = createProxy<Contracts>();
-proxy.exec('Contract3') // Error
-proxy.exec('Contract1')('does3'); // Error
-proxy.exec('Contract1')('does1')({}); // Error
-proxy.exec('Contract1')('does1')(12); // Correct
-```
-
-API
-
-Eth-proxy/client
-```
-createProxy(provider$: Observable<any>, options?: EthProxyOptions) => EthProxy;
-```

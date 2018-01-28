@@ -2,11 +2,10 @@ import { curry, CurriedFunction2 } from 'ramda';
 
 export interface CallPayload {
   contractName: string;
-  address: string;
+  address?: string;
   method: string;
   txParams: any;
   args: any;
-  abi: any;
 }
 
 export const PROCESS_CALL = 'PROCESS_CALL';

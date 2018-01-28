@@ -1,33 +1,29 @@
-import { first, tap, mergeMap, filter, map } from 'rxjs/operators';
+import { first, tap, mergeMap, map } from 'rxjs/operators';
 
-import { Request } from '../model';
 import {
   ObservableStore,
   State,
-  getContractFromRef$,
   createProcessCall,
-  getRequestById
+  getRequestById,
+  Request
 } from '../../../store';
 import { pickTxParamsProps } from '../utils';
 
 import { Observable } from 'rxjs/Observable';
+import { defer } from 'rxjs/observable/defer';
 
 export function processCall(
   store: ObservableStore<State>,
   genId: () => string
 ) {
-  // user input
   return (request: Request<string, string, any>) => {
-    const id = genId();
-    const { address, method, payload } = request;
-    return store.let(getContractFromRef$(request)).pipe(
-      first(),
-      tap(contract => {
+    return defer(() => Promise.resolve().then(genId)).pipe(
+      tap(id => {
+        const { address, method, payload } = request;
         store.dispatch(
           createProcessCall({
             id,
-            abi: contract.abi,
-            address: address || contract.address,
+            address,
             args: payload,
             contractName: request.interface,
             method,
@@ -35,7 +31,7 @@ export function processCall(
           })
         );
       }),
-      mergeMap(() => {
+      mergeMap(id => {
         return store.select(getRequestById(id)).pipe(
           tap(({ status, err }) => {
             if (status === 'failed') {

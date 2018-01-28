@@ -3,13 +3,10 @@ import { createSelector } from 'reselect';
 import { find, map, omit, filter, equals, anyPass, isNil } from 'ramda';
 import {
   TransactionWithHash,
-  ConfirmedTransaction,
-  FailedTransaction,
   Transaction,
   InitializedTransaction,
   TransactionResultCode
-} from '../../model';
-import * as Web3 from 'web3';
+} from '../model';
 
 export type State = Transaction[];
 

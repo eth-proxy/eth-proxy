@@ -1,4 +1,22 @@
-import { QueryArgs, QueryResult } from '../../model';
+import { QueryArgs, QueryResult, QueryModel } from '../models';
+import { keys } from 'ramda';
+
+export const COMPOSE_QUERY_FROM_MODEL = 'COMPOSE_QUERY_FROM_MODEL';
+
+export interface ComposeQueryFromModel {
+  type: 'COMPOSE_QUERY_FROM_MODEL';
+  payload: {
+    id: string;
+    model: QueryModel;
+  };
+}
+
+export const createComposeQueryFromModel = (
+  payload: ComposeQueryFromModel['payload']
+): ComposeQueryFromModel => ({
+  type: COMPOSE_QUERY_FROM_MODEL,
+  payload
+});
 
 export const QUERY_EVENTS = 'QUERY_EVENTS';
 
@@ -53,7 +71,7 @@ export const ADD_EVENTS_WATCH = 'ADD_EVENTS_WATCH';
 export interface AddEventsWatch {
   type: 'ADD_EVENTS_WATCH';
   payload: {
-    id: number;
+    id: string;
     fromBlock: number;
     addresses: string[];
   };
@@ -68,15 +86,16 @@ export const REMOVE_EVENTS_WATCH = 'REMOVE_EVENTS_WATCH';
 
 export interface RemoveEventsWatch {
   type: 'REMOVE_EVENTS_WATCH';
-  payload: number;
+  payload: string;
 }
 
-export const createRemoveEventsWatch = (payload: number) => ({
+export const createRemoveEventsWatch = (payload: string) => ({
   type: REMOVE_EVENTS_WATCH,
   payload
 });
 
 export type EventsActionTypes =
+  | ComposeQueryFromModel
   | QueryEvents
   | QueryEventsSuccess
   | QueryEventsFailed

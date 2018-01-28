@@ -1,13 +1,6 @@
 import { expect } from 'chai';
 
-import { TransactionResult } from '../../model';
-import { EthProxy } from '../../index';
-import { pipe } from 'ramda';
-import {
-  ContractDefinition,
-  ContractsAggregation,
-  RequestFactory
-} from './model';
+import { RequestFactory } from '../../store';
 import { C } from './contract-proxy';
 import { at, withOptions } from './utils';
 
