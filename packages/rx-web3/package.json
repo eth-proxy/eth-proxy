@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/rx-web3",
-  "version": "0.3.0",
+  "version": "0.3.1-y.0",
   "description": "Web3 using rxjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,9 +13,11 @@
     "postpublish": "rimraf dist"
   },
   "dependencies": {
-    "bignumber.js": "^5.0.0",
     "ramda": "0.25.0",
     "rxjs": "5.5.6",
     "web3": "^0.20.3"
+  },
+  "peerDependencies": {
+    "bignumber.js": "^6.0.0"
   }
 }

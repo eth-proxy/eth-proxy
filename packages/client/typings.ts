@@ -1,5 +1,5 @@
 declare module 'web3' {
-  import BigNumber from 'bignumber.js';
+  import { BigNumber } from 'bignumber.js';
   type Callback<T> = (err: Error | null, value: T) => void;
 
   class Web3 {
