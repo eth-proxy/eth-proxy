@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/client",
-  "version": "0.3.1-y.1",
+  "version": "0.3.1-y.2",
   "description": "Proxy for ethereum blockchain",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,7 @@
     "postpublish": "rimraf dist"
   },
   "dependencies": {
-    "@eth-proxy/rx-web3": "^0.3.1-y.1",
+    "@eth-proxy/rx-web3": "^0.3.1-y.2",
     "ethjs-abi": "0.1.8",
     "ramda": "^0.25.0",
     "redux": "^3.7.2",
