@@ -86,7 +86,7 @@ export interface TruffleContractInstance {
   address: string;
   abi: any[];
   contract: any;
-  constructor: { currentProvider: any };
+  constructor: { currentProvider: any; contractName: string };
 }
 
 export interface Receipt {
@@ -106,6 +106,7 @@ export interface TruffleContractAbstraction<T extends TruffleContractInstance> {
   abi: any[];
   networks: any[];
   network: any;
+  address: string;
   new: (...args: any[]) => Promise<T>;
   at(address: string): T;
   setProvider(provider: any): void;
