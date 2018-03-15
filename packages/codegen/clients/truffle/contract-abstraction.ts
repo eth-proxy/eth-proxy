@@ -17,6 +17,10 @@ export const contractAbstracion: InterfaceDeclarationStructure = {
       type: 'any'
     },
     {
+      name: 'address',
+      type: 'string'
+    },
+    {
       name: 'new',
       type: '(...args: any[]) => Promise<T>'
     }
@@ -102,10 +106,4 @@ export const contractAbstracion: InterfaceDeclarationStructure = {
       returnType: 'TruffleContractAbstraction<T>'
     }
   ]
-  // constructSignatures: [
-  //   {
-  //     parameters: [{ name: 'args', type: 'any[]', isRestParameter: true }],
-  //     returnType: 'Promise<T>'
-  //   }
-  // ]
 };
