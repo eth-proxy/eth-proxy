@@ -13,12 +13,12 @@ import {
 } from '../../lib';
 
 export function getMethodsInterfaces({
-  contract_name,
+  contractName,
   abi
 }: TruffleJson): InterfaceDeclarationStructure[] {
   const functions = abi.filter(({ type }) => type === 'function');
-  const getInputName = toInputName(contract_name);
-  return functions.map(getMethodDefinition(contract_name));
+  const getInputName = toInputName(contractName);
+  return functions.map(getMethodDefinition(contractName));
 }
 
 const getMethodDefinition = (contractName: string) => (

@@ -12,18 +12,18 @@ import {
 
 export const createEventInterface: CreateEventDeclaraton = (
   { name, inputs }: EventDescription,
-  { contract_name }: TruffleJson
+  { contractName }: TruffleJson
 ) => {
   return [
     {
-      name: toEventPayloadName(contract_name, name),
+      name: toEventPayloadName(contractName, name),
       properties: inputs.map(({ name, type }) => ({
         name,
         type: solidityToJsOutputType(type)
       }))
     },
     {
-      name: toEventName(contract_name, name),
+      name: toEventName(contractName, name),
       properties: [
         {
           name: 'type',
@@ -31,7 +31,7 @@ export const createEventInterface: CreateEventDeclaraton = (
         },
         {
           name: 'payload',
-          type: toEventPayloadName(contract_name, name)
+          type: toEventPayloadName(contractName, name)
         },
         {
           name: 'meta',

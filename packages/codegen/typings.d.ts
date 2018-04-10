@@ -36,6 +36,6 @@ interface FunctionParameter {
 }
 
 interface TruffleJson {
-  contract_name: string;
+  contractName: string;
   abi: ContractAbi;
 }

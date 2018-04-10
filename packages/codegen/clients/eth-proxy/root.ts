@@ -5,9 +5,9 @@ export function getRootInterface(
 ): InterfaceDeclarationStructure {
   return {
     name: 'Contracts',
-    properties: contracts.map(({ contract_name }) => ({
-      name: contract_name,
-      type: contract_name
+    properties: contracts.map(({ contractName }) => ({
+      name: contractName,
+      type: contractName
     }))
   };
 }

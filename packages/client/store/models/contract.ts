@@ -9,7 +9,7 @@ export interface ContractSchemaExtras {
 }
 
 export interface ContractSchema extends Partial<ContractSchemaExtras> {
-  contract_name: string;
+  contractName: string;
   abi: Web3.ContractAbi;
 }
 
@@ -55,7 +55,7 @@ export interface ContractInfo {
 }
 
 export interface TruffleJson {
-  contract_name: string;
+  contractName: string;
   abi: Web3.ContractAbi;
   unlinked_binary: string;
   networks: { [id: string]: NetworkDefinition };

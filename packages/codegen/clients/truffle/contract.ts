@@ -11,7 +11,7 @@ import {
 export const createTruffleContractInterfaces = createContractInterfaces(
   (json, functions) => {
     return {
-      name: json.contract_name,
+      name: json.contractName,
       extends: ['TruffleContractInstance'],
       methods: functions.map(createMethod)
     };
