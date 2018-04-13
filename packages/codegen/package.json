@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/codegen",
-  "version": "0.4.1-y.2",
+  "version": "0.4.1-y.3",
   "description": "Contracts code generation for @eth-proxy/client",
   "main": "dist/index.js",
   "bin": "dist/index.js",
