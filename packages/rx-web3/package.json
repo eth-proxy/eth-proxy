@@ -8,16 +8,19 @@
     "access": "public"
   },
   "scripts": {
-    "compile": "tsc -p tsconfig.build.json",
+    "compile": "../../node_modules/tsc -p tsconfig.build.json",
     "prepublish": "rimraf dist && npm run compile",
     "postpublish": "rimraf dist"
   },
   "dependencies": {
-    "ramda": "0.25.0",
-    "rxjs": "5.5.6",
-    "web3": "^0.20.3"
+    "ramda": "0.25.0"
   },
   "peerDependencies": {
-    "bignumber.js": "^6.0.0"
+    "bignumber.js": "^6.0.0",
+    "rxjs": "5.5.2",
+    "web3": "^0.20.3"
+  },
+  "devDependencies": {
+    "typescript": "^2.8.1"
   }
 }

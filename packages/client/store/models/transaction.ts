@@ -129,10 +129,12 @@ export type ContractsAggregation<T extends {}> = {
 
 export class RequestHandlers<T extends {}> {
   ethCall: <I extends keyof T, M extends keyof T[I]>(
-    request: Request<I, M, T[I][M]['in']>
-  ) => CallResult<T[I][M]['out']>;
+    request: Request<I, M, T[I][M] extends { in: infer In } ? In : never>
+  ) => CallResult<T[I][M] extends { out: infer Out } ? Out : never>;
 
   transaction: <I extends keyof T, M extends keyof T[I], V extends T[I][M]>(
-    request: Request<I, M, T[I][M]['in']>
-  ) => TransactionResult<T[I][M]['events']>;
+    request: Request<I, M, T[I][M] extends { in: infer In } ? In : never>
+  ) => TransactionResult<
+    T[I][M] extends { events: infer Events } ? Events : never
+  >;
 }

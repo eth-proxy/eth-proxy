@@ -9,7 +9,7 @@
   },
   "scripts": {
     "precompile": "rimraf dist",
-    "compile": "tsc -p tsconfig.build.json",
+    "compile": "npx tsc -p tsconfig.build.json",
     "prepublish": "rimraf dist && npm run compile",
     "postpublish": "rimraf dist"
   },
@@ -18,14 +18,15 @@
     "ethjs-abi": "0.1.8",
     "ramda": "^0.25.0",
     "redux": "^3.7.2",
-    "redux-observable": "^0.17.0",
-    "reselect": "^3.0.1",
-    "rxjs": "^5.5.6",
-    "truffle-blockchain-utils": "^0.0.3",
-    "truffle-contract-schema": "^0.0.5",
-    "web3": "^0.20.3"
+    "redux-observable": "^0.18.0",
+    "reselect": "^3.0.1"
   },
   "peerDependencies": {
-    "bignumber.js": "^6.0.0"
+    "bignumber.js": "^6.0.0",
+    "web3": "^0.20.3",
+    "rxjs": "^5.5.2"
+  },
+  "devDependencies": {
+    "typescript": "^2.8.1"
   }
 }
