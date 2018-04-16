@@ -6,7 +6,7 @@ import { toOutputName, getOutputProperty } from '../../lib';
 import { hasComplexOutput } from './utils';
 
 export function getOutputInterfaces({
-  contract_name,
+  contractName,
   abi
 }: TruffleJson): InterfaceDeclarationStructure[] {
   const functionsWithOutputs = abi.filter(
@@ -14,7 +14,7 @@ export function getOutputInterfaces({
   ) as FunctionDescription[];
 
   return functionsWithOutputs.map(({ name, outputs }) => ({
-    name: toOutputName(contract_name)(name),
+    name: toOutputName(contractName)(name),
     properties: outputs.map(getOutputProperty)
   }));
 }

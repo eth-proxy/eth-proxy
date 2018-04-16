@@ -41,13 +41,13 @@ export function reducer(
       };
     }
     case actions.LOAD_CONTRACT_SCHEMA_SUCCESS: {
-      const { address, abi, contract_name, genesisBlock } = action.payload;
+      const { address, abi, contractName, genesisBlock } = action.payload;
       return {
         ...state,
-        [contract_name]: {
+        [contractName]: {
           address,
           abi,
-          name: contract_name,
+          name: contractName,
           genesisBlock
         }
       };

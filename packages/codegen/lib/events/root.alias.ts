@@ -6,7 +6,7 @@ export function getRootContractsEventsAlias(
   jsons: TruffleJson[]
 ): TypeAliasDeclarationStructure {
   const contractsEvents = map(
-    ({ contract_name }) => toContractEventsName(contract_name)(''),
+    ({ contractName }) => toContractEventsName(contractName)(''),
     jsons
   );
   const contractsEventsUnion = contractsEvents.join(' | ');

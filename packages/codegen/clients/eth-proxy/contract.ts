@@ -14,10 +14,10 @@ import {
 } from '../../lib';
 
 export const createEthProxyContractInterfaces = createContractInterfaces(
-  ({ contract_name }, functions) => {
+  ({ contractName }, functions) => {
     return {
-      name: contract_name,
-      properties: map(getMethodDefinition(contract_name), functions)
+      name: contractName,
+      properties: map(getMethodDefinition(contractName), functions)
     };
   }
 );
