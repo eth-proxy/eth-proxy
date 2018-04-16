@@ -18,9 +18,9 @@ function getEventsByContract(
   return {
     name: 'EventsByType',
     properties: map(
-      ({ abi, contract_name }) => ({
-        name: contract_name,
-        type: toEventsByTypeName(contract_name)
+      ({ abi, contractName }) => ({
+        name: contractName,
+        type: toEventsByTypeName(contractName)
       }),
       jsons
     )
@@ -31,11 +31,11 @@ function getContractEventsByType(
   jsons: TruffleJson[]
 ): InterfaceDeclarationStructure[] {
   return map(
-    ({ contract_name, abi }) => ({
-      name: toEventsByTypeName(contract_name),
+    ({ contractName, abi }) => ({
+      name: toEventsByTypeName(contractName),
       properties: abi.filter(a => a.type === 'event').map(({ name }) => ({
         name,
-        type: toEventName(contract_name, name)
+        type: toEventName(contractName, name)
       }))
     }),
     jsons

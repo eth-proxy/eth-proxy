@@ -10,7 +10,7 @@ import {
 import { hasComplexInput } from './utils';
 
 export function getInputInterfaces({
-  contract_name,
+  contractName,
   abi
 }: TruffleJson): InterfaceDeclarationStructure[] {
   const functionsWithExternalInputs = abi.filter(
@@ -18,7 +18,7 @@ export function getInputInterfaces({
   ) as FunctionDescription[];
 
   return functionsWithExternalInputs.map(({ name, inputs }) => ({
-    name: toInputName(contract_name)(name),
+    name: toInputName(contractName)(name),
     properties: inputs.map(getInputProperty)
   }));
 }
