@@ -8,7 +8,7 @@
     "access": "public"
   },
   "scripts": {
-    "compile": "tsc -p tsconfig.build.json",
+    "compile": "npx tsc -p tsconfig.build.json",
     "prepublish": "rimraf dist && npm run compile",
     "postpublish": "rimraf dist"
   },
