@@ -8,6 +8,10 @@ declare module '@eth-proxy/client' {
 import { BigNumber } from 'bignumber.js';
 import { EventMetadata, RequestFactory, EntityModel } from '@eth-proxy/client';
 
+export type ERC20Events = ERC20ApprovalEvent | ERC20TransferEvent;
+export type ContractsEvents = ERC20Events;
+export type NumberLike = BigNumber | string | number;
+
 export interface EventsByType {
   ERC20: ERC20EventsByType;
 }
@@ -116,7 +120,3 @@ export interface ERC20TransferEvent {
   payload: ERC20TransferPayload;
   meta: EventMetadata;
 }
-
-export type ERC20Events = ERC20ApprovalEvent | ERC20TransferEvent;
-export type ContractsEvents = ERC20Events;
-export type NumberLike = BigNumber | string | number;

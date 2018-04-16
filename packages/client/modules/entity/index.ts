@@ -152,28 +152,27 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
   };
 };
 
-export interface TransactionHandler<E, MD extends { in: any }> {
+export interface TransactionHandler<E, MD> {
   handle: (
     state: E,
-    next: MD['in'],
+    next: MD extends { in: any } ? MD['in'] : never,
     transaction: InitializedTransaction | TransactionWithHash
   ) => E;
   identity: (
-    e: MD['in'],
+    e: MD extends { in: any } ? MD['in'] : never,
     transaction: InitializedTransaction | TransactionWithHash
   ) => string | number;
   root?: boolean;
 }
-export interface EventHandler<
-  Entity,
-  Event extends { payload: any; meta: any }
-> {
+export interface EventHandler<Entity, Event> {
   handle: (
     state: Entity,
-    next: Event['payload'],
+    next: Event extends { payload: infer Payload } ? Payload : never,
     meta: EventMetadata
   ) => Entity;
-  identity: (e: Event['payload']) => string | number;
+  identity: (
+    e: Event extends { payload: infer Payload } ? Payload : never
+  ) => string | number;
   root?: boolean;
 }
 

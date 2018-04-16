@@ -3,7 +3,8 @@ import Ast, {
   MethodSignatureStructure,
   ParameterDeclarationStructure,
   InterfaceDeclarationStructure,
-  PropertySignatureStructure
+  PropertySignatureStructure,
+  SourceFileStructure
 } from 'ts-simple-ast';
 import {
   chain,
@@ -35,7 +36,7 @@ const outputDir = path.join(process.cwd(), args['output'] || args['o']);
 const target = args['target'] || args['t'] || 'eth-proxy';
 
 const files = requireDir(contractsDir);
-const contracts = Object.values(files);
+const contracts = Object.values(files) as TruffleJson[];
 const generators = {
   'eth-proxy': getEthProxySourceFile,
   truffle: getTruffleSourceFile
@@ -44,7 +45,11 @@ const generator = generators[target];
 const targetSource = generator(contracts);
 const commonSource = getCommonSource(contracts);
 
-const source = mergeDeepWith(concat, commonSource, targetSource);
+const source = mergeDeepWith<SourceFileStructure, SourceFileStructure>(
+  concat,
+  commonSource,
+  targetSource
+);
 
 const instertedText = {
   'eth-proxy': `declare module '@eth-proxy/client' {
@@ -56,7 +61,9 @@ const instertedText = {
 };
 
 const sourceFile = new Ast()
-  .addSourceFileFromStructure(outputDir, source)
+  .createSourceFile(outputDir, source, {
+    overwrite: true
+  })
   .insertText(0, '/* tslint:disable */\n' + instertedText[target]);
 
 sourceFile.save();

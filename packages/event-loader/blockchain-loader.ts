@@ -16,7 +16,7 @@ export function createBlockchainReader(
 ): Reader {
   return (filter: EventFilter, work$: Observable<[number, number]>) => {
     const web3Reader = (f: EventFilter) =>
-      getEvents(web3, f as Web3.FilterObject).let(
+      getEvents(web3, f as Web3.FilterObject).pipe(
         map(events => ({
           range: [f.fromBlock, f.toBlock],
           result: events

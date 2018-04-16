@@ -1,6 +1,10 @@
 /* tslint:disable */
 import { BigNumber } from 'bignumber.js';
 
+export type ERC20Events = ERC20ApprovalEvent | ERC20TransferEvent;
+export type ContractsEvents = ERC20Events;
+export type NumberLike = BigNumber | string | number;
+
 export interface EventsByType {
   ERC20: ERC20EventsByType;
 }
@@ -120,7 +124,3 @@ export interface TruffleContractAbstraction<T extends TruffleContractInstance> {
   defaults(defaults: TransactionOptions): void;
   clone(networkId: string): TruffleContractAbstraction<T>;
 }
-
-export type ERC20Events = ERC20ApprovalEvent | ERC20TransferEvent;
-export type ContractsEvents = ERC20Events;
-export type NumberLike = BigNumber | string | number;

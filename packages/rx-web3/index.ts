@@ -15,7 +15,10 @@ export function getNetwork(web3: Web3): Observable<string> {
 
 export const executeMethod = curry(
   <T>(web3Method: any, args = [], tx_params) => {
-    return bindNodeCallback<T>(web3Method)(...clone(args), clone(tx_params));
+    return (bindNodeCallback as any)(web3Method)(
+      ...clone(args),
+      clone(tx_params)
+    );
   }
 );
 // It should be probably done by web3, same way like rest of receipt, but as for (0.20.3) its not done
