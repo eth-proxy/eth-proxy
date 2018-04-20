@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/rx-web3",
-  "version": "0.4.1-y.8",
+  "version": "0.4.1-y.10",
   "description": "Web3 using rxjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,7 +17,7 @@
   },
   "peerDependencies": {
     "bignumber.js": "^6.0.0",
-    "rxjs": "5.5.2",
+    "rxjs": "^5.5.2",
     "web3": "^0.20.3"
   },
   "devDependencies": {
