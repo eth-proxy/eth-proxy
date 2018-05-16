@@ -16,5 +16,5 @@ export const createSchemaLoader = (store: ObservableStore<State>) => (
   if (!contract) {
     store.dispatch(createLoadContractSchema(name));
   }
-  return store.let(getLoadedContractFromRef$(name));
+  return store.pipe(getLoadedContractFromRef$(name));
 };

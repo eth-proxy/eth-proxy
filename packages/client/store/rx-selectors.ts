@@ -1,12 +1,6 @@
 import { Observable } from 'rxjs/Observable';
 import { State } from './model';
-import {
-  map as rxMap,
-  filter,
-  tap,
-  mergeMap,
-  mergeMapTo
-} from 'rxjs/operators';
+import { map as rxMap, filter, tap } from 'rxjs/operators';
 import { first } from 'rxjs/operators/first';
 import {
   getNetworkId,
@@ -16,17 +10,10 @@ import {
   getContractFromRef,
   getTransactionFromInitId
 } from './selectors';
-import { keys, pick, values, flatten, assoc } from 'ramda';
+import { keys } from 'ramda';
 
-import { combineLatest } from 'rxjs/observable/combineLatest';
-import { QueryState } from './reducers/events';
 import { QueryModel, ContractInfo } from './model';
-import {
-  ConfirmedTransaction,
-  FailedTransaction,
-  InitializedTransaction,
-  TransactionWithHash
-} from './models';
+import * as models from './models';
 
 export function getDetectedNetwork$(state$: Observable<State>) {
   return state$.pipe(rxMap(getNetworkId), first(x => !!x));

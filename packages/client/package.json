@@ -23,8 +23,7 @@
   },
   "peerDependencies": {
     "bignumber.js": "^6.0.0",
-    "rxjs": "^5.5.2",
-    "web3": "^0.20.3"
+    "rxjs": "^5.5.2"
   },
   "devDependencies": {
     "typescript": "^2.8.1"

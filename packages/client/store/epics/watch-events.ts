@@ -24,7 +24,7 @@ export const watchEvents = (
     takeUntil(
       action$
         .ofType(REMOVE_EVENTS_WATCH)
-        .let(filter(({ payload }: RemoveEventsWatch) => payload === id))
+        .pipe(filter(({ payload }: RemoveEventsWatch) => payload === id))
     );
 
   return action$.ofType(ADD_EVENTS_WATCH).pipe(

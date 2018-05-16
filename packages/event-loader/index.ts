@@ -1,13 +1,13 @@
-import * as Web3 from 'web3';
 import { createBlockchainReader } from './blockchain-loader';
 import { EventFilter } from './model';
 import { bufferResult } from './results-buffer';
 import { pipe } from 'ramda';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
+import { Provider } from '@eth-proxy/rx-web3';
 
-export function defaultReader(web3: Web3, filter: EventFilter) {
-  const bcReader = createBlockchainReader(web3, filter);
+export function defaultReader(provider: Provider, filter: EventFilter) {
+  const bcReader = createBlockchainReader(provider);
 
   return pipe(bcReader, bufferResult)(
     filter,

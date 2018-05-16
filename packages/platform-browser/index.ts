@@ -1,4 +1,3 @@
-import * as Web3 from 'web3';
 import {
   createProxy,
   EthProxyOptions,
@@ -10,10 +9,11 @@ import { map, filter } from 'rxjs/operators';
 import { race } from 'rxjs/observable/race';
 import { of } from 'rxjs/observable/of';
 import { fromEvent } from 'rxjs/observable/fromEvent';
+import { Provider } from '@eth-proxy/rx-web3';
 
 export interface EthWindow extends Window {
   web3: {
-    currentProvider: Web3.Provider;
+    currentProvider: Provider;
   };
 }
 function getWindow() {

@@ -7,6 +7,7 @@ import {
   solidityToJsInputType,
   solidityToJsOutputType
 } from '../../lib';
+import { FunctionDescription, TruffleJson } from '../../interfaces';
 
 export const createTruffleContractInterfaces = createContractInterfaces(
   (json, functions) => {

@@ -1,6 +1,6 @@
 import { forkJoin } from 'rxjs/observable/forkJoin';
 import { map as rxMap, catchError, mergeMap } from 'rxjs/operators';
-import { flatten, filter, pathEq, min, max, isNil } from 'ramda';
+import { flatten, filter, pathEq, min, max } from 'ramda';
 import { map } from 'rxjs/operators';
 import { ActionsObservable } from 'redux-observable';
 import { of } from 'rxjs/observable/of';

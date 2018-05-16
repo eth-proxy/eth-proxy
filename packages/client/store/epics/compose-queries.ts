@@ -30,9 +30,9 @@ export const composeQueries = (
       return combineLatest(
         of(id),
         forkJoin(keys(model.deps).map(contractLoader)),
-        state$.let(map(getLatestBlockNumberOrFail)),
+        state$.pipe(map(getLatestBlockNumberOrFail)),
         // was with latest from?
-        state$.let(map(getEventQueries))
+        state$.pipe(map(getEventQueries))
       ).pipe(first(args => args.every(x => x !== undefined)));
     }),
     mergeMap(([id, contracts, latestBlockNumber, queries]) => {

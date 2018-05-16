@@ -41,7 +41,9 @@ export function processTransaction(
           })
         );
       }),
-      mergeMap(([initId]) => store.let(getTransactionResultFromInitId$(initId)))
+      mergeMap(([initId]) =>
+        store.pipe(getTransactionResultFromInitId$(initId))
+      )
     );
   };
 }

@@ -1,5 +1,6 @@
-import * as Web3 from 'web3';
 import * as ethJSABI from 'ethjs-abi';
+import { sha3 } from '@eth-proxy/rx-web3';
+import { BigNumber } from 'bignumber.js';
 
 export const decodeLogs = abi => (logs: any[]) => {
   const events = eventsFromAbi(abi);
@@ -51,7 +52,7 @@ function parseArg(type: string, value: any) {
     return value.map(item => parseArg(type.replace('[]', ''), item));
   }
   if (type.startsWith('uint') || type.startsWith('int')) {
-    return new Web3().toBigNumber('0x' + value.toString(16));
+    return new BigNumber('0x' + value.toString(16));
   }
   return value;
 }
@@ -70,11 +71,7 @@ export function eventsFromAbi(abi) {
 export function eventAbiToSignature(item: any) {
   const args = item.inputs.map(x => x.type).join(',');
 
-  return new Web3().sha3(`${item.name}(${args})`);
-}
-
-export function eventInputToSignature(item: any) {
-  return new Web3().sha3(item);
+  return sha3(`${item.name}(${args})`);
 }
 
 function partialABI(fullABI, indexed) {

@@ -7,6 +7,7 @@ import {
 import { assoc } from 'ramda';
 import { numberLike } from './common/numberlike';
 import { transactionOptions } from './transaction';
+import { TruffleJson } from '../interfaces';
 
 export const getCommonSource = (
   contracts: TruffleJson[]

@@ -8,7 +8,7 @@ const pendingStatuses = ['init', 'tx'];
 
 export function once(type: PendingStatus, fn: (arg: any) => any) {
   return (obs: Observable<Transaction>) =>
-    obs.let(
+    obs.pipe(
       map(next => {
         if (!next || type !== next.status) {
           return next;

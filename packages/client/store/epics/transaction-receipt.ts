@@ -11,28 +11,25 @@ import {
   take,
   concat,
   map,
-  withLatestFrom,
   catchError
 } from 'rxjs/operators';
-import { getReceipt } from '@eth-proxy/rx-web3';
 import { getLogDecoder } from '../selectors';
 import { EpicContext } from '../model';
 import { of } from 'rxjs/observable/of';
 import { _throw } from 'rxjs/observable/throw';
 
-import { LoadReceiptSuccess, LoadReceiptFailed } from '../actions';
+import * as actions from '../actions';
 import { Observable } from 'rxjs/Observable';
 
 export const findReceiptEpic = (
-  actions$: ActionsObservable<any>,
+  actions$: ActionsObservable<actions.TxGenerated>,
   store,
-  { web3Proxy$ }: EpicContext
+  { getReceipt }: EpicContext
 ) => {
   return actions$.pipe(
     ofType(TX_GENERATED),
-    withLatestFrom(web3Proxy$),
-    mergeMap(([{ payload: { tx } }, web3]) =>
-      getReceipt(web3, tx).pipe(
+    mergeMap(({ payload: { tx } }) =>
+      getReceipt(tx).pipe(
         map(receipt =>
           createLoadReceiptSuccess({
             receipt,

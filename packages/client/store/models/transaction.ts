@@ -1,7 +1,7 @@
-import * as Web3 from 'web3';
 import { Observable } from 'rxjs/Observable';
 import { BlockchainEvent } from './events';
 import { BigNumber } from 'bignumber.js';
+import { TransactionReceipt } from '@eth-proxy/rx-web3';
 
 export interface TransactionInfo {
   contractName: string;
@@ -9,7 +9,7 @@ export interface TransactionInfo {
   method: string;
   txParams: any;
   args: any;
-  initId?: string;
+  initId: string;
 }
 
 export interface InitializedTransaction extends TransactionInfo {
@@ -27,7 +27,7 @@ export interface FailedTransaction extends TransactionInfo {
 export interface ConfirmedTransaction extends TransactionInfo {
   tx: string;
   status: 'confirmed';
-  receipt: Web3.TransactionReceipt;
+  receipt: TransactionReceipt;
   logs: BlockchainEvent[];
 }
 
@@ -43,7 +43,7 @@ export interface TransationHashEvent {
 }
 export interface TransactionConfirmation<T> {
   logs: T[];
-  receipt: Web3.TransactionReceipt;
+  receipt: TransactionReceipt;
   tx: string;
 }
 export interface TransationConfirmationEvent<T> {

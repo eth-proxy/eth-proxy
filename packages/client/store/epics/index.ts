@@ -1,6 +1,5 @@
 import { Observable } from 'rxjs/Observable';
-import { combineEpics, ActionsObservable } from 'redux-observable';
-import { Epic } from 'redux-observable';
+import { combineEpics, ActionsObservable, Epic } from 'redux-observable';
 
 import { findReceiptEpic } from './transaction-receipt';
 import { watchAccount } from './account';
@@ -11,12 +10,7 @@ import { processTransactionEpic } from './process-transaction';
 import { processCallEpic } from './process-call';
 import { composeQueries } from './compose-queries';
 import { loadContractSchema } from './contract-schema';
-import {
-  EthProxyOptions,
-  ProcessRequestArgs,
-  ContractSchemaResolver,
-  EpicContext
-} from '../model';
+import * as model from '../model';
 
 export const rootEpic = combineEpics(
   watchAccount,

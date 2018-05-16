@@ -9,7 +9,6 @@ import {
   flatten,
   omit
 } from 'ramda';
-import * as Web3 from 'web3';
 
 import { State } from '../../store';
 import { getSelectors as getEventsSelectors } from '../../store/reducers/events';
@@ -27,7 +26,6 @@ import {
   getSelectors as getInternalSelectors
 } from '../../store';
 
-import { sortEvents } from '../../utils';
 import { EntityModel } from './model';
 
 export const getSelectors = <App>(getModule: (state: App) => State) => {

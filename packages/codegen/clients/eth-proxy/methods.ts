@@ -1,23 +1,18 @@
-import {
-  InterfaceDeclarationStructure,
-  PropertySignatureStructure,
-  ParameterDeclarationStructure
-} from 'ts-simple-ast';
-import { map } from 'ramda';
-import { hasComplexInput, toMethodDefinitionName } from './utils';
+import { InterfaceDeclarationStructure } from 'ts-simple-ast';
+import { toMethodDefinitionName } from './utils';
 import {
   toOutputName,
   toInputName,
   solidityToJsOutputType,
   solidityToJsInputType
 } from '../../lib';
+import { TruffleJson, FunctionDescription } from '../../interfaces';
 
 export function getMethodsInterfaces({
   contractName,
   abi
 }: TruffleJson): InterfaceDeclarationStructure[] {
   const functions = abi.filter(({ type }) => type === 'function');
-  const getInputName = toInputName(contractName);
   return functions.map(getMethodDefinition(contractName));
 }
 

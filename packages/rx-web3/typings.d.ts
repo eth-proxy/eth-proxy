@@ -1,8 +1,9 @@
 declare module 'web3' {
-  import BigNumber from 'bignumber.js';
+  import { BigNumber } from 'bignumber.js';
   type Callback<T> = (err: Error | null, value: T) => void;
 
   class Web3 {
+    constructor(provider?: Web3.Provider);
     public static providers: typeof providers;
 
     public version: {
@@ -47,6 +48,10 @@ declare module 'web3' {
         addressHexString: string,
         callback: Callback<number>
       ): number;
+      getTransaction(
+        hash: string,
+        callback: Callback<Web3.Transaction>
+      ): Web3.Transaction;
     };
 
     public setProvider(provider: Web3.Provider): void;
@@ -119,6 +124,20 @@ declare module 'web3' {
       get<T>(callback: Callback<SolidityEvent<T>[]>): void;
       watch<T>(callback: Callback<SolidityEvent<T>>): void;
       stopWatching(callback: Callback<true>): void;
+    }
+
+    interface Transaction {
+      hash: string;
+      nonce: number;
+      blockHash: string;
+      blockNumber: number;
+      transactionIndex: number;
+      from: string;
+      to: string;
+      value: BigNumber;
+      gasPrice: BigNumber;
+      gas: number;
+      input: string;
     }
 
     interface Block {

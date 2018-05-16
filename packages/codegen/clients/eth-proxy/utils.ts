@@ -1,5 +1,7 @@
 import { toName } from '../../lib';
 import { CurriedFunction2 } from 'ramda';
+import { FunctionDescription, AbiDefinition } from '../../interfaces';
+
 export function hasComplexInput({ inputs, type }: AbiDefinition): boolean {
   return type === 'function' && inputs.length > 1;
 }

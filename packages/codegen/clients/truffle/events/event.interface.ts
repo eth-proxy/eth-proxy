@@ -1,15 +1,10 @@
 import {
-  InterfaceDeclarationStructure,
-  PropertySignatureStructure,
-  TypeAliasDeclarationStructure
-} from 'ts-simple-ast';
-import { chain, map, filter } from 'ramda';
-import {
   solidityToJsOutputType,
   toEventPayloadName,
   toEventName,
   CreateEventDeclaraton
 } from '../../../lib';
+import { TruffleJson, EventDescription } from '../../../interfaces';
 
 export const createEventDeclaration: CreateEventDeclaraton = (
   { name, inputs }: EventDescription,

@@ -1,4 +1,4 @@
-import { Block } from 'web3';
+import { Block } from '@eth-proxy/rx-web3';
 import * as actions from '../actions/blocks';
 import { createSelector } from 'reselect';
 import { isNil } from 'ramda';

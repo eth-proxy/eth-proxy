@@ -2,21 +2,8 @@ import { ActionsObservable, ofType } from 'redux-observable';
 import { mergeMap, map, catchError } from 'rxjs/operators';
 import { Observable } from 'rxjs/Observable';
 
-import {
-  EpicContext,
-  ContractSchemaExtras,
-  ResolvedContractSchema,
-  ContractSchema
-} from '../model';
-import {
-  createLoadContractSchemaSuccess,
-  createLoadContractSchemaFailed,
-  LoadContractSchemaSuccess,
-  LoadContractSchema,
-  LOAD_CONTRACT_SCHEMA,
-  LOAD_CONTRACT_SCHEMA_SUCCESS,
-  LoadContractSchemaFailed
-} from '../actions';
+import { EpicContext, ResolvedContractSchema, ContractSchema } from '../model';
+import * as actions from '../actions';
 import { getDetectedNetwork$ } from '../rx-selectors';
 
 import { defer } from 'rxjs/observable/defer';
@@ -41,20 +28,20 @@ export const mapResolvedContractSchema = (
   );
 
 export const loadContractSchema = (
-  actions$: ActionsObservable<any>,
+  actions$: ActionsObservable<actions.LoadContractSchema>,
   _,
   { contractSchemaResolver, state$ }: EpicContext
 ) => {
   return actions$.pipe(
-    ofType<LoadContractSchema>(LOAD_CONTRACT_SCHEMA),
+    ofType(actions.LOAD_CONTRACT_SCHEMA),
     mergeMap(({ payload: { name } }) => {
       return combineLatest(
         defer(() => contractSchemaResolver({ name })),
-        state$.let(getDetectedNetwork$),
+        state$.pipe(getDetectedNetwork$),
         mapResolvedContractSchema
       ).pipe(
-        map(createLoadContractSchemaSuccess),
-        catchError(err => of(createLoadContractSchemaFailed(name, err)))
+        map(actions.createLoadContractSchemaSuccess),
+        catchError(err => of(actions.createLoadContractSchemaFailed(name, err)))
       );
     })
   );

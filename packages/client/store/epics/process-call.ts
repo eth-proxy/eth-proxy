@@ -11,8 +11,7 @@ import { EpicContext, ProcessRequestArgs, ContractInfo } from '../model';
 import { of } from 'rxjs/observable/of';
 
 import { Observable } from 'rxjs/Observable';
-import { TxGenerated, ProcessCallFailed, ProcessCallSuccess } from '../actions';
-import { getLoadedContractFromRef$ } from '../rx-selectors';
+import * as actions from '../actions';
 
 function prepareRequestArgs(
   { txParams, args, address, method }: CallPayload,
@@ -28,15 +27,15 @@ function prepareRequestArgs(
 }
 
 export const processCallEpic = (
-  actions$: ActionsObservable<any>,
+  actions$: ActionsObservable<actions.ProcessCall>,
   _,
-  { processCall, contractLoader }: EpicContext
+  { sendCall, contractLoader }: EpicContext
 ) => {
   return actions$.ofType(PROCESS_CALL).pipe(
     mergeMap(({ payload }: ProcessCall) => {
       return contractLoader(payload.contractName).pipe(
         mergeMap(contract =>
-          processCall(prepareRequestArgs(payload, contract)).pipe(
+          sendCall(prepareRequestArgs(payload, contract)).pipe(
             map(createProcessCallSuccess(payload.id)),
             catchError(err => {
               return of(
