@@ -1,6 +1,7 @@
 import { TypeAliasDeclarationStructure } from 'ts-simple-ast';
 import { map } from 'ramda';
 import { toEventName, toContractEventsName } from '../utils';
+import { TruffleJson, EventDescription } from '../../interfaces';
 
 export const getContractEventsAliases = map(getContractEventAlias);
 

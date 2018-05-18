@@ -1,21 +1,6 @@
-import {
-  MethodDeclarationStructure,
-  ParameterDeclarationStructure
-} from 'ts-simple-ast';
 import { map } from 'ramda';
-import {
-  toOutputName,
-  toInputName,
-  solidityToJsOutputType,
-  solidityToJsInputType
-} from '../../lib';
-
-import {
-  InterfaceDeclarationStructure,
-  PropertySignatureStructure,
-  TypeAliasDeclarationStructure
-} from 'ts-simple-ast';
-import { chain, filter } from 'ramda';
+import { InterfaceDeclarationStructure } from 'ts-simple-ast';
+import { TruffleJson, FunctionDescription } from '../../interfaces';
 
 export type CreateContractInterface = (
   json: TruffleJson,

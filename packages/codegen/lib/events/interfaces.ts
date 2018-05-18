@@ -1,9 +1,6 @@
-import {
-  InterfaceDeclarationStructure,
-  PropertySignatureStructure,
-  TypeAliasDeclarationStructure
-} from 'ts-simple-ast';
-import { chain, map, filter } from 'ramda';
+import { InterfaceDeclarationStructure } from 'ts-simple-ast';
+import { chain } from 'ramda';
+import { TruffleJson, EventDescription } from '../../interfaces';
 
 export type CreateEventDeclaraton = (
   e: EventDescription,

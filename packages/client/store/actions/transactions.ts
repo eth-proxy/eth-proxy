@@ -1,6 +1,6 @@
 import { curry, CurriedFunction2 } from 'ramda';
-import * as Web3 from 'web3';
 import { TransactionInfo, BlockchainEvent } from '../model';
+import { TransactionReceipt } from '@eth-proxy/rx-web3';
 
 export interface ProcessTransactionPayload {
   initId: string;
@@ -90,7 +90,7 @@ export const LOAD_RECEIPT_SUCCESS = 'LOAD_RECEIPT_SUCCESS';
 export interface LoadReceiptSuccess {
   type: 'LOAD_RECEIPT_SUCCESS';
   payload: {
-    receipt: Web3.TransactionReceipt;
+    receipt: TransactionReceipt;
     logs: BlockchainEvent[];
   };
 }

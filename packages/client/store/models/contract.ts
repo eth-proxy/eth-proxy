@@ -1,7 +1,6 @@
-import * as Web3 from 'web3';
-
 import { SubscribableOrPromise } from 'rxjs/Observable';
 import { Observable } from 'rxjs/Observable';
+import { ContractAbi, AbiDefinition } from '@eth-proxy/rx-web3';
 
 export interface ContractSchemaExtras {
   address: string;
@@ -10,7 +9,7 @@ export interface ContractSchemaExtras {
 
 export interface ContractSchema extends Partial<ContractSchemaExtras> {
   contractName: string;
-  abi: Web3.ContractAbi;
+  abi: ContractAbi;
 }
 
 export interface ResolvedContractSchema extends ContractSchema {
@@ -51,12 +50,12 @@ export interface ContractInfo {
   address: string;
   name: string;
   genesisBlock: number;
-  abi: Web3.AbiDefinition[];
+  abi: AbiDefinition[];
 }
 
 export interface TruffleJson {
   contractName: string;
-  abi: Web3.ContractAbi;
+  abi: ContractAbi;
   unlinked_binary: string;
   networks: { [id: string]: NetworkDefinition };
 }

@@ -1,13 +1,6 @@
-import {
-  pipe,
-  flip,
-  toUpper,
-  concat,
-  curry,
-  CurriedFunction2,
-  CurriedFunction3
-} from 'ramda';
+import { toUpper, curry, CurriedFunction2, CurriedFunction3 } from 'ramda';
 import { PropertySignatureStructure } from 'ts-simple-ast';
+import { FunctionParameter } from '../interfaces';
 
 export function solidityToJsOutputType(type: string): string {
   if (type.includes('[]')) {

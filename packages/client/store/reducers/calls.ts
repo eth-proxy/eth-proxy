@@ -1,6 +1,6 @@
 import * as actions from '../actions';
 import { createSelector } from 'reselect';
-import * as Web3 from 'web3';
+import { sha3 } from '@eth-proxy/rx-web3';
 
 export type State = {
   requests: {
@@ -16,7 +16,7 @@ export type State = {
 };
 
 function hashRequestData(data: any) {
-  return new Web3().sha3(JSON.stringify(data));
+  return sha3(JSON.stringify(data));
 }
 
 export function reducer(

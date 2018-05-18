@@ -4,6 +4,7 @@ import {
 } from 'ts-simple-ast';
 import { toOutputName, getOutputProperty } from '../../lib';
 import { hasComplexOutput } from './utils';
+import { TruffleJson, FunctionDescription } from '../../interfaces';
 
 export function getOutputInterfaces({
   contractName,

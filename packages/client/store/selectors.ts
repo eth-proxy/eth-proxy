@@ -1,6 +1,6 @@
 import { createSelector, createStructuredSelector } from 'reselect';
-import { always, keys, chain, reduce, pick, values } from 'ramda';
-import * as Web3 from 'web3';
+import { always, keys, pick, values } from 'ramda';
+import { Block } from '@eth-proxy/rx-web3';
 
 import * as fromNetwork from './reducers/network';
 import * as fromContracts from './reducers/contracts';
@@ -13,20 +13,7 @@ import * as fromCalls from './reducers/calls';
 import { State } from './model';
 import { decodeLogs } from '../utils';
 import { DEFAULT_GAS } from './constants';
-import {
-  ContractInfo,
-  ErrorRecord,
-  InterfaceRef,
-  LoadingRecord,
-  QueryModel,
-  FailedTransaction,
-  ConfirmedTransaction,
-  BlockchainEvent,
-  InitializedTransaction,
-  TransactionWithHash,
-  AggregatedQueryResult,
-  QueryArgs
-} from './models';
+import * as models from './models';
 
 export const { getNetworkId } = fromNetwork.getSelectors<State>(
   m => m.networkId

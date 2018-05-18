@@ -7,13 +7,12 @@ import { map } from 'rxjs/operators/map';
 import { State } from './model';
 import { reducer } from './root-reducer';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/let';
 
 export type RxSelector<S, R> = (state$: Observable<S>) => Observable<R>;
 
 export interface ObservableStore<T> extends Store<T> {
   select<S>(selector: Selector<T, S>): Observable<S>;
-  let<S>(rxSelect: RxSelector<T, S>): Observable<S>;
+  pipe<S>(rxSelect: RxSelector<T, S>): Observable<S>;
 }
 
 export function createObservableStore(
@@ -31,7 +30,7 @@ export function createObservableStore(
     middleware ? applyMiddleware(middleware) : undefined
   ) as ObservableStore<State>;
   redux.select = select;
-  redux.let = <S>(rxSelect: RxSelector<State, S>): Observable<S> =>
+  redux.pipe = <S>(rxSelect: RxSelector<State, S>): Observable<S> =>
     state$.pipe(distinctUntilChanged(), rxSelect, distinctUntilChanged());
 
   redux.subscribe(() => {

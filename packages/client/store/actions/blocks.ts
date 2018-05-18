@@ -1,5 +1,4 @@
-import { Block } from 'web3';
-import { pipe, reject, isNil, uniq } from 'ramda';
+import { Block } from '@eth-proxy/rx-web3';
 
 export const UPDATE_LATEST_BLOCK = 'UPDATE_LATEST_BLOCK';
 

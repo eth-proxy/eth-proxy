@@ -1,30 +1,13 @@
 #!/usr/bin/env node
-import Ast, {
-  MethodSignatureStructure,
-  ParameterDeclarationStructure,
-  InterfaceDeclarationStructure,
-  PropertySignatureStructure,
-  SourceFileStructure
-} from 'ts-simple-ast';
-import {
-  chain,
-  map,
-  toUpper,
-  concat,
-  pipe,
-  flip,
-  assoc,
-  prop,
-  mergeDeepRight,
-  mergeDeepWith
-} from 'ramda';
+import Ast, { SourceFileStructure } from 'ts-simple-ast';
+import { concat, mergeDeepWith } from 'ramda';
 import * as requireDir from 'require-dir';
-import * as glob from 'glob';
 import * as argv from 'minimist';
 import * as path from 'path';
 import { getSourceFile as getEthProxySourceFile } from './clients/eth-proxy';
 import { getSourceFile as getTruffleSourceFile } from './clients/truffle';
 import { getCommonSource } from './lib';
+import { TruffleJson } from './interfaces';
 
 const args = argv(process.argv.slice(2));
 

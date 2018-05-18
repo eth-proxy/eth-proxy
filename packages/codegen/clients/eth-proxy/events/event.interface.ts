@@ -1,14 +1,10 @@
 import {
-  InterfaceDeclarationStructure,
-  PropertySignatureStructure,
-  TypeAliasDeclarationStructure
-} from 'ts-simple-ast';
-import {
   solidityToJsOutputType,
   toEventPayloadName,
   toEventName,
   CreateEventDeclaraton
 } from '../../../lib';
+import { EventDescription, TruffleJson } from '../../../interfaces';
 
 export const createEventInterface: CreateEventDeclaraton = (
   { name, inputs }: EventDescription,

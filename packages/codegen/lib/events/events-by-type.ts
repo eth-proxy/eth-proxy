@@ -1,11 +1,7 @@
 import { InterfaceDeclarationStructure } from 'ts-simple-ast';
-import {
-  toContractEventsName,
-  toEventName,
-  toEventsByTypeName
-} from '../utils';
-import { map, chain, converge } from 'ramda';
-import { concat } from 'ramda';
+import { toEventName, toEventsByTypeName } from '../utils';
+import { map } from 'ramda';
+import { TruffleJson } from '../../interfaces';
 
 export const getEventsByTypeIntefaces = (jsons: TruffleJson[]) => [
   getEventsByContract(jsons),

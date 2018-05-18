@@ -1,22 +1,17 @@
 import { Observable } from 'rxjs/Observable';
 import { max, reverse, times } from 'ramda';
 import { catchError, mergeMap, finalize, map } from 'rxjs/operators';
-import * as Web3 from 'web3';
 import { Reader, EventFilter } from './model';
 import { Subject } from 'rxjs/Subject';
-import { getEvents } from '@eth-proxy/rx-web3';
-import 'rxjs/add/operator/let';
+import { getEvents, Provider } from '@eth-proxy/rx-web3';
 import { merge } from 'rxjs/observable/merge';
 
 const rangeSize = 10000;
 
-export function createBlockchainReader(
-  web3: Web3,
-  filter: EventFilter
-): Reader {
+export function createBlockchainReader(provider: Provider): Reader {
   return (filter: EventFilter, work$: Observable<[number, number]>) => {
     const web3Reader = (f: EventFilter) =>
-      getEvents(web3, f as Web3.FilterObject).pipe(
+      getEvents(provider, f).pipe(
         map(events => ({
           range: [f.fromBlock, f.toBlock],
           result: events

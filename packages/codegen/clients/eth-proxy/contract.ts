@@ -1,17 +1,11 @@
 import {
   InterfaceDeclarationStructure,
-  PropertySignatureStructure,
-  ParameterDeclarationStructure
+  PropertySignatureStructure
 } from 'ts-simple-ast';
 import { map } from 'ramda';
-import { hasComplexInput, toMethodDefinitionName } from './utils';
-import {
-  toOutputName,
-  toInputName,
-  solidityToJsOutputType,
-  solidityToJsInputType,
-  createContractInterfaces
-} from '../../lib';
+import { toMethodDefinitionName } from './utils';
+import { createContractInterfaces } from '../../lib';
+import { FunctionDescription, TruffleJson } from '../../interfaces';
 
 export const createEthProxyContractInterfaces = createContractInterfaces(
   ({ contractName }, functions) => {
