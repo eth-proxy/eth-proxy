@@ -10,30 +10,19 @@ import {
   omit
 } from 'ramda';
 
-import { State } from '../../store';
-import { getSelectors as getEventsSelectors } from '../../store/reducers/events';
-import { getSelectors as getTransactionSelectors } from '../../store/reducers/transactions';
-import {
-  LoadingRecord,
-  ErrorRecord,
-  InitializedTransaction,
-  TransactionWithHash,
-  ConfirmedTransaction,
-  FailedTransaction,
-  EventMetadata,
-  BlockchainEvent,
-  ContractInfo,
-  getSelectors as getInternalSelectors
-} from '../../store';
+import { State, getSelectors as getInternalSelectors } from '../../store';
+import * as fromEvents from '../events';
+import * as fromTransactions from '../transaction';
 
 import { EntityModel } from './model';
+import { ContractInfo } from '../schema';
 
 export const getSelectors = <App>(getModule: (state: App) => State) => {
-  const { getAllEventsSorted } = getEventsSelectors(
+  const { getAllEventsSorted } = fromEvents.getSelectors(
     createSelector(getModule, m => m.events)
   );
 
-  const { getPendingTransactions } = getTransactionSelectors(
+  const { getPendingTransactions } = fromTransactions.getSelectors(
     createSelector(getModule, m => m.transactions)
   );
 
@@ -82,7 +71,7 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
 
         const handlers = pipe(mapObjIndexed(values), values, flatten)(model);
         const hasRoot = handlers.some(x => x.root);
-        const isEventInvolved = (x: BlockchainEvent) =>
+        const isEventInvolved = (x: fromEvents.DecodedEvent) =>
           eventTypes.find(
             ({ type, address }) => type === x.type && address === x.meta.address
           );

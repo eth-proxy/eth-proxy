@@ -1,19 +1,18 @@
-import * as fromNetwork from './reducers/network';
-import * as fromContracts from './reducers/contracts';
-import * as fromAccounts from './reducers/accounts';
-import * as fromTransactions from './reducers/transactions';
-import * as fromBlocks from './reducers/blocks';
-import * as fromEvents from './reducers/events';
-import * as fromCalls from './reducers/calls';
-
+import * as fromAccounts from '../modules/account';
+import * as fromBlocks from '../modules/blocks';
+import * as fromNetwork from '../modules/network';
+import * as fromEvents from '../modules/events';
+import * as fromSchema from '../modules/schema';
+import * as fromTransactions from '../modules/transaction';
+import * as fromCalls from '../modules/call';
 import { combineReducers, AnyAction } from 'redux';
 
 import { State } from './model';
 
 export const reducer = combineReducers<State>({
   networkId: fromNetwork.reducer,
-  contracts: fromContracts.reducer,
-  accounts: fromAccounts.reducer,
+  contracts: fromSchema.reducer,
+  [fromAccounts.moduleId]: fromAccounts.reducer,
   transactions: fromTransactions.reducer,
   blocks: fromBlocks.reducer,
   events: fromEvents.reducer,

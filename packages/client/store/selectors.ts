@@ -1,19 +1,19 @@
 import { createSelector, createStructuredSelector } from 'reselect';
-import { always, keys, pick, values } from 'ramda';
+import { always, keys, pick, values, map } from 'ramda';
 import { Block } from '@eth-proxy/rx-web3';
 
-import * as fromNetwork from './reducers/network';
-import * as fromContracts from './reducers/contracts';
-import * as fromAccounts from './reducers/accounts';
-import * as fromTransactions from './reducers/transactions';
-import * as fromBlocks from './reducers/blocks';
-import * as fromEvents from './reducers/events';
-import * as fromCalls from './reducers/calls';
+import * as fromAccounts from '../modules/account';
+import * as fromBlocks from '../modules/blocks';
+import * as fromNetwork from '../modules/network';
+import * as fromEvents from '../modules/events';
+import * as fromSchema from '../modules/schema';
+import * as fromTransactions from '../modules/transaction';
+import * as fromCalls from '../modules/call';
 
 import { State } from './model';
 import { decodeLogs } from '../utils';
-import { DEFAULT_GAS } from './constants';
-import * as models from './models';
+import { DEFAULT_GAS } from '../constants';
+import { QueryModel } from '../modules/events';
 
 export const { getNetworkId } = fromNetwork.getSelectors<State>(
   m => m.networkId
@@ -23,10 +23,10 @@ export const {
   getContractFromRef,
   getContractsFromRefs,
   getAllAbis,
-  getContractsFromQueryModel,
   getHasContracts,
-  getContractsByName
-} = fromContracts.getSelectors<State>(m => m.contracts);
+  getContractsByName,
+  getContractForRef
+} = fromSchema.getSelectors<State>(m => m.contracts);
 
 export const { getActiveAccount } = fromAccounts.getSelectors<State>(
   m => m.accounts
@@ -63,7 +63,7 @@ export const getLogDecoder = createSelector(getAllAbis, abis =>
 );
 
 export const getSelectors = <T>(getModule: (state: T) => State) =>
-  fromContracts.getSelectors(createSelector(getModule, m => m.contracts));
+  fromSchema.getSelectors(createSelector(getModule, m => m.contracts));
 
 const getModelAddressess = (id: string) =>
   createSelector(
@@ -95,4 +95,9 @@ export const getQueryResultsFromModelId = (id: string) =>
         ...fromEvents.aggregateQueryResults(results)
       };
     }
+  );
+
+export const getContractsFromQueryModel = (userModel: QueryModel) =>
+  createSelector(getContractForRef, contractsFromRefs =>
+    map(contractsFromRefs, keys(userModel.deps))
   );

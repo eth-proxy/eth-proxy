@@ -11,9 +11,9 @@ import {
   getTransactionFromInitId
 } from './selectors';
 import { keys } from 'ramda';
-
-import { QueryModel, ContractInfo } from './model';
-import * as models from './models';
+import { QueryModel } from '../modules/events';
+import { ContractInfo } from '../modules/schema';
+import * as fromTransaction from '../modules/transaction';
 
 export function getDetectedNetwork$(state$: Observable<State>) {
   return state$.pipe(rxMap(getNetworkId), first(x => !!x));

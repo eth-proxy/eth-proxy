@@ -1,4 +1,3 @@
-import { map } from 'rxjs/operators/map';
 import { Observable } from 'rxjs/Observable';
 import { shareReplay } from 'rxjs/operators/shareReplay';
 import { take } from 'rxjs/operators/take';
@@ -12,23 +11,20 @@ import {
 } from '@eth-proxy/rx-web3';
 import { identity } from 'ramda';
 
-import { processTransaction, processCall } from './modules/contract';
 import {
   createObservableStore,
   getActiveAccount$,
   State,
-  Request
+  rootEpic
 } from './store';
-import {
-  createSetNetwork,
-  getDetectedNetwork$,
-  EthProxyOptions
-} from './store';
-import { rootEpic } from './store/epics';
-import { EthProxy } from './model';
-import { query } from './modules/query';
+import { getDetectedNetwork$ } from './store';
+import { EthProxy, EthProxyOptions } from './model';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { createSchemaLoader } from './modules/schema';
+import { processCall } from './modules/call';
+import { Request } from './modules/request';
+import { query } from './modules/events';
+import { processTransaction } from './modules/transaction';
 
 const defaultOptions = {
   pollInterval: 1000,
@@ -48,11 +44,6 @@ export function createProxy<T extends {}>(
   const replayProvider$ = provider$.pipe(shareReplay(1), take(1));
 
   const rxWeb3 = createRxWeb3(provider$);
-
-  rxWeb3
-    .getNetwork()
-    .pipe(map(createSetNetwork))
-    .subscribe(action => store.dispatch(action));
 
   const getEvents = (filter: FilterObject) =>
     replayProvider$.pipe(
@@ -108,8 +99,15 @@ export function createProxy<T extends {}>(
 export * from './model';
 export * from './utils';
 export { ethProxyIntegrationReducer, State as EthProxyState } from './store';
-export * from './modules/contract';
-export * from './modules/entity';
+export { ContractInfo } from './modules/schema';
+export {
+  EntityModel,
+  EventHandler,
+  TransactionHandler,
+  getSelectors
+} from './modules/entity';
+export { on, once } from './modules/transaction';
+export { at, withOptions } from './modules/request';
 
 export function entity(arg) {
   return arg;

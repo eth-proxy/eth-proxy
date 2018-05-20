@@ -1,34 +1,17 @@
-import * as fromNetwork from './reducers/network';
-import * as fromContracts from './reducers/contracts';
-import * as fromAccounts from './reducers/accounts';
-import * as fromTransactions from './reducers/transactions';
-import * as fromBlocks from './reducers/blocks';
-import * as fromEvents from './reducers/events';
-import * as fromCalls from './reducers/calls';
-import { Observable } from 'rxjs/Observable';
-
-import {
-  EthProxyOptions,
-  ContractSchemaResolver,
-  ContractLoader
-} from './models';
-import { RxWeb3 } from '@eth-proxy/rx-web3';
+import * as fromAccounts from '../modules/account';
+import * as fromBlocks from '../modules/blocks';
+import * as fromNetwork from '../modules/network';
+import * as fromEvents from '../modules/events';
+import * as fromSchema from '../modules/schema';
+import * as fromTransactions from '../modules/transaction';
+import * as fromCalls from '../modules/call';
 
 export interface State {
   networkId: fromNetwork.State;
-  contracts: fromContracts.State;
-  accounts: fromAccounts.State;
+  contracts: fromSchema.State;
+  [fromAccounts.moduleId]: fromAccounts.State;
   transactions: fromTransactions.State;
   blocks: fromBlocks.State;
   events: fromEvents.State;
   calls: fromCalls.State;
 }
-
-export interface EpicContext extends RxWeb3 {
-  state$: Observable<State>;
-  options: EthProxyOptions;
-  contractSchemaResolver: ContractSchemaResolver;
-  contractLoader: ContractLoader;
-}
-
-export * from './models';

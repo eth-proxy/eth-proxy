@@ -1,7 +1,7 @@
 export * from './decode-logs';
 import { ascend, sortWith, path, equals } from 'ramda';
 import { createSelectorCreator, defaultMemoize } from 'reselect';
-import { EventMetadata, BlockchainEvent } from '../store';
+import { DecodedEvent } from '../modules/events';
 
 export const networkNameFromId = (networkId: string) => {
   switch (networkId) {
@@ -28,11 +28,11 @@ export const isMain = (networkId: string) =>
 
 export function idFromEvent({
   meta: { transactionHash, transactionIndex, logIndex }
-}: BlockchainEvent) {
+}: DecodedEvent) {
   return transactionHash + transactionIndex + logIndex;
 }
 
-export const sortEvents = sortWith<BlockchainEvent>([
+export const sortEvents = sortWith<DecodedEvent>([
   ascend(path(['meta', 'blockNumber'])),
   ascend(path(['meta', 'transactionIndex'])),
   ascend(path(['meta', 'logIndex']))
