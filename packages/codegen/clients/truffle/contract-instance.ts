@@ -23,5 +23,12 @@ export const contractInstance: InterfaceDeclarationStructure = {
       name: 'constructor',
       type: `{ currentProvider: any; contractName: string }`
     }
+  ],
+  methods: [
+    {
+      name: 'send',
+      parameters: [{ name: 'value', type: 'NumberLike' }],
+      returnType: 'Promise<TransactionResult>'
+    }
   ]
 };
