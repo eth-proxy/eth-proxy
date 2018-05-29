@@ -28,6 +28,8 @@ import {
 
 import { EntityModel } from './model';
 
+const EMPTY_SNAPSHOT = {};
+
 export const getSelectors = <App>(getModule: (state: App) => State) => {
   const { getAllEventsSorted } = getEventsSelectors(
     createSelector(getModule, m => m.events)
@@ -55,11 +57,15 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
     type: string;
     address: string;
   }
-  const getEntitiesFromModel = <T>(model: EntityModel<T, {}, {}>) => {
+  const getEntitiesFromModel = <T>(
+    model: EntityModel<T, {}, {}>,
+    seedSelector: (state: App) => { [id: string]: T } = () => EMPTY_SNAPSHOT
+  ) => {
     return createSelector(
+      seedSelector,
       getContractsFromRefs(keys(model)),
       getAllEventsSorted,
-      (contracts, allEvents) => {
+      (seed, contracts, allEvents) => {
         if (contracts.some((x: any) => !x || x.loading || x.error)) {
           return {};
         }
@@ -100,12 +106,15 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
                 [id]: next
               }
             : omit([id.toString()], state);
-        }, {});
+        }, seed);
       }
     );
   };
 
-  const getEntitiesFromModelOptimistic = <T>(model: EntityModel<T, {}, {}>) => {
+  const getEntitiesFromModelOptimistic = <T>(
+    model: EntityModel<T, {}, {}>,
+    seedSelector: (state: App) => { [id: string]: T } = () => EMPTY_SNAPSHOT
+  ) => {
     const transactionTypes = pipe(
       mapObjIndexed((handlers, interfaceName) =>
         keys(handlers).map(method => ({ method, interfaceName }))
@@ -121,7 +130,7 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
     const hasRoot = handlers.some((x: any) => x.root);
 
     return createSelector(
-      getEntitiesFromModel(model),
+      getEntitiesFromModel(model, seedSelector),
       getPendingTransactionsOfType(transactionTypes),
       (entities, transactions): { [id: string]: T } => {
         return transactions.reduce((state: any, t) => {
@@ -141,8 +150,11 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
       }
     );
   };
-  const getListFromModelOptimistic = <T>(model: EntityModel<T, {}, {}>) =>
-    createSelector(getEntitiesFromModelOptimistic(model), values);
+  const getListFromModelOptimistic = <T>(
+    model: EntityModel<T, {}, {}>,
+    seedSelector?: (state: App) => { [id: string]: T }
+  ) =>
+    createSelector(getEntitiesFromModelOptimistic(model, seedSelector), values);
 
   return {
     getEntitiesFromModel,
