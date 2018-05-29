@@ -10,12 +10,12 @@ import {
   omit
 } from 'ramda';
 
-import { State, getSelectors as getInternalSelectors } from '../../store';
-import * as fromEvents from '../events';
-import * as fromTransactions from '../transaction';
+import { State, getSelectors as getInternalSelectors } from '../store';
+import * as fromEvents from '../modules/events';
+import * as fromTransactions from '../modules/transaction';
 
 import { EntityModel } from './model';
-import { ContractInfo } from '../schema';
+import { ContractInfo } from '../modules/schema';
 
 export const getSelectors = <App>(getModule: (state: App) => State) => {
   const { getAllEventsSorted } = fromEvents.getSelectors(

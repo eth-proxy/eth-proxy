@@ -30,13 +30,13 @@ export const mapResolvedContractSchema = (
 export const loadContractSchema = (
   actions$: ActionsObservable<actions.LoadContractSchema>,
   _,
-  { contractSchemaResolver, state$ }: EpicContext
+  { options, state$ }: EpicContext
 ): Observable<actions.Types> => {
   return actions$.pipe(
     ofType(actions.LOAD_CONTRACT_SCHEMA),
     mergeMap(({ payload: { name } }) => {
       return combineLatest(
-        defer(() => contractSchemaResolver({ name })),
+        defer(() => options.contractSchemaResolver({ name })),
         state$.pipe(getDetectedNetwork$),
         mapResolvedContractSchema
       ).pipe(

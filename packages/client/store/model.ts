@@ -7,11 +7,11 @@ import * as fromTransactions from '../modules/transaction';
 import * as fromCalls from '../modules/call';
 
 export interface State {
-  networkId: fromNetwork.State;
-  contracts: fromSchema.State;
+  [fromNetwork.moduleId]: fromNetwork.State;
+  [fromSchema.moduleId]: fromSchema.State;
   [fromAccounts.moduleId]: fromAccounts.State;
-  transactions: fromTransactions.State;
-  blocks: fromBlocks.State;
-  events: fromEvents.State;
-  calls: fromCalls.State;
+  [fromTransactions.moduleId]: fromTransactions.State;
+  [fromBlocks.moduleId]: fromBlocks.State;
+  [fromEvents.moduleId]: fromEvents.State;
+  [fromCalls.moduleId]: fromCalls.State;
 }

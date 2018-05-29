@@ -11,7 +11,7 @@ import {
 
 import { Observable } from 'rxjs/Observable';
 import { EpicContext } from '../../../context';
-import { getLogDecoder } from '../../../store';
+import * as fromSchema from '../../schema';
 
 // DONT WATCH SAME CONTRACTS MORE THEN ONCE
 export const watchEvents = (
@@ -33,7 +33,7 @@ export const watchEvents = (
         address: addresses
       }).pipe(
         takeUnilRemoved(id),
-        map(log => getLogDecoder(store.getState())([log])),
+        map(log => fromSchema.getLogDecoder(store.getState())([log])),
         map(createEventsLoaded),
         catchError((err, err$) => {
           console.error(err);

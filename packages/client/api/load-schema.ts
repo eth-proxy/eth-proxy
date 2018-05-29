@@ -1,20 +1,17 @@
 import { Observable } from 'rxjs/Observable';
-
+import { ObservableStore, State, getLoadedContractFromRef$ } from '../store';
+import { ContractInfo } from '../model';
 import {
-  ObservableStore,
-  State,
-  getLoadedContractFromRef$,
-  getContractFromRef
-} from '../../store';
-import * as actions from './actions';
-import { ContractInfo } from '../schema';
+  getContractFromRef,
+  createLoadContractSchema
+} from '../modules/schema';
 
 export const createSchemaLoader = (store: ObservableStore<State>) => (
   name: string
 ): Observable<ContractInfo> => {
   const contract = getContractFromRef(name)(store.getState());
   if (!contract) {
-    store.dispatch(actions.createLoadContractSchema(name));
+    store.dispatch(createLoadContractSchema(name));
   }
   return store.pipe(getLoadedContractFromRef$(name));
 };

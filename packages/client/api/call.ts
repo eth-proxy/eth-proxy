@@ -1,21 +1,19 @@
 import { first, tap, mergeMap, map } from 'rxjs/operators';
-
-import { ObservableStore, State, getRequestById } from '../../store';
-import { pickTxParamsProps, Request } from '../request';
-import * as actions from './actions';
 import { Observable } from 'rxjs/Observable';
-import { defer } from 'rxjs/observable/defer';
 
-export function processCall(
-  store: ObservableStore<State>,
-  genId: () => string
-) {
+import { pickTxParamsProps, Request } from '../modules/request';
+import { defer } from 'rxjs/observable/defer';
+import { createProcessCall, getRequestById } from '../modules/call';
+import { Context } from '../context';
+import { getInterceptor } from '../utils';
+
+export function sendCall({ genId, options, store }: Context) {
   return (request: Request<string, string, any>) => {
     return defer(() => Promise.resolve().then(genId)).pipe(
       tap(id => {
         const { address, method, payload } = request;
         store.dispatch(
-          actions.createProcessCall({
+          createProcessCall({
             id,
             address,
             args: payload,
@@ -35,7 +33,8 @@ export function processCall(
           first(x => x.status === 'success'),
           map(({ data }) => data)
         );
-      })
+      }),
+      getInterceptor('ethCall', options)
     );
   };
 }

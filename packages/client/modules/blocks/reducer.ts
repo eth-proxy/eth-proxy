@@ -2,6 +2,7 @@ import { Block } from '@eth-proxy/rx-web3';
 import * as actions from './actions';
 import { createSelector } from 'reselect';
 import { isNil } from 'ramda';
+import { moduleId } from './constants';
 
 export interface State {
   latest?: number;
@@ -76,3 +77,7 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
     )
   };
 };
+
+export const { getLatestBlock, getLatestBlockNumberOrFail } = getSelectors(
+  m => m[moduleId]
+);

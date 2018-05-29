@@ -27,7 +27,7 @@ export function createObservableStore(
 
   const redux = createStore(
     reducer,
-    middleware ? applyMiddleware(middleware) : undefined
+    middleware && applyMiddleware(middleware)
   ) as ObservableStore<State>;
   redux.select = select;
   redux.pipe = <S>(rxSelect: RxSelector<State, S>): Observable<S> =>

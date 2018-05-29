@@ -11,7 +11,8 @@ import {
   take,
   concat,
   map,
-  catchError
+  catchError,
+  withLatestFrom
 } from 'rxjs/operators';
 import { of } from 'rxjs/observable/of';
 import { _throw } from 'rxjs/observable/throw';
@@ -19,20 +20,20 @@ import { _throw } from 'rxjs/observable/throw';
 import * as actions from '../actions';
 import { Observable } from 'rxjs/Observable';
 import { EpicContext } from '../../../context';
-import { getLogDecoder, State } from '../../../store';
-import { Store } from 'redux';
+import { getLogDecoder } from '../../schema';
 
 export const findReceiptEpic = (
   actions$: ActionsObservable<actions.TxGenerated>,
-  store: Store<State>,
-  { getReceipt }: EpicContext
+  _,
+  { getReceipt, state$ }: EpicContext
 ) => {
   return actions$.pipe(
     ofType(TX_GENERATED),
-    mergeMap(({ payload: { tx } }) =>
+    withLatestFrom(state$),
+    mergeMap(([{ payload: { tx } }, state]) =>
       getReceipt(tx).pipe(
         map(receipt => {
-          const logs = getLogDecoder(store.getState())(receipt.logs);
+          const logs = getLogDecoder(state)(receipt.logs);
           return createLoadReceiptSuccess({
             receipt,
             logs

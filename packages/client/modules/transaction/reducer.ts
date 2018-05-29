@@ -7,6 +7,7 @@ import {
   TransactionWithHash
 } from './model';
 import * as actions from './actions';
+import { moduleId } from './constants';
 
 export type State = Transaction[];
 
@@ -100,3 +101,7 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
     getTransactionFromInitId
   };
 };
+
+export const { getTransactionByTx, getTransactionFromInitId } = getSelectors(
+  m => m[moduleId]
+);

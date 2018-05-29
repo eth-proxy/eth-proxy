@@ -1,9 +1,10 @@
 import { ActionsObservable } from 'redux-observable';
-import { EpicContext } from '../../context';
-import * as actions from './actions';
 import { map, retry, catchError } from 'rxjs/operators';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
+
+import { EpicContext } from '../../context';
+import * as actions from './actions';
 
 export const watchLatestBlock = (
   _: ActionsObservable<any>,

@@ -9,7 +9,7 @@ import { BlockRange, QueryResult, QueryArgs } from '../model';
 
 import { Observable } from 'rxjs/Observable';
 import { EpicContext } from '../../../context';
-import { getLogDecoder } from '../../../store';
+import * as fromSchema from '../../schema';
 
 export const queryEvents = (
   action$: ActionsObservable<actions.QueryEvents>,
@@ -22,7 +22,7 @@ export const queryEvents = (
       const addresses = payload.map(q => q.address);
       const genesis = payload.map(x => x.range[0]).reduce(min, Infinity);
       const toBlock = payload.map(x => x.range[1]).reduce(max, 0);
-      const decodeLogs = getLogDecoder(store.getState());
+      const decodeLogs = fromSchema.getLogDecoder(store.getState());
 
       return forkJoin(
         payload.map(({ range: [fromBlock, toBlock], address }) => {

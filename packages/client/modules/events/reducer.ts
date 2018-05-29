@@ -26,6 +26,7 @@ import {
   createLengthEqualSelector,
   createDeepEqualSelector
 } from '../../utils';
+import { moduleId } from './constants';
 
 export interface QueryState {
   loading: boolean;
@@ -255,3 +256,12 @@ export const aggregateQueryResults = reduce<
     loading: state.loading || result.loading
   };
 }, emptyResult);
+
+export const {
+  getAllEvents,
+  getEventEntities,
+  getEventQueries,
+  getQueryResultsByAddress,
+  getModelFromId,
+  getIsLoadingByAddresses
+} = getSelectors(m => m[moduleId]);

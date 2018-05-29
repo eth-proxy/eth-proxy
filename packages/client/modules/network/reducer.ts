@@ -1,6 +1,7 @@
 import * as actions from './actions';
 import { createSelector } from 'reselect';
 import { identity } from 'ramda';
+import { moduleId } from './constants';
 
 export type State = string | null;
 export function reducer(state: State = null, action: actions.Types): State {
@@ -17,3 +18,5 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
     getNetworkId: createSelector(getModule, identity)
   };
 };
+
+export const { getNetworkId } = getSelectors(m => m[moduleId]);

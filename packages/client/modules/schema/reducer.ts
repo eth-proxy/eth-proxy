@@ -4,6 +4,8 @@ import { pipe, values, flatten, map, all, propOr } from 'ramda';
 import * as actions from './actions';
 import { ContractInfo, ContractRef, LoadingRecord, ErrorRecord } from './model';
 import { isString } from '../../utils';
+import { moduleId } from './constants';
+import { decodeLogs } from './decode-logs';
 
 export interface State {
   [contractName: string]:
@@ -64,17 +66,29 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
     createSelector(getContractForRef, getContract =>
       pipe(map(getContract), all((x: any) => !!x && !x.loading))(res)
     );
+  const getAllAbis = createSelector(
+    getModule,
+    pipe(values, map(propOr([], 'abi')), flatten)
+  );
+  const getLogDecoder = createSelector(getAllAbis, abis => decodeLogs(abis));
 
   return {
     getContractForRef,
     getContractFromRef: (contractRef: ContractRef) => (state: T) =>
       getContractForRef(state)(contractRef),
     getContractsFromRefs,
-    getAllAbis: createSelector(
-      getModule,
-      pipe(values, map(propOr([], 'abi')), flatten)
-    ),
+    getAllAbis,
     getHasContracts,
-    getContractsByName
+    getContractsByName,
+    getLogDecoder
   };
 };
+
+export const {
+  getContractFromRef,
+  getContractsFromRefs,
+  getHasContracts,
+  getContractsByName,
+  getContractForRef,
+  getLogDecoder
+} = getSelectors(m => m[moduleId]);

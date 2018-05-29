@@ -1,5 +1,8 @@
-import { InitializedTransaction, TransactionWithHash } from '../transaction';
-import { EventMetadata } from '../events';
+import {
+  InitializedTransaction,
+  TransactionWithHash
+} from '../modules/transaction';
+import { EventMetadata } from '../modules/events';
 
 export interface TransactionHandler<E, MD> {
   handle: (

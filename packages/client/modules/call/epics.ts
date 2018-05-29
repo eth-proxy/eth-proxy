@@ -1,9 +1,10 @@
-import * as actions from './actions';
 import { ActionsObservable } from 'redux-observable';
 import { mergeMap, map, catchError } from 'rxjs/operators';
-import { ProcessRequestArgs } from '../request';
 import { of } from 'rxjs/observable/of';
 import { Observable } from 'rxjs/Observable';
+
+import * as actions from './actions';
+import { ProcessRequestArgs } from '../request';
 import { EpicContext } from '../../context';
 import { ContractInfo } from '../schema';
 

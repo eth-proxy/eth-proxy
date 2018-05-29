@@ -1,6 +1,7 @@
 import * as actions from './actions';
 import { createSelector } from 'reselect';
 import { sha3 } from '@eth-proxy/rx-web3';
+import { moduleId } from './constants';
 
 export type State = {
   requests: {
@@ -102,3 +103,5 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
     getRequestById
   };
 };
+
+export const { getRequestById } = getSelectors(m => m[moduleId]);

@@ -1,7 +1,7 @@
-export * from './decode-logs';
-import { ascend, sortWith, path, equals } from 'ramda';
+import { ascend, sortWith, path, equals, identity } from 'ramda';
 import { createSelectorCreator, defaultMemoize } from 'reselect';
 import { DecodedEvent } from '../modules/events';
+import { EthProxyInterceptors } from '../model';
 
 export const networkNameFromId = (networkId: string) => {
   switch (networkId) {
@@ -47,3 +47,6 @@ export const createDeepEqualSelector = createSelectorCreator(
   defaultMemoize,
   equals
 );
+
+export const getInterceptor = (key: keyof EthProxyInterceptors, options: any) =>
+  ((options.interceptors as any) || {})[key] || identity;

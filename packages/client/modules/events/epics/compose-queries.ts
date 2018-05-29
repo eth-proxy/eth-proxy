@@ -2,17 +2,17 @@ import { ActionsObservable, ofType } from 'redux-observable';
 import { mergeMap, first, map } from 'rxjs/operators';
 import { of } from 'rxjs/observable/of';
 import { combineLatest } from 'rxjs/observable/combineLatest';
-
-import { QueryArgs } from '../model';
-import * as actions from '../actions';
-
 import { Observable } from 'rxjs/Observable';
 import { forkJoin } from 'rxjs/observable/forkJoin';
 import { keys, isNil } from 'ramda';
 import { _throw } from 'rxjs/observable/throw';
+
+import { QueryArgs } from '../model';
+import * as actions from '../actions';
+import { getEventQueries } from '../reducer';
 import { EpicContext } from '../../../context';
-import { getLatestBlockNumberOrFail, getEventQueries } from '../../../store';
 import { createQueries } from '../create-queries';
+import { getLatestBlockNumberOrFail } from '../../blocks';
 
 export const composeQueries = (
   actions$: ActionsObservable<actions.Types>,

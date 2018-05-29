@@ -10,14 +10,15 @@ import { combineReducers, AnyAction } from 'redux';
 import { State } from './model';
 
 export const reducer = combineReducers<State>({
-  networkId: fromNetwork.reducer,
-  contracts: fromSchema.reducer,
+  [fromNetwork.moduleId]: fromNetwork.reducer,
+  [fromSchema.moduleId]: fromSchema.reducer,
   [fromAccounts.moduleId]: fromAccounts.reducer,
-  transactions: fromTransactions.reducer,
-  blocks: fromBlocks.reducer,
-  events: fromEvents.reducer,
-  calls: fromCalls.reducer
+  [fromTransactions.moduleId]: fromTransactions.reducer,
+  [fromBlocks.moduleId]: fromBlocks.reducer,
+  [fromEvents.moduleId]: fromEvents.reducer,
+  [fromCalls.moduleId]: fromCalls.reducer
 });
+
 const initialState = reducer(undefined, { type: '' });
 
 export const ethProxyIntegrationReducer = (

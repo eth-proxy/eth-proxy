@@ -9,7 +9,7 @@ import {
   FilterObject,
   Provider
 } from '@eth-proxy/rx-web3';
-import { identity } from 'ramda';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import {
   createObservableStore,
@@ -19,12 +19,7 @@ import {
 } from './store';
 import { getDetectedNetwork$ } from './store';
 import { EthProxy, EthProxyOptions } from './model';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { createSchemaLoader } from './modules/schema';
-import { processCall } from './modules/call';
-import { Request } from './modules/request';
-import { query } from './modules/events';
-import { processTransaction } from './modules/transaction';
+import { sendCall, createSchemaLoader, sendTransaction, query } from './api';
 
 const defaultOptions = {
   pollInterval: 1000,
@@ -54,45 +49,38 @@ export function createProxy<T extends {}>(
 
   const state$ = new BehaviorSubject<State>(null);
 
+  const context = {
+    ...rxWeb3,
+    getEvents,
+    options,
+    state$,
+    contractLoader,
+    genId
+  };
+
   const epicMiddleware = createEpicMiddleware(rootEpic, {
-    dependencies: {
-      ...rxWeb3,
-      getEvents,
-      options,
-      state$,
-      contractSchemaResolver: options.contractSchemaResolver,
-      contractLoader
-    }
+    dependencies: context
   });
 
   var store = createObservableStore(epicMiddleware, options.store);
   store.select(x => x).subscribe(state$);
 
-  const getInterceptor = (key: string) =>
-    (options.interceptors as any)[key] || identity;
-
-  const interceptors = {
-    transaction: getInterceptor('transaction'),
-    ethCall: getInterceptor('ethCall'),
-    preQuery: getInterceptor('preQuery'),
-    postQuery: getInterceptor('postQuery')
+  const deps = {
+    ...context,
+    store
   };
 
   return {
     ...rxWeb3,
     provider$: replayProvider$,
-    query: query(store, genId, interceptors),
+    query: query(deps),
 
     network$: store.pipe(getDetectedNetwork$),
     defaultAccount$: store.pipe(getActiveAccount$),
 
     loadContractSchema: contractLoader,
-
-    transaction: (request: Request<string, string, any>) =>
-      processTransaction(store, genId)(request).pipe(interceptors.transaction),
-
-    ethCall: (request: Request<string, string, any>) =>
-      processCall(store, genId)(request).pipe(interceptors.ethCall)
+    transaction: sendTransaction(deps) as any,
+    ethCall: sendCall(deps) as any
   };
 }
 
@@ -100,12 +88,13 @@ export * from './model';
 export * from './utils';
 export { ethProxyIntegrationReducer, State as EthProxyState } from './store';
 export { ContractInfo } from './modules/schema';
+export * from './modules/request';
 export {
   EntityModel,
   EventHandler,
   TransactionHandler,
   getSelectors
-} from './modules/entity';
+} from './entity';
 export { on, once } from './modules/transaction';
 export { at, withOptions } from './modules/request';
 

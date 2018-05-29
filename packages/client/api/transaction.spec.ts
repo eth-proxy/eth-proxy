@@ -1,11 +1,12 @@
-import { processTransaction } from './process';
-import { createObservableStore, ObservableStore, State } from '../../store';
-import * as actions from './actions';
-import * as fromAccount from '../account';
+import { sendTransaction } from './transaction';
+import { createObservableStore, ObservableStore, State } from '../store';
+import * as actions from '../modules/transaction';
+import * as fromAccount from '../modules/account';
+import * as fromRequest from '../modules/request';
 import { AnyAction } from 'redux';
 import { expect } from 'chai';
 import { Observable } from 'rxjs/Observable';
-import { DEFAULT_GAS } from '../../constants';
+import { DEFAULT_GAS } from '../constants';
 
 const account = '123';
 
@@ -40,6 +41,7 @@ type TestStore = ObservableStore<State> & {
 
 describe('Initialize transaction', () => {
   let store: TestStore;
+  let sendTx: (request: fromRequest.Request<any, any, any>) => Observable<{}>;
   beforeEach(() => {
     store = createObservableStore() as TestStore;
     let next = store.dispatch;
@@ -50,12 +52,13 @@ describe('Initialize transaction', () => {
       let result = next(action);
       return result;
     };
+    sendTx = sendTransaction({ store, genId, options: {} } as any);
   });
 
   it('Dispatches process action', done => {
     store.dispatch(fromAccount.createSetActiveAccount(account));
 
-    processTransaction(store, genId)({
+    sendTx({
       interface: interfaceName,
       method: methodName,
       payload: args
@@ -71,7 +74,7 @@ describe('Initialize transaction', () => {
     const expectedAction = actions.createProcessTransaction(transactionData);
 
     it('Waits for active account', done => {
-      processTransaction(store, genId)({
+      sendTx({
         interface: interfaceName,
         method: methodName,
         payload: args
@@ -87,7 +90,7 @@ describe('Initialize transaction', () => {
     let result$: Observable<any>;
     beforeEach(() => {
       store.dispatch(fromAccount.createSetActiveAccount(account));
-      result$ = processTransaction(store, genId)({
+      result$ = sendTx({
         interface: interfaceName,
         method: methodName,
         payload: args
