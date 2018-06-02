@@ -17,6 +17,16 @@ import * as fromTransactions from '../modules/transaction';
 import { EntityModel } from './model';
 import { ContractInfo } from '../modules/schema';
 
+const EMPTY_SNAPSHOT = {
+  entities: {},
+  toBlock: 0
+};
+
+export interface Snapshot<T> {
+  entities: { [id: string]: T };
+  toBlock: number;
+}
+
 export const getSelectors = <App>(getModule: (state: App) => State) => {
   const { getAllEventsSorted } = fromEvents.getSelectors(
     createSelector(getModule, m => m.events)
@@ -44,11 +54,15 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
     type: string;
     address: string;
   }
-  const getEntitiesFromModel = <T>(model: EntityModel<T, {}, {}>) => {
+  const getEntitiesFromModel = <T>(
+    model: EntityModel<T, {}, {}>,
+    snapshotSelector: (state: App) => Snapshot<T> = () => EMPTY_SNAPSHOT
+  ) => {
     return createSelector(
+      snapshotSelector,
       getContractsFromRefs(keys(model)),
       getAllEventsSorted,
-      (contracts, allEvents) => {
+      (snapshot, contracts, allEvents) => {
         if (contracts.some((x: any) => !x || x.loading || x.error)) {
           return {};
         }
@@ -73,7 +87,10 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
         const hasRoot = handlers.some(x => x.root);
         const isEventInvolved = (x: fromEvents.DecodedEvent) =>
           eventTypes.find(
-            ({ type, address }) => type === x.type && address === x.meta.address
+            ({ type, address }) =>
+              type === x.type &&
+              address === x.meta.address &&
+              x.meta.blockNumber > snapshot.toBlock
           );
 
         return allEvents.filter(isEventInvolved).reduce((state: any, e) => {
@@ -89,12 +106,15 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
                 [id]: next
               }
             : omit([id.toString()], state);
-        }, {});
+        }, snapshot.entities);
       }
     );
   };
 
-  const getEntitiesFromModelOptimistic = <T>(model: EntityModel<T, {}, {}>) => {
+  const getEntitiesFromModelOptimistic = <T>(
+    model: EntityModel<T, {}, {}>,
+    snapshotSelector: (state: App) => Snapshot<T> = () => EMPTY_SNAPSHOT
+  ) => {
     const transactionTypes = pipe(
       mapObjIndexed((handlers, interfaceName) =>
         keys(handlers).map(method => ({ method, interfaceName }))
@@ -110,7 +130,7 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
     const hasRoot = handlers.some((x: any) => x.root);
 
     return createSelector(
-      getEntitiesFromModel(model),
+      getEntitiesFromModel(model, snapshotSelector),
       getPendingTransactionsOfType(transactionTypes),
       (entities, transactions): { [id: string]: T } => {
         return transactions.reduce((state: any, t) => {
@@ -130,8 +150,14 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
       }
     );
   };
-  const getListFromModelOptimistic = <T>(model: EntityModel<T, {}, {}>) =>
-    createSelector(getEntitiesFromModelOptimistic(model), values);
+  const getListFromModelOptimistic = <T>(
+    model: EntityModel<T, {}, {}>,
+    snapshotSelector?: (app: App) => Snapshot<T>
+  ) =>
+    createSelector(
+      getEntitiesFromModelOptimistic(model, snapshotSelector),
+      values
+    );
 
   return {
     getEntitiesFromModel,

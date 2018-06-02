@@ -91,6 +91,7 @@ export interface TruffleContractInstance {
   abi: any[];
   contract: any;
   constructor: { currentProvider: any; contractName: string };
+  send(value: NumberLike): Promise<TransactionResult>;
 }
 
 export interface Receipt {
