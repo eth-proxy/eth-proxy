@@ -11,15 +11,11 @@ import {
 } from '@eth-proxy/rx-web3';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import {
-  createObservableStore,
-  getActiveAccount$,
-  State,
-  rootEpic
-} from './store';
+import { createAppStore, getActiveAccount$, State, rootEpic } from './store';
 import { getDetectedNetwork$ } from './store';
 import { EthProxy, EthProxyOptions } from './model';
 import { sendCall, createSchemaLoader, sendTransaction, query } from './api';
+import { empty } from 'rxjs/observable/empty';
 
 const defaultOptions = {
   pollInterval: 1000,
@@ -37,6 +33,7 @@ export function createProxy<T extends {}>(
 ): EthProxy<T> {
   const options = { ...defaultOptions, ...userOptions };
   const replayProvider$ = provider$.pipe(shareReplay(1), take(1));
+  const state$ = new BehaviorSubject<State>(null);
 
   const rxWeb3 = createRxWeb3(provider$);
 
@@ -46,8 +43,6 @@ export function createProxy<T extends {}>(
     );
 
   const contractLoader = (name: string) => createSchemaLoader(store)(name);
-
-  const state$ = new BehaviorSubject<State>(null);
 
   const context = {
     ...rxWeb3,
@@ -62,7 +57,7 @@ export function createProxy<T extends {}>(
     dependencies: context
   });
 
-  var store = createObservableStore(epicMiddleware, options.store);
+  var store = createAppStore(epicMiddleware, options.store);
   store.select(x => x).subscribe(state$);
 
   const deps = {
@@ -80,7 +75,8 @@ export function createProxy<T extends {}>(
 
     loadContractSchema: contractLoader,
     transaction: sendTransaction(deps) as any,
-    ethCall: sendCall(deps) as any
+    ethCall: sendCall(deps) as any,
+    stop: () => epicMiddleware.replaceEpic(() => empty())
   };
 }
 

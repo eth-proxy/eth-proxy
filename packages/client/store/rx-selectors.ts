@@ -4,8 +4,8 @@ import { map as rxMap, filter, tap } from 'rxjs/operators';
 import { first } from 'rxjs/operators/first';
 import { getContractsFromQueryModel, getDefaultTxParams } from './selectors';
 import { keys } from 'ramda';
-import { QueryModel } from '../modules/events';
-import { ContractInfo } from '../modules/schema';
+
+import * as fromEvents from '../modules/events';
 import * as fromAccounts from '../modules/account';
 import * as fromNetwork from '../modules/network';
 import * as fromSchema from '../modules/schema';
@@ -15,7 +15,7 @@ export function getDetectedNetwork$(state$: Observable<State>) {
   return state$.pipe(rxMap(fromNetwork.getNetworkId), first(x => !!x));
 }
 
-export function getContractsFromModel$(queryModel: QueryModel) {
+export function getContractsFromModel$(queryModel: fromEvents.QueryModel) {
   return (state$: Observable<State>) =>
     state$.pipe(
       first(fromSchema.getHasContracts(keys(queryModel.deps))),
@@ -26,7 +26,7 @@ export function getContractsFromModel$(queryModel: QueryModel) {
           throw loadingError;
         }
       }),
-      rxMap(x => x as ContractInfo[])
+      rxMap(x => x as fromSchema.ContractInfo[])
     );
 }
 
@@ -40,7 +40,7 @@ export function getLoadedContractFromRef$(contractRef: string) {
           throw x.error;
         }
       }),
-      rxMap(x => x as ContractInfo)
+      rxMap(x => x as fromSchema.ContractInfo)
     );
 }
 

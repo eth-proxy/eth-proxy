@@ -1,54 +1,69 @@
 import { ActionsObservable, ofType } from 'redux-observable';
-import { mergeMap, first, map } from 'rxjs/operators';
-import { of } from 'rxjs/observable/of';
-import { combineLatest } from 'rxjs/observable/combineLatest';
-import { Observable } from 'rxjs/Observable';
+import { mergeMap, first, map as rxMap } from 'rxjs/operators';
 import { forkJoin } from 'rxjs/observable/forkJoin';
-import { keys, isNil } from 'ramda';
-import { _throw } from 'rxjs/observable/throw';
+import { keys, isNil, chain } from 'ramda';
 
-import { QueryArgs } from '../model';
-import * as actions from '../actions';
-import { getEventQueries } from '../reducer';
-import { EpicContext } from '../../../context';
-import { createQueries } from '../create-queries';
+import {
+  COMPOSE_QUERY_FROM_MODEL,
+  ComposeQueryFromModel,
+  createAddEventsWatch,
+  createQueryEvents
+} from '../actions';
 import { getLatestBlockNumberOrFail } from '../../blocks';
+import { Observable } from 'rxjs/Observable';
+import { EpicContext } from '../../../context';
+import { BlockRange, NormalizedFilter, ContractQuery } from '../model';
+import { depsToTopics } from '../utils/expand-model';
+import { splitQueryByTopics, toTopicList } from '../utils';
 
 export const composeQueries = (
-  actions$: ActionsObservable<actions.Types>,
+  actions$: ActionsObservable<any>,
   _,
   { state$, contractLoader }: EpicContext
-): Observable<actions.Types> =>
+) =>
   actions$.pipe(
-    ofType<actions.ComposeQueryFromModel>(actions.COMPOSE_QUERY_FROM_MODEL),
-    mergeMap(({ payload: { id, model } }) => {
-      return combineLatest(
-        of(id),
-        forkJoin(keys(model.deps).map(contractLoader)),
-        state$.pipe(map(getLatestBlockNumberOrFail)),
-        // was with latest from?
-        state$.pipe(map(getEventQueries))
-      ).pipe(first(args => args.every(x => x !== undefined)));
-    }),
-    mergeMap(([id, contracts, latestBlockNumber, queries]) => {
-      const toQuery = createQueries({
-        contracts,
-        latestBlockNumber,
-        queries
-      });
-      if (toQuery.some(x => isNil(x.address))) {
-        return _throw('Address is not defined');
-      }
+    ofType(COMPOSE_QUERY_FROM_MODEL),
+    mergeMap(({ payload: { id, model } }: ComposeQueryFromModel) => {
+      return forkJoin(keys(model.deps).map(contractLoader)).pipe(
+        mergeMap(contracts => {
+          return state$
+            .pipe(rxMap(getLatestBlockNumberOrFail), first(x => !isNil(x)))
+            .pipe(
+              mergeMap(latestBlockNumber => {
+                const queries = contracts.map(
+                  ({ address, genesisBlock, abi, name }) => {
+                    return {
+                      range: [genesisBlock, latestBlockNumber] as BlockRange,
+                      topics: depsToTopics(abi, model.deps[name]),
+                      address
+                    };
+                  }
+                );
+                const queryByTopics = chain(splitQueryByTopics, queries);
+                const filters = queryByTopics.map(
+                  ({ range: [fromBlock, toBlock], address, topics }) => ({
+                    toBlock,
+                    fromBlock,
+                    address,
+                    topics: toTopicList(topics)
+                  })
+                );
 
-      const queryEventsAction = actions.createQueryEvents(toQuery);
-
-      return [
-        queryEventsAction,
-        actions.createAddEventsWatch({
-          id,
-          addresses: toQuery.map(x => x.address),
-          fromBlock: latestBlockNumber
+                return [
+                  createQueryEvents({
+                    id,
+                    queries,
+                    filters
+                  }),
+                  createAddEventsWatch({
+                    id,
+                    addresses: contracts.map(c => c.address),
+                    fromBlock: latestBlockNumber
+                  })
+                ];
+              })
+            );
         })
-      ];
+      );
     })
   );

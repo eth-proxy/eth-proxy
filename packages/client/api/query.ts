@@ -4,7 +4,7 @@ import { never } from 'rxjs/observable/never';
 import { of } from 'rxjs/observable/of';
 import { merge } from 'rxjs/observable/merge';
 
-import { getQueryResultsFromModelId } from '../store';
+import { getQueryResultFromQueryId } from '../modules/events';
 import * as fromEvents from '../modules/events';
 import { Context } from '../context';
 import { getInterceptor } from '../utils';
@@ -22,7 +22,14 @@ export const query = ({ genId, options, store }: Context) => (
           fromEvents.createComposeQueryFromModel({ id, model: queryModel })
         )
       ),
-      mergeMapTo(store.select(getQueryResultsFromModelId(id)))
+      mergeMapTo(store.select(getQueryResultFromQueryId(id))),
+      tap({
+        next: x => {
+          if (x && x.status === 'error') {
+            throw new Error('Could not fulfil request');
+          }
+        }
+      })
     )
   ).pipe(
     getInterceptor('postQuery', options),

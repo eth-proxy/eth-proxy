@@ -1,40 +1,22 @@
-import { createStore, Store, applyMiddleware, Middleware } from 'redux';
+import { createStore, applyMiddleware, Middleware, AnyAction } from 'redux';
 
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Selector } from 'reselect';
-import { distinctUntilChanged } from 'rxjs/operators/distinctUntilChanged';
-import { map } from 'rxjs/operators/map';
 import { State } from './model';
 import { reducer } from './root-reducer';
-import { Observable } from 'rxjs/Observable';
+import { ObservableStore, toObservableStore } from '../utils';
 
-export type RxSelector<S, R> = (state$: Observable<S>) => Observable<R>;
-
-export interface ObservableStore<T> extends Store<T> {
-  select<S>(selector: Selector<T, S>): Observable<S>;
-  pipe<S>(rxSelect: RxSelector<T, S>): Observable<S>;
-}
-
-export function createObservableStore(
+export function createAppStore(
   middleware?: Middleware,
-  externalStore?: any
+  externalStore?: any,
+  rootReducer = reducer
 ): ObservableStore<State> {
-  const state$ = new BehaviorSubject<State>(
-    reducer(undefined, { type: 'init' })
+  const redux = toObservableStore(
+    createStore(
+      rootReducer,
+      middleware ? applyMiddleware(middleware) : undefined
+    )
   );
-  const select = <S>(selector?: Selector<State, S>) =>
-    state$.pipe(distinctUntilChanged(), map(selector), distinctUntilChanged());
-
-  const redux = createStore(
-    reducer,
-    middleware && applyMiddleware(middleware)
-  ) as ObservableStore<State>;
-  redux.select = select;
-  redux.pipe = <S>(rxSelect: RxSelector<State, S>): Observable<S> =>
-    state$.pipe(distinctUntilChanged(), rxSelect, distinctUntilChanged());
 
   redux.subscribe(() => {
-    state$.next(redux.getState());
     if (externalStore) {
       externalStore.dispatch({
         type: 'SET_ETH-PROXY_STATE',
@@ -45,3 +27,5 @@ export function createObservableStore(
 
   return redux;
 }
+
+export { ObservableStore };

@@ -1,4 +1,4 @@
-import { QueryArgs, QueryResult, QueryModel } from './model';
+import { NormalizedFilter, ContractQuery, QueryModel } from './model';
 
 export const COMPOSE_QUERY_FROM_MODEL = 'COMPOSE_QUERY_FROM_MODEL';
 
@@ -21,10 +21,14 @@ export const QUERY_EVENTS = 'QUERY_EVENTS';
 
 export interface QueryEvents {
   type: 'QUERY_EVENTS';
-  payload: QueryArgs[];
+  payload: {
+    id: string;
+    queries: ContractQuery[];
+    filters: NormalizedFilter[];
+  };
 }
 
-export const createQueryEvents = (payload: QueryArgs[]) => ({
+export const createQueryEvents = (payload: QueryEvents['payload']) => ({
   type: QUERY_EVENTS,
   payload
 });
@@ -32,11 +36,16 @@ export const createQueryEvents = (payload: QueryArgs[]) => ({
 export const QUERY_EVENTS_SUCCESS = 'QUERY_EVENTS_SUCCESS';
 
 export interface QueryEventsSuccess {
-  type: 'QUERY_EVENTS_SUCCESS';
-  payload: QueryResult[];
+  type: typeof QUERY_EVENTS_SUCCESS;
+  payload: {
+    id: string;
+    events: any[];
+  };
 }
 
-export const createQueryEventsSuccess = (payload: QueryResult[]) => ({
+export const createQueryEventsSuccess = (
+  payload: QueryEventsSuccess['payload']
+): QueryEventsSuccess => ({
   type: QUERY_EVENTS_SUCCESS,
   payload
 });
@@ -44,11 +53,13 @@ export const createQueryEventsSuccess = (payload: QueryResult[]) => ({
 export const QUERY_EVENTS_FAILED = 'QUERY_EVENTS_FAILED';
 
 export interface QueryEventsFailed {
-  type: 'QUERY_EVENTS_FAILED';
-  payload: QueryArgs[];
+  type: typeof QUERY_EVENTS_FAILED;
+  payload: string;
 }
 
-export const createQueryEventsFailed = (payload: QueryArgs[]) => ({
+export const createQueryEventsFailed = (
+  payload: QueryEventsFailed['payload']
+): QueryEventsFailed => ({
   type: QUERY_EVENTS_FAILED,
   payload
 });
@@ -56,7 +67,7 @@ export const createQueryEventsFailed = (payload: QueryArgs[]) => ({
 export const EVENTS_LOADED = 'EVENTS_LOADED';
 
 export interface EventsLoaded {
-  type: 'EVENTS_LOADED';
+  type: typeof EVENTS_LOADED;
   payload: any[];
 }
 
@@ -68,7 +79,7 @@ export const createEventsLoaded = (payload: any[]) => ({
 export const ADD_EVENTS_WATCH = 'ADD_EVENTS_WATCH';
 
 export interface AddEventsWatch {
-  type: 'ADD_EVENTS_WATCH';
+  type: typeof ADD_EVENTS_WATCH;
   payload: {
     id: string;
     fromBlock: number;
@@ -84,7 +95,7 @@ export const createAddEventsWatch = (payload: AddEventsWatch['payload']) => ({
 export const REMOVE_EVENTS_WATCH = 'REMOVE_EVENTS_WATCH';
 
 export interface RemoveEventsWatch {
-  type: 'REMOVE_EVENTS_WATCH';
+  type: typeof REMOVE_EVENTS_WATCH;
   payload: string;
 }
 
@@ -93,7 +104,7 @@ export const createRemoveEventsWatch = (payload: string) => ({
   payload
 });
 
-export type Types =
+export type EventsActionTypes =
   | ComposeQueryFromModel
   | QueryEvents
   | QueryEventsSuccess

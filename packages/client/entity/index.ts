@@ -28,7 +28,7 @@ export interface Snapshot<T> {
 }
 
 export const getSelectors = <App>(getModule: (state: App) => State) => {
-  const { getAllEventsSorted } = fromEvents.getSelectors(
+  const { getAllEvents } = fromEvents.getSelectors(
     createSelector(getModule, m => m.events)
   );
 
@@ -61,7 +61,7 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
     return createSelector(
       snapshotSelector,
       getContractsFromRefs(keys(model)),
-      getAllEventsSorted,
+      getAllEvents,
       (snapshot, contracts, allEvents) => {
         if (contracts.some((x: any) => !x || x.loading || x.error)) {
           return {};

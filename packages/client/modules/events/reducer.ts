@@ -1,117 +1,67 @@
 import { createSelector } from 'reselect';
-import {
-  indexBy,
-  reduce,
-  values,
-  chain,
-  map,
-  mapObjIndexed,
-  filter,
-  groupBy,
-  any
-} from 'ramda';
+import { indexBy, values, pickBy } from 'ramda';
+import { combineReducers, AnyAction } from 'redux';
 
 import * as actions from './actions';
-import * as fromTransactions from '../transaction';
 import {
-  BlockRange,
   DecodedEvent,
   QueryModel,
-  AggregatedQueryResult
+  ContractQuery,
+  NormalizedFilter
 } from './model';
-import { combineReducers, AnyAction } from 'redux';
-import {
-  idFromEvent,
-  sortEvents,
-  createLengthEqualSelector,
-  createDeepEqualSelector
-} from '../../utils';
+import { idFromEvent, sortEvents } from '../../utils';
+import { addressMatches, topicsMatches } from './utils';
 import { moduleId } from './constants';
 
-export interface QueryState {
-  loading: boolean;
-  range: BlockRange;
-  eventIds: string[];
-  error?: any;
-}
+import * as fromTransactions from '../transaction';
 
 export interface EventsQueryState {
-  [address: string]: QueryState[];
+  [id: string]: {
+    queries: ContractQuery[];
+    filters: NormalizedFilter[];
+    status: 'loading' | 'success' | 'error';
+  };
 }
 
 export function eventsQueryReducer(
   state: EventsQueryState = {},
-  action: actions.Types
+  action: actions.EventsActionTypes
 ): EventsQueryState {
   switch (action.type) {
     case actions.QUERY_EVENTS: {
-      return reduce(
-        (contract, query) => {
-          const { address, range } = query;
-          return {
-            ...contract,
-            [address]: [
-              ...(contract[address] || []),
-              { range, eventIds: [], loading: true }
-            ]
-          };
-        },
-        state,
-        action.payload
-      );
+      const { id, queries, filters } = action.payload;
+      return {
+        ...state,
+        [id]: {
+          status: 'loading',
+          queries,
+          filters
+        }
+      };
     }
     case actions.QUERY_EVENTS_SUCCESS: {
-      return reduce(
-        (contract, query) => {
-          const { address, range, events } = query;
-          return {
-            ...contract,
-            [address]: (contract[address] || []).map(
-              result =>
-                rangeEqual(result.range, range)
-                  ? {
-                      range,
-                      eventIds: map(idFromEvent, events),
-                      loading: false
-                    }
-                  : result
-            )
-          };
-        },
-        state,
-        action.payload
-      );
+      const { id } = action.payload;
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          status: 'success'
+        }
+      };
     }
     case actions.QUERY_EVENTS_FAILED: {
-      return reduce(
-        (contract, query) => {
-          const { address, range } = query;
-          return {
-            ...contract,
-            [address]: (contract[address] || []).map(
-              result =>
-                rangeEqual(result.range, range)
-                  ? {
-                      range,
-                      eventIds: [],
-                      loading: false,
-                      error: 'Could not load'
-                    }
-                  : result
-            )
-          };
-        },
-        state,
-        action.payload
-      );
+      const id = action.payload;
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          status: 'error'
+        }
+      };
     }
     default:
       return state;
   }
-}
-
-function rangeEqual([a1, a2]: BlockRange, [b1, b2]: BlockRange) {
-  return a1 === b1 && a2 === b2;
 }
 
 export interface EventsByHash {
@@ -119,14 +69,14 @@ export interface EventsByHash {
 }
 
 export function eventEntitiesReducer(
-  state: EventsQueryState = {},
-  action: actions.Types | fromTransactions.Types
-): EventsQueryState {
+  state: EventsByHash = {},
+  action: actions.EventsActionTypes | fromTransactions.Types
+): EventsByHash {
   switch (action.type) {
     case actions.QUERY_EVENTS_SUCCESS: {
       return {
         ...state,
-        ...indexBy(idFromEvent, chain(x => x.events, action.payload))
+        ...indexBy(idFromEvent, action.payload.events)
       };
     }
     case actions.EVENTS_LOADED: {
@@ -151,7 +101,7 @@ export interface ModelsState {
 
 export function modelsReducer(
   state: ModelsState = {},
-  action: actions.Types
+  action: actions.EventsActionTypes
 ): ModelsState {
   switch (action.type) {
     case actions.COMPOSE_QUERY_FROM_MODEL: {
@@ -179,89 +129,43 @@ export const reducer = combineReducers<State>({
 
 export const getSelectors = <T>(getModule: (state: T) => State) => {
   const getEventEntities = createSelector(getModule, m => m.entities);
-  const getEventQueries = createSelector(getModule, m => m.queries);
   const getAllEvents = createSelector(getEventEntities, values);
   const getAllEventsSorted = createSelector(getAllEvents, sortEvents);
 
-  const getEventsByAddress = createLengthEqualSelector(
-    getAllEvents,
-    groupBy((x: any) => x.meta.address)
-  );
-  const getEventsForAddresses = (address: string[]) =>
-    createLengthEqualSelector(getAllEvents, events =>
-      events.filter(x => address.includes(x.meta.address))
+  const getEventQueries = createSelector(getModule, m => m.queries);
+  const getEventQuery = (id: string) =>
+    createSelector(
+      getEventQueries,
+      q => q[id] || { status: 'loading', filters: [] as NormalizedFilter[] }
     );
 
-  const getFailedQueriedByAddresses = createDeepEqualSelector(
-    getEventQueries,
-    mapObjIndexed((qs: QueryState[], address) =>
-      filter(x => !!x.error, qs).map(({ range, error }) => ({
-        address,
-        range,
-        error
-      }))
-    )
-  );
-  const getIsLoadingByAddresses = createDeepEqualSelector(
-    getEventQueries,
-    mapObjIndexed<QueryState[], boolean>(qs => any(x => x.loading, qs))
-  );
-
-  const getQueryResultsByAddress = createSelector(
-    getEventsByAddress,
-    getFailedQueriedByAddresses,
-    getIsLoadingByAddresses,
-    (eventsByAddress, failedQueries, isLoading) => {
-      return mapObjIndexed(
-        (_, address) =>
-          ({
-            failedQueries: failedQueries[address],
-            loading: isLoading[address],
-            events: eventsByAddress[address] || []
-          } as AggregatedQueryResult),
-        failedQueries
-      );
-    }
-  );
-
-  const getModelsById = createSelector(getModule, m => m.modelsToCompose);
-  const getModelFromId = (id: string) =>
-    createSelector(getModelsById, byId => byId[id]);
+  const getQueryResultFromQueryId = (id: string) =>
+    createSelector(
+      getEventQuery(id),
+      getEventEntities,
+      ({ status, filters }, eventsById) => {
+        return {
+          status,
+          events: values(
+            pickBy(e => filters.some(f => isEventMatching(f, e)), eventsById)
+          )
+        };
+      }
+    );
 
   return {
-    getAllEvents,
-    getAllEventsSorted,
-    getEventEntities,
-    getEventQueries,
-    getEventsForAddresses,
-    getQueryResultsByAddress,
-    getModelFromId,
-    getIsLoadingByAddresses
+    getAllEvents: getAllEventsSorted,
+    getQueryResultFromQueryId
   };
 };
 
-const emptyResult = {
-  failedQueries: [],
-  events: [],
-  loading: false
-} as AggregatedQueryResult;
+// ignores ranges since its not yet supported
+function isEventMatching(f: NormalizedFilter, event: DecodedEvent) {
+  return (
+    addressMatches(f, event.meta) && topicsMatches(f.topics, event.meta.topics)
+  );
+}
 
-export const aggregateQueryResults = reduce<
-  AggregatedQueryResult,
-  AggregatedQueryResult
->((state, result) => {
-  return {
-    failedQueries: [...state.failedQueries, ...result.failedQueries],
-    events: sortEvents([...state.events, ...result.events]),
-    loading: state.loading || result.loading
-  };
-}, emptyResult);
-
-export const {
-  getAllEvents,
-  getEventEntities,
-  getEventQueries,
-  getQueryResultsByAddress,
-  getModelFromId,
-  getIsLoadingByAddresses
-} = getSelectors(m => m[moduleId]);
+export const { getAllEvents, getQueryResultFromQueryId } = getSelectors(
+  m => m[moduleId]
+);

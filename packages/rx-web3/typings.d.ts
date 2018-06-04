@@ -111,13 +111,18 @@ declare module 'web3' {
       fromBlock?: number | string;
       toBlock?: number | string;
       address?: string | string[];
-      topics?: string[];
+      topics?: string[] | string[][];
     }
 
     interface SolidityEvent<A> {
       event: string;
       address: string;
       args: A;
+      transactionHash: string;
+      transactionIndex: number;
+      logIndex: number;
+      topics: string[];
+      blockNumber: number;
     }
 
     interface FilterResult {

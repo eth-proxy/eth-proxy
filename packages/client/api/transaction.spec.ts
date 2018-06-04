@@ -1,5 +1,5 @@
 import { sendTransaction } from './transaction';
-import { createObservableStore, ObservableStore, State } from '../store';
+import { createAppStore, ObservableStore, State } from '../store';
 import * as actions from '../modules/transaction';
 import * as fromAccount from '../modules/account';
 import * as fromRequest from '../modules/request';
@@ -43,7 +43,7 @@ describe('Initialize transaction', () => {
   let store: TestStore;
   let sendTx: (request: fromRequest.Request<any, any, any>) => Observable<{}>;
   beforeEach(() => {
-    store = createObservableStore() as TestStore;
+    store = createAppStore() as TestStore;
     let next = store.dispatch;
     store.dispatch = action => {
       store.dispatched = store.dispatched || [];
