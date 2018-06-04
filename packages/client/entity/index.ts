@@ -19,7 +19,7 @@ import { ContractInfo } from '../modules/schema';
 
 const EMPTY_SNAPSHOT = {
   entities: {},
-  toBlock: 0
+  toBlock: -1
 };
 
 export interface Snapshot<T> {
