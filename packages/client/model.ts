@@ -1,9 +1,15 @@
 import { Observable } from 'rxjs/Observable';
-import { QueryModel, ContractInfo, RequestHandlers } from './store';
 import { RxWeb3, Provider } from '@eth-proxy/rx-web3';
+import { QueryModel, EventMetadata } from './modules/events';
+import { ContractInfo } from './modules/schema';
+import { TransactionHandler } from './modules/transaction';
+import { EthProxyInterceptors } from './interceptors';
+import { EthProxyOptions } from './options';
+import { CallHandler } from './modules/call';
 
-export class EthProxy<T extends {} = {}> extends RequestHandlers<T>
-  implements RxWeb3 {
+export class EthProxy<T extends {} = {}> implements RxWeb3 {
+  ethCall: CallHandler<T>;
+  transaction: TransactionHandler<T>;
   provider$: Observable<Provider>;
   network$: Observable<string>;
   defaultAccount$: Observable<string | undefined>;
@@ -30,12 +36,11 @@ export {
   Transaction,
   TransactionConfirmation,
   ObservableTransactionResult,
-  EthProxyInterceptors,
-  ContractInfo,
-  EventMetadata,
   ConfirmedTransaction,
-  RequestFactory,
-  InitializedTransaction,
-  EthProxyOptions,
-  ContractsAggregation
-} from './store';
+  InitializedTransaction
+} from './modules/transaction';
+
+export { RequestFactory, ContractsAggregation } from './modules/request';
+export { ContractInfo } from './modules/schema';
+export { EventMetadata, QueryModel } from './modules/events';
+export { EthProxyInterceptors, EthProxyOptions };

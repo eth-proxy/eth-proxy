@@ -2,27 +2,23 @@ import { Observable } from 'rxjs/Observable';
 import { State } from './model';
 import { map as rxMap, filter, tap } from 'rxjs/operators';
 import { first } from 'rxjs/operators/first';
-import {
-  getNetworkId,
-  getHasContracts,
-  getContractsFromQueryModel,
-  getActiveAccount,
-  getContractFromRef,
-  getTransactionFromInitId
-} from './selectors';
+import { getContractsFromQueryModel, getDefaultTxParams } from './selectors';
 import { keys } from 'ramda';
-
-import { QueryModel, ContractInfo } from './model';
-import * as models from './models';
+import { QueryModel } from '../modules/events';
+import { ContractInfo } from '../modules/schema';
+import * as fromAccounts from '../modules/account';
+import * as fromNetwork from '../modules/network';
+import * as fromSchema from '../modules/schema';
+import * as fromTransactions from '../modules/transaction';
 
 export function getDetectedNetwork$(state$: Observable<State>) {
-  return state$.pipe(rxMap(getNetworkId), first(x => !!x));
+  return state$.pipe(rxMap(fromNetwork.getNetworkId), first(x => !!x));
 }
 
 export function getContractsFromModel$(queryModel: QueryModel) {
   return (state$: Observable<State>) =>
     state$.pipe(
-      first(getHasContracts(keys(queryModel.deps))),
+      first(fromSchema.getHasContracts(keys(queryModel.deps))),
       rxMap(getContractsFromQueryModel(queryModel)),
       tap(contracts => {
         const loadingError = contracts.find((x: any) => x.error);
@@ -37,7 +33,7 @@ export function getContractsFromModel$(queryModel: QueryModel) {
 export function getLoadedContractFromRef$(contractRef: string) {
   return (state$: Observable<State>) =>
     state$.pipe(
-      rxMap(getContractFromRef(contractRef)),
+      rxMap(fromSchema.getContractFromRef(contractRef)),
       first((x: any) => !!x && !x.loading),
       tap(x => {
         if (x.error) {
@@ -49,16 +45,28 @@ export function getLoadedContractFromRef$(contractRef: string) {
 }
 
 export const getActiveAccount$ = (state$: Observable<State>) =>
-  state$.pipe(rxMap(getActiveAccount), filter(x => x !== undefined));
+  state$.pipe(
+    rxMap(fromAccounts.getActiveAccount),
+    filter(x => x !== undefined)
+  );
 
 export const getTransactionResultFromInitId$ = (id: string) => (
   state$: Observable<State>
 ) =>
   state$.pipe(
-    rxMap(getTransactionFromInitId(id)),
+    rxMap(fromTransactions.getTransactionFromInitId(id)),
     tap(x => {
       if (x.status === 'failed') {
         throw x.error;
       }
     })
   );
+
+export function getTxParams(userParams: any) {
+  return (state$: Observable<State>) =>
+    state$.pipe(
+      rxMap(getDefaultTxParams),
+      rxMap(fromTransactions.mergeParams(userParams)),
+      first(fromTransactions.txParamsValid)
+    );
+}

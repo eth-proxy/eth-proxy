@@ -1,4 +1,3 @@
-import { map } from 'rxjs/operators/map';
 import { Observable } from 'rxjs/Observable';
 import { shareReplay } from 'rxjs/operators/shareReplay';
 import { take } from 'rxjs/operators/take';
@@ -10,25 +9,17 @@ import {
   FilterObject,
   Provider
 } from '@eth-proxy/rx-web3';
-import { identity } from 'ramda';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import { processTransaction, processCall } from './modules/contract';
 import {
   createObservableStore,
   getActiveAccount$,
   State,
-  Request
+  rootEpic
 } from './store';
-import {
-  createSetNetwork,
-  getDetectedNetwork$,
-  EthProxyOptions
-} from './store';
-import { rootEpic } from './store/epics';
-import { EthProxy } from './model';
-import { query } from './modules/query';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { createSchemaLoader } from './modules/schema';
+import { getDetectedNetwork$ } from './store';
+import { EthProxy, EthProxyOptions } from './model';
+import { sendCall, createSchemaLoader, sendTransaction, query } from './api';
 
 const defaultOptions = {
   pollInterval: 1000,
@@ -49,11 +40,6 @@ export function createProxy<T extends {}>(
 
   const rxWeb3 = createRxWeb3(provider$);
 
-  rxWeb3
-    .getNetwork()
-    .pipe(map(createSetNetwork))
-    .subscribe(action => store.dispatch(action));
-
   const getEvents = (filter: FilterObject) =>
     replayProvider$.pipe(
       mergeMap(provider => options.eventReader(provider, filter))
@@ -63,53 +49,54 @@ export function createProxy<T extends {}>(
 
   const state$ = new BehaviorSubject<State>(null);
 
+  const context = {
+    ...rxWeb3,
+    getEvents,
+    options,
+    state$,
+    contractLoader,
+    genId
+  };
+
   const epicMiddleware = createEpicMiddleware(rootEpic, {
-    dependencies: {
-      ...rxWeb3,
-      getEvents,
-      options,
-      state$,
-      contractSchemaResolver: options.contractSchemaResolver,
-      contractLoader
-    }
+    dependencies: context
   });
 
   var store = createObservableStore(epicMiddleware, options.store);
   store.select(x => x).subscribe(state$);
 
-  const getInterceptor = (key: string) =>
-    (options.interceptors as any)[key] || identity;
-
-  const interceptors = {
-    transaction: getInterceptor('transaction'),
-    ethCall: getInterceptor('ethCall'),
-    preQuery: getInterceptor('preQuery'),
-    postQuery: getInterceptor('postQuery')
+  const deps = {
+    ...context,
+    store
   };
 
   return {
     ...rxWeb3,
     provider$: replayProvider$,
-    query: query(store, genId, interceptors),
+    query: query(deps),
 
     network$: store.pipe(getDetectedNetwork$),
     defaultAccount$: store.pipe(getActiveAccount$),
 
     loadContractSchema: contractLoader,
-
-    transaction: (request: Request<string, string, any>) =>
-      processTransaction(store, genId)(request).pipe(interceptors.transaction),
-
-    ethCall: (request: Request<string, string, any>) =>
-      processCall(store, genId)(request).pipe(interceptors.ethCall)
+    transaction: sendTransaction(deps) as any,
+    ethCall: sendCall(deps) as any
   };
 }
 
 export * from './model';
 export * from './utils';
 export { ethProxyIntegrationReducer, State as EthProxyState } from './store';
-export * from './modules/contract';
-export * from './modules/entity';
+export { ContractInfo } from './modules/schema';
+export * from './modules/request';
+export {
+  EntityModel,
+  EventHandler,
+  TransactionHandler,
+  getSelectors
+} from './entity';
+export { on, once } from './modules/transaction';
+export { at, withOptions } from './modules/request';
 
 export function entity(arg) {
   return arg;
