@@ -42,7 +42,10 @@ export const decodeLogs = abi => (logs: any[]) => {
       return {
         type: eventAbi.name,
         payload,
-        meta: log
+        meta: {
+          ...log,
+          type: eventAbi.name
+        }
       };
     });
 };
