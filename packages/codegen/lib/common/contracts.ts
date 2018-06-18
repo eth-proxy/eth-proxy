@@ -1,7 +1,7 @@
 import { InterfaceDeclarationStructure } from 'ts-simple-ast';
 import { TruffleJson } from '../../interfaces';
 
-export function getRootInterface(
+export function getAllContractsInterface(
   contracts: TruffleJson[]
 ): InterfaceDeclarationStructure {
   return {

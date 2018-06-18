@@ -1,5 +1,9 @@
 #!/usr/bin/env node
-import Ast, { SourceFileStructure } from 'ts-simple-ast';
+import Ast, {
+  SourceFileStructure,
+  IndentationText,
+  QuoteKind
+} from 'ts-simple-ast';
 import { concat, mergeDeepWith } from 'ramda';
 import * as requireDir from 'require-dir';
 import * as argv from 'minimist';
@@ -34,19 +38,17 @@ const source = mergeDeepWith<SourceFileStructure, SourceFileStructure>(
   targetSource
 );
 
-const instertedText = {
-  'eth-proxy': `declare module '@eth-proxy/client' {
-  const C: RequestFactory<Contracts>;
-  function entity <T>(model: EntityModel<T, EventsByType, Contracts>): EntityModel<T, EventsByType, Contracts>
-}
-`,
-  truffle: ''
-};
+const project = new Ast({
+  manipulationSettings: {
+    indentationText: IndentationText.TwoSpaces,
+    quoteKind: QuoteKind.Single
+  }
+});
 
-const sourceFile = new Ast()
+const sourceFile = project
   .createSourceFile(outputDir, source, {
     overwrite: true
   })
-  .insertText(0, '/* tslint:disable */\n' + instertedText[target]);
+  .insertText(0, '/* tslint:disable */\n');
 
 sourceFile.save();
