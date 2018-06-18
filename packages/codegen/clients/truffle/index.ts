@@ -12,13 +12,8 @@ import { TruffleJson } from '../../interfaces';
 import { getAllContractsInterface } from '../../lib/common/contracts';
 
 export function getSourceFile(contracts: TruffleJson[]): SourceFileStructure {
-  const contractNames =
-    '[\n' +
-    contracts.map(({ contractName }) => `  '${contractName}'`).join(',\n') +
-    ',\n];';
-
   return {
-    bodyText: `const contractNames: ContractNames = ${contractNames}`,
+    enums: [buildContractNamesEnum(contracts)].map(assoc('isExported', true)),
     interfaces: [
       getAllContractsInterface(contracts),
       ...createTruffleContractInterfaces(contracts),
@@ -28,9 +23,14 @@ export function getSourceFile(contracts: TruffleJson[]): SourceFileStructure {
       contractInstance,
       receipt,
       contractAbstracion
-    ].map(assoc('isExported', true)),
-    typeAliases: [{ name: 'ContractNames', type: 'keyof Contracts' }].map(
-      assoc('isExported', true)
-    )
+    ].map(assoc('isExported', true))
   };
 }
+
+export const buildContractNamesEnum = (contracts: TruffleJson[]) => ({
+  name: 'ContractsNames',
+  members: contracts.map(({ contractName }) => ({
+    name: contractName,
+    value: contractName
+  }))
+});

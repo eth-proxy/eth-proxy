@@ -21,6 +21,10 @@ export interface TransactionOptions {
   gasPrice?: NumberLike;
 }
 
+export interface Contracts {
+  ERC20: ERC20;
+}
+
 export interface ERC20 extends TruffleContractInstance {
   approve(
     spender: string,
@@ -124,4 +128,8 @@ export interface TruffleContractAbstraction<T extends TruffleContractInstance> {
   hasNetwork(networkId: string): boolean;
   defaults(defaults: TransactionOptions): void;
   clone(networkId: string): TruffleContractAbstraction<T>;
+}
+
+export enum ContractsNames {
+  ERC20 = 'ERC20'
 }
