@@ -9,7 +9,7 @@
   },
   "scripts": {
     "precompile": "rimraf dist",
-    "compile": "npx tsc -p tsconfig.build.json",
+    "compile": "tsc -p tsconfig.build.json",
     "gen": "cd dist && node index --cDir=\"../example/contracts\"",
     "gen:eth-proxy": "npm run gen -- --o=\"../example/output/eth-proxy/contracts.ts\"",
     "gen:truffle": "npm run gen -- --o=\"../example/output/truffle/contracts.ts\" --target=truffle",
@@ -28,6 +28,8 @@
     "@types/glob": "5.0.34",
     "@types/minimist": "1.2.0",
     "@types/node": "8.5.2",
-    "@types/ramda": "0.25.12"
+    "@types/ramda": "0.25.12",
+    "rimraf": "^2.6.2",
+    "typescript": "^2.9.2"
   }
 }
