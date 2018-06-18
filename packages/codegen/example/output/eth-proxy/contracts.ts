@@ -1,10 +1,3 @@
-/* tslint:disable */
-declare module '@eth-proxy/client' {
-  const C: RequestFactory<Contracts>;
-  function entity<T>(
-    model: EntityModel<T, EventsByType, Contracts>
-  ): EntityModel<T, EventsByType, Contracts>;
-}
 import { BigNumber } from 'bignumber.js';
 import { EventMetadata, RequestFactory, EntityModel } from '@eth-proxy/client';
 
@@ -119,4 +112,11 @@ export interface ERC20TransferEvent {
   type: 'Transfer';
   payload: ERC20TransferPayload;
   meta: EventMetadata;
+}
+
+declare module '@eth-proxy/client' {
+  const C: RequestFactory<Contracts>;
+  function entity<T>(
+    model: EntityModel<T, EventsByType, Contracts>
+  ): EntityModel<T, EventsByType, Contracts>;
 }
