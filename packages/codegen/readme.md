@@ -66,6 +66,16 @@ npx codegen --o=\"src/contracts.ts\" --cDir=\"build/contracts\" --t=truffle
 ```
 
 Eth Proxy Client:
+
 ```
 npx codegen --o=\"src/contracts.ts\" --cDir=\"build/contracts\"
+```
+
+# Development
+
+## Generating example code
+
+```
+npm run gen:truffle
+npm run gen:eth-proxy
 ```
