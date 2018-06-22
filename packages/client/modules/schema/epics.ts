@@ -1,10 +1,7 @@
 import { ActionsObservable, ofType } from 'redux-observable';
 import { mergeMap, map, catchError } from 'rxjs/operators';
-import { Observable } from 'rxjs/Observable';
+import { Observable, defer, of, combineLatest } from 'rxjs';
 import { pathOr } from 'ramda';
-import { defer } from 'rxjs/observable/defer';
-import { of } from 'rxjs/observable/of';
-import { combineLatest } from 'rxjs/observable/combineLatest';
 
 import { ResolvedContractSchema, ContractSchema } from './model';
 import * as actions from './actions';

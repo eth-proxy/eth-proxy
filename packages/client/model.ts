@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { RxWeb3, Provider } from '@eth-proxy/rx-web3';
 import { QueryModel, EventMetadata } from './modules/events';
 import { ContractInfo } from './modules/schema';

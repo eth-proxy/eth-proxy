@@ -1,11 +1,13 @@
 import { ActionsObservable, ofType } from 'redux-observable';
 import { mergeMap, first, map } from 'rxjs/operators';
-import { of } from 'rxjs/observable/of';
-import { combineLatest } from 'rxjs/observable/combineLatest';
-import { Observable } from 'rxjs/Observable';
-import { forkJoin } from 'rxjs/observable/forkJoin';
+import {
+  of,
+  combineLatest,
+  Observable,
+  forkJoin,
+  throwError as _throw
+} from 'rxjs';
 import { keys, isNil } from 'ramda';
-import { _throw } from 'rxjs/observable/throw';
 
 import { QueryArgs } from '../model';
 import * as actions from '../actions';

@@ -89,7 +89,11 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
           x => flatten<EventType>(x)
         )(model);
 
-        const handlers = pipe(mapObjIndexed(values), values, flatten)(model);
+        const handlers = pipe(
+          mapObjIndexed(values),
+          values,
+          flatten
+        )(model);
         const hasRoot = handlers.some(x => x.root);
         const isEventInvolved = (x: fromEvents.DecodedEvent) =>
           eventTypes.find(
@@ -139,7 +143,11 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
       interfaceName: string;
     }[];
 
-    const handlers = pipe(mapObjIndexed(values), values, flatten)(model);
+    const handlers = pipe(
+      mapObjIndexed(values),
+      values,
+      flatten
+    )(model);
     const hasRoot = handlers.some((x: any) => x.root);
 
     return createSelector(

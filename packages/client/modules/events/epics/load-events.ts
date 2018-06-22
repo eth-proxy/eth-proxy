@@ -1,13 +1,9 @@
-import { forkJoin } from 'rxjs/observable/forkJoin';
-import { map as rxMap, catchError, mergeMap } from 'rxjs/operators';
+import { forkJoin, of, Observable } from 'rxjs';
+import { map as rxMap, catchError, mergeMap, map } from 'rxjs/operators';
 import { flatten, filter, pathEq, min, max } from 'ramda';
-import { map } from 'rxjs/operators';
 import { ActionsObservable } from 'redux-observable';
-import { of } from 'rxjs/observable/of';
 import * as actions from '../actions';
 import { BlockRange, QueryResult, QueryArgs } from '../model';
-
-import { Observable } from 'rxjs/Observable';
 import { EpicContext } from '../../../context';
 import * as fromSchema from '../../schema';
 

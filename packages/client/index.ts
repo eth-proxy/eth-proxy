@@ -1,7 +1,5 @@
-import { Observable } from 'rxjs/Observable';
-import { shareReplay } from 'rxjs/operators/shareReplay';
-import { take } from 'rxjs/operators/take';
-import { mergeMap } from 'rxjs/operators/mergeMap';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { shareReplay, take, mergeMap } from 'rxjs/operators';
 import { createEpicMiddleware } from 'redux-observable';
 import {
   getEvents,
@@ -9,7 +7,6 @@ import {
   FilterObject,
   Provider
 } from '@eth-proxy/rx-web3';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import {
   createObservableStore,
@@ -36,7 +33,10 @@ export function createProxy<T extends {}>(
   userOptions: EthProxyOptions
 ): EthProxy<T> {
   const options = { ...defaultOptions, ...userOptions };
-  const replayProvider$ = provider$.pipe(shareReplay(1), take(1));
+  const replayProvider$ = provider$.pipe(
+    shareReplay(1),
+    take(1)
+  );
 
   const rxWeb3 = createRxWeb3(provider$);
 
@@ -58,11 +58,13 @@ export function createProxy<T extends {}>(
     genId
   };
 
-  const epicMiddleware = createEpicMiddleware(rootEpic, {
+  const epicMiddleware = createEpicMiddleware({
     dependencies: context
   });
 
   var store = createObservableStore(epicMiddleware, options.store);
+  epicMiddleware.run(rootEpic);
+
   store.select(x => x).subscribe(state$);
 
   const deps = {

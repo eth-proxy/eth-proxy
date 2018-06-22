@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { RxWeb3 } from '@eth-proxy/rx-web3';
 
 import { State, ObservableStore } from './store';

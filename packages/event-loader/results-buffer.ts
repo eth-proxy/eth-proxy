@@ -1,8 +1,7 @@
 import { ReaderResult } from './model';
 import { map as rxMap, bufferWhen } from 'rxjs/operators';
-import { Observable } from 'rxjs/Observable';
+import { Observable, Subject } from 'rxjs';
 import { flatten } from 'ramda';
-import { Subject } from 'rxjs/Subject';
 
 export function bufferResult({
   work$,

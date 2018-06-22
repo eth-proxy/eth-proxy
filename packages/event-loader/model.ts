@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 export interface ReaderResult {
   work$: Observable<[number, number]>;

@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { TransactionReceipt } from '@eth-proxy/rx-web3';
 import { Request } from '../request';
 import { DecodedEvent } from '../events';

@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { combineEpics, ActionsObservable, Epic } from 'redux-observable';
 import { EpicContext } from '../context';
 import { State } from './model';

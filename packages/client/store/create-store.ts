@@ -1,12 +1,10 @@
 import { createStore, Store, applyMiddleware, Middleware } from 'redux';
 
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Selector } from 'reselect';
-import { distinctUntilChanged } from 'rxjs/operators/distinctUntilChanged';
-import { map } from 'rxjs/operators/map';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 import { State } from './model';
 import { reducer } from './root-reducer';
-import { Observable } from 'rxjs/Observable';
 
 export type RxSelector<S, R> = (state$: Observable<S>) => Observable<R>;
 
@@ -23,7 +21,11 @@ export function createObservableStore(
     reducer(undefined, { type: 'init' })
   );
   const select = <S>(selector?: Selector<State, S>) =>
-    state$.pipe(distinctUntilChanged(), map(selector), distinctUntilChanged());
+    state$.pipe(
+      distinctUntilChanged(),
+      map(selector),
+      distinctUntilChanged()
+    );
 
   const redux = createStore(
     reducer,
@@ -31,7 +33,11 @@ export function createObservableStore(
   ) as ObservableStore<State>;
   redux.select = select;
   redux.pipe = <S>(rxSelect: RxSelector<State, S>): Observable<S> =>
-    state$.pipe(distinctUntilChanged(), rxSelect, distinctUntilChanged());
+    state$.pipe(
+      distinctUntilChanged(),
+      rxSelect,
+      distinctUntilChanged()
+    );
 
   redux.subscribe(() => {
     state$.next(redux.getState());
