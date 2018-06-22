@@ -1,7 +1,7 @@
 import { forkJoin, of, Observable } from 'rxjs';
 import { map as rxMap, catchError, mergeMap, map } from 'rxjs/operators';
 import { flatten, filter, pathEq, min, max } from 'ramda';
-import { ActionsObservable } from 'redux-observable';
+import { ActionsObservable, StateObservable } from 'redux-observable';
 import * as actions from '../actions';
 import { BlockRange, QueryResult, QueryArgs } from '../model';
 import { EpicContext } from '../../../context';
@@ -9,7 +9,7 @@ import * as fromSchema from '../../schema';
 
 export const queryEvents = (
   action$: ActionsObservable<actions.QueryEvents>,
-  store,
+  state$: StateObservable<any>,
   { getEvents }: EpicContext
 ) => {
   // Could buffer requests by time lets say 10ms
@@ -18,7 +18,7 @@ export const queryEvents = (
       const addresses = payload.map(q => q.address);
       const genesis = payload.map(x => x.range[0]).reduce(min, Infinity);
       const toBlock = payload.map(x => x.range[1]).reduce(max, 0);
-      const decodeLogs = fromSchema.getLogDecoder(store.getState());
+      const decodeLogs = fromSchema.getLogDecoder(state$.value);
 
       return forkJoin(
         payload.map(({ range: [fromBlock, toBlock], address }) => {

@@ -6,7 +6,6 @@ import { EthProxyOptions } from './model';
 import { ContractLoader } from './modules/schema';
 
 export interface EpicContext extends RxWeb3 {
-  state$: Observable<State>;
   options: EthProxyOptions;
   contractLoader: ContractLoader;
   genId: () => string;

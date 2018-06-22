@@ -19,7 +19,6 @@ import { EthProxy, EthProxyOptions } from './model';
 import { sendCall, createSchemaLoader, sendTransaction, query } from './api';
 
 const defaultOptions = {
-  pollInterval: 1000,
   eventReader: getEvents,
   interceptors: {},
   store: undefined
@@ -47,13 +46,10 @@ export function createProxy<T extends {}>(
 
   const contractLoader = (name: string) => createSchemaLoader(store)(name);
 
-  const state$ = new BehaviorSubject<State>(null);
-
   const context = {
     ...rxWeb3,
     getEvents,
     options,
-    state$,
     contractLoader,
     genId
   };
@@ -64,8 +60,6 @@ export function createProxy<T extends {}>(
 
   var store = createObservableStore(epicMiddleware, options.store);
   epicMiddleware.run(rootEpic);
-
-  store.select(x => x).subscribe(state$);
 
   const deps = {
     ...context,

@@ -1,4 +1,4 @@
-import { ActionsObservable, ofType } from 'redux-observable';
+import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import { mergeMap, first, map } from 'rxjs/operators';
 import {
   of,
@@ -15,11 +15,12 @@ import { getEventQueries } from '../reducer';
 import { EpicContext } from '../../../context';
 import { createQueries } from '../create-queries';
 import { getLatestBlockNumberOrFail } from '../../blocks';
+import { State } from '../../../store';
 
 export const composeQueries = (
   actions$: ActionsObservable<actions.Types>,
-  _,
-  { state$, contractLoader }: EpicContext
+  state$: StateObservable<State>,
+  { contractLoader }: EpicContext
 ): Observable<actions.Types> =>
   actions$.pipe(
     ofType<actions.ComposeQueryFromModel>(actions.COMPOSE_QUERY_FROM_MODEL),
