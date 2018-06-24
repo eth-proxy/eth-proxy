@@ -14,11 +14,9 @@ import {
   catchError,
   withLatestFrom
 } from 'rxjs/operators';
-import { of } from 'rxjs/observable/of';
-import { _throw } from 'rxjs/observable/throw';
+import { of, throwError as _throw, Observable } from 'rxjs';
 
 import * as actions from '../actions';
-import { Observable } from 'rxjs/Observable';
 import { EpicContext } from '../../../context';
 import { getLogDecoder } from '../../schema';
 

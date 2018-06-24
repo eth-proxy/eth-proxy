@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { RxWeb3, Provider } from '@eth-proxy/rx-web3';
 import { QueryModel, EventMetadata } from './modules/events';
 import { ContractInfo } from './modules/schema';
@@ -16,7 +16,6 @@ export class EthProxy<T extends {} = {}> implements RxWeb3 {
 
   query: (queryModel: QueryModel<T>) => Observable<any>;
   loadContractSchema: (name: keyof T) => Observable<ContractInfo>;
-  stop: () => void;
 
   // rxweb3
   getBalance: RxWeb3['getBalance'];

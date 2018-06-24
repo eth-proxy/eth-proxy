@@ -26,7 +26,12 @@ const emptyTopics: Topics = {
 
 export function mergeTopics(groupedTopics: Topics[]): Topics {
   return reduce(
-    mergeDeepWith(pipe(concat, uniq as any)),
+    mergeDeepWith(
+      pipe(
+        concat,
+        uniq as any
+      )
+    ),
     emptyTopics,
     groupedTopics
   );

@@ -1,6 +1,6 @@
 import { ActionsObservable, ofType } from 'redux-observable';
 import { mergeMap, first, map as rxMap } from 'rxjs/operators';
-import { forkJoin } from 'rxjs/observable/forkJoin';
+import { forkJoin, Observable } from 'rxjs';
 import { keys, isNil, chain } from 'ramda';
 
 import {
@@ -10,7 +10,6 @@ import {
   createQueryEvents
 } from '../actions';
 import { getLatestBlockNumberOrFail } from '../../blocks';
-import { Observable } from 'rxjs/Observable';
 import { EpicContext } from '../../../context';
 import { BlockRange, NormalizedFilter, ContractQuery } from '../model';
 import { depsToTopics } from '../utils/expand-model';
@@ -27,7 +26,10 @@ export const composeQueries = (
       return forkJoin(keys(model.deps).map(contractLoader)).pipe(
         mergeMap(contracts => {
           return state$
-            .pipe(rxMap(getLatestBlockNumberOrFail), first(x => !isNil(x)))
+            .pipe(
+              rxMap(getLatestBlockNumberOrFail),
+              first(x => !isNil(x))
+            )
             .pipe(
               mergeMap(latestBlockNumber => {
                 const queries = contracts.map(

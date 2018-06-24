@@ -1,8 +1,7 @@
 import * as Web3 from 'web3';
 import { clone, curry, CurriedFunction2 } from 'ramda';
 import { createWeb3, getMethodAbi } from '../../utils';
-import { bindNodeCallback } from 'rxjs/observable/bindNodeCallback';
-import { Observable } from 'rxjs/Observable';
+import { Observable, bindNodeCallback } from 'rxjs';
 import { formatPayload } from './formatters';
 
 export interface TransactionInput {

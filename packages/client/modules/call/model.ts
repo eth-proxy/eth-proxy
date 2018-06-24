@@ -1,5 +1,5 @@
 import { Request } from '../request';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 export type CallResult<T> = Observable<T>;
 
 export type CallHandler<T> = <I extends keyof T, M extends keyof T[I]>(

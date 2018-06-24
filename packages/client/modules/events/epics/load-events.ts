@@ -1,4 +1,4 @@
-import { forkJoin } from 'rxjs/observable/forkJoin';
+import { forkJoin, of, Observable } from 'rxjs';
 import {
   map as rxMap,
   catchError,
@@ -9,7 +9,6 @@ import {
 } from 'rxjs/operators';
 import { chain, isEmpty } from 'ramda';
 import { ActionsObservable } from 'redux-observable';
-import { of } from 'rxjs/observable/of';
 
 import {
   createQueryEventsSuccess,
@@ -19,7 +18,6 @@ import {
   QueryEventsFailed,
   QueryEventsSuccess
 } from '../actions';
-import { Observable } from 'rxjs/Observable';
 import { EpicContext } from '../../../context';
 import {
   createEventCache,

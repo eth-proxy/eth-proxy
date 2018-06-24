@@ -1,8 +1,7 @@
 import { first, tap, mergeMap, map } from 'rxjs/operators';
-import { Observable } from 'rxjs/Observable';
+import { Observable, defer } from 'rxjs';
 
 import { pickTxParamsProps, Request } from '../modules/request';
-import { defer } from 'rxjs/observable/defer';
 import { createProcessCall, getRequestById } from '../modules/call';
 import { Context } from '../context';
 import { getInterceptor } from '../utils';

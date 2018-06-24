@@ -1,10 +1,8 @@
 import { Store } from 'redux';
 
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Selector } from 'reselect';
-import { distinctUntilChanged } from 'rxjs/operators/distinctUntilChanged';
-import { map } from 'rxjs/operators/map';
-import { Observable } from 'rxjs/Observable';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 
 export type RxSelector<S, R> = (state$: Observable<S>) => Observable<R>;
 

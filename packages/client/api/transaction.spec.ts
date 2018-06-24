@@ -5,7 +5,7 @@ import * as fromAccount from '../modules/account';
 import * as fromRequest from '../modules/request';
 import { AnyAction } from 'redux';
 import { expect } from 'chai';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { DEFAULT_GAS } from '../constants';
 
 const account = '123';

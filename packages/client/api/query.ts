@@ -1,8 +1,5 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable, NEVER as never, of, merge } from 'rxjs';
 import { tap, finalize, mergeMapTo } from 'rxjs/operators';
-import { never } from 'rxjs/observable/never';
-import { of } from 'rxjs/observable/of';
-import { merge } from 'rxjs/observable/merge';
 
 import { getQueryResultFromQueryId } from '../modules/events';
 import * as fromEvents from '../modules/events';

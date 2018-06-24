@@ -1,7 +1,6 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable, timer } from 'rxjs';
 import { mergeMap, distinctUntilChanged, map } from 'rxjs/operators';
 import { ActionsObservable } from 'redux-observable';
-import { timer } from 'rxjs/observable/timer';
 
 import * as actions from './actions';
 import { EpicContext } from '../../context';

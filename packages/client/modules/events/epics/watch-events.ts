@@ -1,5 +1,4 @@
-import { catchError, takeUntil, mergeMap, filter } from 'rxjs/operators';
-import { map } from 'rxjs/operators';
+import { catchError, takeUntil, mergeMap, filter, map } from 'rxjs/operators';
 import { ActionsObservable } from 'redux-observable';
 import {
   AddEventsWatch,
@@ -9,7 +8,7 @@ import {
   RemoveEventsWatch
 } from '../actions';
 
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { EpicContext } from '../../../context';
 import * as fromSchema from '../../schema';
 

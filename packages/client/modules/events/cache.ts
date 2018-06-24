@@ -11,7 +11,7 @@ import {
   flatten
 } from 'ramda';
 import * as Web3 from 'web3';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { toObservableStore } from '../../utils';
 import { fillFilterWithMany, isEventMatching } from './utils';
 

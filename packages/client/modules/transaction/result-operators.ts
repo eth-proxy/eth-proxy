@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 
 import { Transaction, TransactionConfirmation } from './model';

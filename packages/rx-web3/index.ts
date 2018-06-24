@@ -1,6 +1,6 @@
 /// <reference path="typings.d.ts" />
 import * as Web3 from 'web3';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { mergeMap, first } from 'rxjs/operators';
 import { mapObjIndexed } from 'ramda';
 import * as allMethods from './methods';

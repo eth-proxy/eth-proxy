@@ -1,8 +1,7 @@
 import * as Web3 from 'web3';
 import { createWeb3 } from '../utils';
 import { CurriedFunction2, curry } from 'ramda';
-import { Observable } from 'rxjs/Observable';
-import { merge } from 'rxjs/observable/merge';
+import { Observable, merge } from 'rxjs';
 
 // TESTRPC WATCH DOES NOT WORK WITH ADDRESS LIST
 export const watchEvents = curry(

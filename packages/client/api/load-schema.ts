@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { ObservableStore, State, getLoadedContractFromRef$ } from '../store';
 import { ContractInfo } from '../model';
 import {
