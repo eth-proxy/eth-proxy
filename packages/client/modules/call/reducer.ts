@@ -2,6 +2,7 @@ import * as actions from './actions';
 import { createSelector } from 'reselect';
 import { sha3 } from '@eth-proxy/rx-web3';
 import { moduleId } from './constants';
+import { omit } from 'ramda';
 
 export type State = {
   requests: {
@@ -29,14 +30,14 @@ export function reducer(
 ): State {
   switch (action.type) {
     case actions.PROCESS_CALL: {
-      const { id, ...data } = action.payload;
+      const { id } = action.payload;
       return {
         data: state.data,
         requests: {
           ...state.requests,
           [id]: {
             status: 'init',
-            hash: hashRequestData(data)
+            hash: hashRequestData(omit(['id'], action.payload))
           }
         }
       };

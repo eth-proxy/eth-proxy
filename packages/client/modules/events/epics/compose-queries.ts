@@ -1,11 +1,13 @@
-import { ActionsObservable, ofType } from 'redux-observable';
+import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import { mergeMap, first, map } from 'rxjs/operators';
-import { of } from 'rxjs/observable/of';
-import { combineLatest } from 'rxjs/observable/combineLatest';
-import { Observable } from 'rxjs/Observable';
-import { forkJoin } from 'rxjs/observable/forkJoin';
+import {
+  of,
+  combineLatest,
+  Observable,
+  forkJoin,
+  throwError as _throw
+} from 'rxjs';
 import { keys, isNil } from 'ramda';
-import { _throw } from 'rxjs/observable/throw';
 
 import { QueryArgs } from '../model';
 import * as actions from '../actions';
@@ -13,11 +15,12 @@ import { getEventQueries } from '../reducer';
 import { EpicContext } from '../../../context';
 import { createQueries } from '../create-queries';
 import { getLatestBlockNumberOrFail } from '../../blocks';
+import { State } from '../../../store';
 
 export const composeQueries = (
   actions$: ActionsObservable<actions.Types>,
-  _,
-  { state$, contractLoader }: EpicContext
+  state$: StateObservable<State>,
+  { contractLoader }: EpicContext
 ): Observable<actions.Types> =>
   actions$.pipe(
     ofType<actions.ComposeQueryFromModel>(actions.COMPOSE_QUERY_FROM_MODEL),

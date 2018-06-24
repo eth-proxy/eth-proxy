@@ -64,11 +64,18 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
 
   const getHasContracts = (res: ContractRef[]) =>
     createSelector(getContractForRef, getContract =>
-      pipe(map(getContract), all((x: any) => !!x && !x.loading))(res)
+      pipe(
+        map(getContract),
+        all((x: any) => !!x && !x.loading)
+      )(res)
     );
   const getAllAbis = createSelector(
     getModule,
-    pipe(values, map(propOr([], 'abi')), flatten)
+    pipe(
+      values,
+      map(propOr([], 'abi')),
+      flatten
+    )
   );
   const getLogDecoder = createSelector(getAllAbis, abis => decodeLogs(abis));
 

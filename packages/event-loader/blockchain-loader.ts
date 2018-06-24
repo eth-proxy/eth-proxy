@@ -1,10 +1,8 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable, Subject, merge } from 'rxjs';
 import { max, reverse, times } from 'ramda';
 import { catchError, mergeMap, finalize, map } from 'rxjs/operators';
 import { Reader, EventFilter } from './model';
-import { Subject } from 'rxjs/Subject';
 import { getEvents, Provider } from '@eth-proxy/rx-web3';
-import { merge } from 'rxjs/observable/merge';
 
 const rangeSize = 10000;
 

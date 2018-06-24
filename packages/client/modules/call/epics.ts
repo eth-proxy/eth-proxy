@@ -1,7 +1,6 @@
 import { ActionsObservable } from 'redux-observable';
 import { mergeMap, map, catchError } from 'rxjs/operators';
-import { of } from 'rxjs/observable/of';
-import { Observable } from 'rxjs/Observable';
+import { of, Observable } from 'rxjs';
 
 import * as actions from './actions';
 import { ProcessRequestArgs } from '../request';

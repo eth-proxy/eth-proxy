@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import * as Web3 from 'web3';
 import { CurriedFunction2 } from 'ramda';
 

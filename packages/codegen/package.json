@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/codegen",
-  "version": "0.4.1-y.23",
+  "version": "0.4.1-y.32",
   "description": "Contracts code generation for @eth-proxy/client",
   "main": "dist/index.js",
   "bin": "dist/index.js",
@@ -30,6 +30,6 @@
     "@types/node": "8.5.2",
     "@types/ramda": "0.25.12",
     "rimraf": "^2.6.2",
-    "typescript": "^2.9.2"
+    "typescript": "^2.8.1"
   }
 }

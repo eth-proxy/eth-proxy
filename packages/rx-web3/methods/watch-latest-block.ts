@@ -1,7 +1,6 @@
 import * as Web3 from 'web3';
 import { createWeb3 } from '../utils';
-import { bindNodeCallback } from 'rxjs/observable/bindNodeCallback';
-import { Observable } from 'rxjs/Observable';
+import { bindNodeCallback, Observable } from 'rxjs';
 import { getBlock } from './get-block';
 import { concat, switchMap, distinctUntilKeyChanged } from 'rxjs/operators';
 

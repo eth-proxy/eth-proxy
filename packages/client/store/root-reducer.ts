@@ -17,7 +17,7 @@ export const reducer = combineReducers<State>({
   [fromBlocks.moduleId]: fromBlocks.reducer,
   [fromEvents.moduleId]: fromEvents.reducer,
   [fromCalls.moduleId]: fromCalls.reducer
-});
+} as any);
 
 const initialState = reducer(undefined, { type: '' });
 

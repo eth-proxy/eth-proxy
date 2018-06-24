@@ -1,5 +1,4 @@
-import { SubscribableOrPromise } from 'rxjs/Observable';
-import { Observable } from 'rxjs/Observable';
+import { SubscribableOrPromise, Observable } from 'rxjs';
 import { ContractAbi, AbiDefinition } from '@eth-proxy/rx-web3';
 
 export interface ContractSchemaExtras {

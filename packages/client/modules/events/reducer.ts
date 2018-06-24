@@ -171,7 +171,7 @@ export interface State {
   modelsToCompose: ModelsState;
 }
 
-export const reducer = combineReducers<State>({
+export const reducer = combineReducers({
   entities: eventEntitiesReducer,
   queries: eventsQueryReducer,
   modelsToCompose: modelsReducer

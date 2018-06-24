@@ -1,8 +1,7 @@
 import * as Web3 from 'web3';
 import { createWeb3 } from '../utils';
 import { CurriedFunction2, curry } from 'ramda';
-import { Observable } from 'rxjs/Observable';
-import { forkJoin } from 'rxjs/observable/forkJoin';
+import { Observable, forkJoin } from 'rxjs';
 import { flatten } from 'ramda';
 
 // TESTRPC WATCH DOES NOT WORK WITH ADDRESS LIST

@@ -1,7 +1,6 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { State } from './model';
-import { map as rxMap, filter, tap } from 'rxjs/operators';
-import { first } from 'rxjs/operators/first';
+import { map as rxMap, filter, tap, first } from 'rxjs/operators';
 import { getContractsFromQueryModel, getDefaultTxParams } from './selectors';
 import { keys } from 'ramda';
 import { QueryModel } from '../modules/events';
@@ -12,7 +11,10 @@ import * as fromSchema from '../modules/schema';
 import * as fromTransactions from '../modules/transaction';
 
 export function getDetectedNetwork$(state$: Observable<State>) {
-  return state$.pipe(rxMap(fromNetwork.getNetworkId), first(x => !!x));
+  return state$.pipe(
+    rxMap(fromNetwork.getNetworkId),
+    first(x => !!x)
+  );
 }
 
 export function getContractsFromModel$(queryModel: QueryModel) {

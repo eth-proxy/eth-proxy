@@ -1,6 +1,5 @@
-import { catchError, takeUntil, mergeMap, filter } from 'rxjs/operators';
-import { map } from 'rxjs/operators';
-import { ActionsObservable } from 'redux-observable';
+import { catchError, takeUntil, mergeMap, filter, map } from 'rxjs/operators';
+import { ActionsObservable, StateObservable } from 'redux-observable';
 import {
   AddEventsWatch,
   createEventsLoaded,
@@ -9,14 +8,14 @@ import {
   RemoveEventsWatch
 } from '../actions';
 
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { EpicContext } from '../../../context';
 import * as fromSchema from '../../schema';
 
 // DONT WATCH SAME CONTRACTS MORE THEN ONCE
 export const watchEvents = (
   action$: ActionsObservable<any>,
-  store,
+  state$: StateObservable<any>,
   { watchEvents }: EpicContext
 ) => {
   const takeUnilRemoved = (id: string) =>
@@ -33,7 +32,7 @@ export const watchEvents = (
         address: addresses
       }).pipe(
         takeUnilRemoved(id),
-        map(log => fromSchema.getLogDecoder(store.getState())([log])),
+        map(log => fromSchema.getLogDecoder(state$.value)([log])),
         map(createEventsLoaded),
         catchError((err, err$) => {
           console.error(err);

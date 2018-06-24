@@ -3,7 +3,7 @@ import { QueryArgs, QueryResult, QueryModel } from './model';
 export const COMPOSE_QUERY_FROM_MODEL = 'COMPOSE_QUERY_FROM_MODEL';
 
 export interface ComposeQueryFromModel {
-  type: 'COMPOSE_QUERY_FROM_MODEL';
+  type: typeof COMPOSE_QUERY_FROM_MODEL;
   payload: {
     id: string;
     model: QueryModel;
@@ -20,11 +20,11 @@ export const createComposeQueryFromModel = (
 export const QUERY_EVENTS = 'QUERY_EVENTS';
 
 export interface QueryEvents {
-  type: 'QUERY_EVENTS';
+  type: typeof QUERY_EVENTS;
   payload: QueryArgs[];
 }
 
-export const createQueryEvents = (payload: QueryArgs[]) => ({
+export const createQueryEvents = (payload: QueryArgs[]): QueryEvents => ({
   type: QUERY_EVENTS,
   payload
 });
@@ -32,7 +32,7 @@ export const createQueryEvents = (payload: QueryArgs[]) => ({
 export const QUERY_EVENTS_SUCCESS = 'QUERY_EVENTS_SUCCESS';
 
 export interface QueryEventsSuccess {
-  type: 'QUERY_EVENTS_SUCCESS';
+  type: typeof QUERY_EVENTS_SUCCESS;
   payload: QueryResult[];
 }
 
@@ -44,7 +44,7 @@ export const createQueryEventsSuccess = (payload: QueryResult[]) => ({
 export const QUERY_EVENTS_FAILED = 'QUERY_EVENTS_FAILED';
 
 export interface QueryEventsFailed {
-  type: 'QUERY_EVENTS_FAILED';
+  type: typeof QUERY_EVENTS_FAILED;
   payload: QueryArgs[];
 }
 
@@ -56,7 +56,7 @@ export const createQueryEventsFailed = (payload: QueryArgs[]) => ({
 export const EVENTS_LOADED = 'EVENTS_LOADED';
 
 export interface EventsLoaded {
-  type: 'EVENTS_LOADED';
+  type: typeof EVENTS_LOADED;
   payload: any[];
 }
 
@@ -68,7 +68,7 @@ export const createEventsLoaded = (payload: any[]) => ({
 export const ADD_EVENTS_WATCH = 'ADD_EVENTS_WATCH';
 
 export interface AddEventsWatch {
-  type: 'ADD_EVENTS_WATCH';
+  type: typeof ADD_EVENTS_WATCH;
   payload: {
     id: string;
     fromBlock: number;
@@ -76,7 +76,9 @@ export interface AddEventsWatch {
   };
 }
 
-export const createAddEventsWatch = (payload: AddEventsWatch['payload']) => ({
+export const createAddEventsWatch = (
+  payload: AddEventsWatch['payload']
+): AddEventsWatch => ({
   type: ADD_EVENTS_WATCH,
   payload
 });
