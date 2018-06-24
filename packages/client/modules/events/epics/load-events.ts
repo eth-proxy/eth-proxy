@@ -8,7 +8,7 @@ import {
   defaultIfEmpty
 } from 'rxjs/operators';
 import { chain, isEmpty } from 'ramda';
-import { ActionsObservable } from 'redux-observable';
+import { ActionsObservable, StateObservable } from 'redux-observable';
 
 import {
   createQueryEventsSuccess,
@@ -25,10 +25,11 @@ import {
   getEventsForFilter
 } from '../cache';
 import * as fromSchema from '../../schema';
+import { State } from '../../../store';
 
 export const queryEvents = (
   action$: ActionsObservable<QueryEvents>,
-  store,
+  state$: StateObservable<State>,
   { getEvents }: EpicContext
 ) => {
   const cache = createEventCache();
@@ -64,7 +65,7 @@ export const queryEvents = (
             )
           ),
           first(),
-          rxMap(fromSchema.getLogDecoder(store.getState()))
+          rxMap(fromSchema.getLogDecoder(state$.value))
         )
         .pipe(
           rxMap(events => createQueryEventsSuccess({ id, events })),

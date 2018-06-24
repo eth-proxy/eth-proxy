@@ -11,12 +11,11 @@ npm install --save-dev @eth-proxy/codegen
 OR
 
 yarn add @eth-proxy/codegen --dev --exact
-
 ```
 
 ### Instructions
 
-Provide path to folder with your contracts JSON artifacts and output where ganerated file should be stored. 
+Provide path to folder with your contracts JSON artifacts and output where ganerated file should be stored.
 
 If you are using truffle-contract, provide additional flag --target=truffle
 
@@ -37,7 +36,7 @@ npx codegen {{ options - check API section }}
 - Default: NONE
 - Expects: path where generated contracts should be saved, path should include file name and extension.
 
-Example: --o=\"src/contracts.ts\" 
+Example: --o=\"src/contracts.ts\"
 
 **Contract Directory - Required**
 
@@ -61,11 +60,22 @@ Example: --t=truffle
 # Example:
 
 Truffle:
+
 ```
 npx codegen --o=\"src/contracts.ts\" --cDir=\"build/contracts\" --t=truffle
 ```
 
 Eth Proxy Client:
+
 ```
 npx codegen --o=\"src/contracts.ts\" --cDir=\"build/contracts\"
+```
+
+# Development
+
+## Generating example code
+
+```
+npm run gen:truffle
+npm run gen:eth-proxy
 ```

@@ -3,7 +3,7 @@ import { NormalizedFilter, ContractQuery, QueryModel } from './model';
 export const COMPOSE_QUERY_FROM_MODEL = 'COMPOSE_QUERY_FROM_MODEL';
 
 export interface ComposeQueryFromModel {
-  type: 'COMPOSE_QUERY_FROM_MODEL';
+  type: typeof COMPOSE_QUERY_FROM_MODEL;
   payload: {
     id: string;
     model: QueryModel;
@@ -28,7 +28,9 @@ export interface QueryEvents {
   };
 }
 
-export const createQueryEvents = (payload: QueryEvents['payload']) => ({
+export const createQueryEvents = (
+  payload: QueryEvents['payload']
+): QueryEvents => ({
   type: QUERY_EVENTS,
   payload
 });
@@ -87,7 +89,9 @@ export interface AddEventsWatch {
   };
 }
 
-export const createAddEventsWatch = (payload: AddEventsWatch['payload']) => ({
+export const createAddEventsWatch = (
+  payload: AddEventsWatch['payload']
+): AddEventsWatch => ({
   type: ADD_EVENTS_WATCH,
   payload
 });
@@ -104,7 +108,7 @@ export const createRemoveEventsWatch = (payload: string) => ({
   payload
 });
 
-export type EventsActionTypes =
+export type Types =
   | ComposeQueryFromModel
   | QueryEvents
   | QueryEventsSuccess

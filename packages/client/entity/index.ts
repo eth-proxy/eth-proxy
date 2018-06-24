@@ -7,7 +7,8 @@ import {
   mapObjIndexed,
   values,
   flatten,
-  omit
+  omit,
+  map
 } from 'ramda';
 
 import { State, getSelectors as getInternalSelectors } from '../store';
@@ -19,12 +20,17 @@ import { ContractInfo } from '../modules/schema';
 
 const EMPTY_SNAPSHOT = {
   entities: {},
-  toBlock: 0
+  toBlock: -1
 };
 
 export interface Snapshot<T> {
-  entities: { [id: string]: T };
+  entities: { [id: string]: EntitySnapshot<T> };
   toBlock: number;
+}
+
+export interface EntitySnapshot<T> {
+  toBlock: number;
+  entity: T;
 }
 
 export const getSelectors = <App>(getModule: (state: App) => State) => {
@@ -97,11 +103,18 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
               x.meta.blockNumber > snapshot.toBlock
           );
 
+        const initialState = map(e => e.entity, snapshot.entities);
         return allEvents.filter(isEventInvolved).reduce((state: any, e) => {
           const handler = model[byAddress[e.meta.address].name][e.type];
           const id = handler.identity(e.payload);
 
-          const canApply = !!state[id] || handler.root || !hasRoot;
+          const entitySnapshot = snapshot.entities[id];
+          const includedInSnapshot =
+            entitySnapshot && e.meta.blockNumber < entitySnapshot.toBlock;
+
+          const canApply =
+            !includedInSnapshot && (!!state[id] || handler.root || !hasRoot);
+
           const next = canApply && handler.handle(state[id], e.payload, e.meta);
 
           return next
@@ -109,8 +122,8 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
                 ...state,
                 [id]: next
               }
-            : omit([id.toString()], state);
-        }, snapshot.entities);
+            : state;
+        }, initialState);
       }
     );
   };
@@ -158,6 +171,7 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
       }
     );
   };
+
   const getListFromModelOptimistic = <T>(
     model: EntityModel<T, {}, {}>,
     snapshotSelector?: (app: App) => Snapshot<T>

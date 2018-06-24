@@ -1,8 +1,8 @@
 import { curry, evolve } from 'ramda';
 import * as Web3 from 'web3';
 import { createWeb3, bind } from '../utils';
-import { Observable, bindNodeCallback } from 'rxjs';
 import { CurriedFunction2 } from 'ramda';
+import { bindNodeCallback, Observable } from 'rxjs';
 
 // It should be probably done by web3, same way like rest of receipt, but as for (0.20.3) its not done
 const decodeStatus = (status: string) =>

@@ -3,7 +3,7 @@ import {
   createLoadReceiptSuccess,
   TX_GENERATED
 } from '../actions';
-import { ActionsObservable, ofType } from 'redux-observable';
+import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import {
   mergeMap,
   retryWhen,
@@ -19,11 +19,12 @@ import { of, throwError as _throw, Observable } from 'rxjs';
 import * as actions from '../actions';
 import { EpicContext } from '../../../context';
 import { getLogDecoder } from '../../schema';
+import { State } from '../../../store';
 
 export const findReceiptEpic = (
   actions$: ActionsObservable<actions.TxGenerated>,
-  _,
-  { getReceipt, state$ }: EpicContext
+  state$: StateObservable<State>,
+  { getReceipt }: EpicContext
 ) => {
   return actions$.pipe(
     ofType(TX_GENERATED),

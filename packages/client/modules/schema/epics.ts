@@ -1,4 +1,4 @@
-import { ActionsObservable, ofType } from 'redux-observable';
+import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import { mergeMap, map, catchError } from 'rxjs/operators';
 import { Observable, defer, of, combineLatest } from 'rxjs';
 import { pathOr } from 'ramda';
@@ -7,6 +7,7 @@ import { ResolvedContractSchema, ContractSchema } from './model';
 import * as actions from './actions';
 import { getDetectedNetwork$ } from '../../store/rx-selectors';
 import { EpicContext } from '../../context';
+import { State } from '../../store';
 
 export const mapResolvedContractSchema = (
   schema: ResolvedContractSchema,
@@ -26,8 +27,8 @@ export const mapResolvedContractSchema = (
 
 export const loadContractSchema = (
   actions$: ActionsObservable<actions.LoadContractSchema>,
-  _,
-  { options, state$ }: EpicContext
+  state$: StateObservable<State>,
+  { options }: EpicContext
 ): Observable<actions.Types> => {
   return actions$.pipe(
     ofType(actions.LOAD_CONTRACT_SCHEMA),

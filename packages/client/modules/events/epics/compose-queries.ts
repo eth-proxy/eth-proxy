@@ -1,4 +1,4 @@
-import { ActionsObservable, ofType } from 'redux-observable';
+import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import { mergeMap, first, map as rxMap } from 'rxjs/operators';
 import { forkJoin, Observable } from 'rxjs';
 import { keys, isNil, chain } from 'ramda';
@@ -7,19 +7,21 @@ import {
   COMPOSE_QUERY_FROM_MODEL,
   ComposeQueryFromModel,
   createAddEventsWatch,
-  createQueryEvents
+  createQueryEvents,
+  Types as ActionTypes
 } from '../actions';
 import { getLatestBlockNumberOrFail } from '../../blocks';
 import { EpicContext } from '../../../context';
 import { BlockRange, NormalizedFilter, ContractQuery } from '../model';
 import { depsToTopics } from '../utils/expand-model';
 import { splitQueryByTopics, toTopicList } from '../utils';
+import { State } from '../../../store';
 
 export const composeQueries = (
-  actions$: ActionsObservable<any>,
-  _,
-  { state$, contractLoader }: EpicContext
-) =>
+  actions$: ActionsObservable<ActionTypes>,
+  state$: StateObservable<State>,
+  { contractLoader }: EpicContext
+): Observable<ActionTypes> =>
   actions$.pipe(
     ofType(COMPOSE_QUERY_FROM_MODEL),
     mergeMap(({ payload: { id, model } }: ComposeQueryFromModel) => {

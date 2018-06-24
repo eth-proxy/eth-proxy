@@ -1,7 +1,7 @@
 import * as Web3 from 'web3';
 import { createWeb3, bind } from '../utils';
-import { Observable, bindNodeCallback } from 'rxjs';
 import { CurriedFunction2 } from 'ramda';
+import { bindNodeCallback, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { head } from 'ramda';
 

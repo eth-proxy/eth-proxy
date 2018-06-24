@@ -25,7 +25,7 @@ export interface EventsQueryState {
 
 export function eventsQueryReducer(
   state: EventsQueryState = {},
-  action: actions.EventsActionTypes
+  action: actions.Types
 ): EventsQueryState {
   switch (action.type) {
     case actions.QUERY_EVENTS: {
@@ -70,7 +70,7 @@ export interface EventsByHash {
 
 export function eventEntitiesReducer(
   state: EventsByHash = {},
-  action: actions.EventsActionTypes | fromTransactions.Types
+  action: actions.Types | fromTransactions.Types
 ): EventsByHash {
   switch (action.type) {
     case actions.QUERY_EVENTS_SUCCESS: {
@@ -101,7 +101,7 @@ export interface ModelsState {
 
 export function modelsReducer(
   state: ModelsState = {},
-  action: actions.EventsActionTypes
+  action: actions.Types
 ): ModelsState {
   switch (action.type) {
     case actions.COMPOSE_QUERY_FROM_MODEL: {

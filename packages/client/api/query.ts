@@ -1,4 +1,4 @@
-import { Observable, NEVER as never, of, merge } from 'rxjs';
+import { Observable, NEVER, of, merge } from 'rxjs';
 import { tap, finalize, mergeMapTo } from 'rxjs/operators';
 
 import { getQueryResultFromQueryId } from '../modules/events';
@@ -11,7 +11,7 @@ export const query = ({ genId, options, store }: Context) => (
 ): Observable<any> => {
   const id = genId();
   return merge(
-    never(),
+    NEVER,
     of(queryModel).pipe(
       getInterceptor('preQuery', options),
       tap(() =>
