@@ -23,7 +23,7 @@ export function diffRanges(
   }
   // Has  ----|||||||------
   // Want --|||||||||||----
-  if (hasFrom > wantFrom && hasTo < wantTo) {
+  if (hasFrom >= wantFrom && hasTo <= wantTo) {
     return [[wantFrom, hasFrom], [hasTo, wantTo]];
   }
   throw Error(
