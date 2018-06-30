@@ -23,7 +23,7 @@ export const query = ({ genId, options, store }: Context) => (
       tap({
         next: x => {
           if (x && x.status === 'error') {
-            throw new Error('Could not fulfil request');
+            throw Error('Could not fulfil request');
           }
         }
       })

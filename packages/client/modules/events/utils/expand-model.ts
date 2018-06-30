@@ -9,7 +9,7 @@ const formatInput = (type: string) => (value: any) => {
   if (type === 'address') {
     return '0x' + value.substr(2).padStart(64, '0');
   } else {
-    return value;
+    throw Error('Not supported filter type ' + type);
   }
 };
 

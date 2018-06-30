@@ -12,7 +12,7 @@ import {
 } from '../actions';
 import { getLatestBlockNumberOrFail } from '../../blocks';
 import { EpicContext } from '../../../context';
-import { BlockRange, NormalizedFilter, ContractQuery } from '../model';
+import { BlockRange } from '../model';
 import { depsToTopics } from '../utils/expand-model';
 import { splitQueryByTopics, toTopicList } from '../utils';
 import { State } from '../../../store';
@@ -61,6 +61,7 @@ export const composeQueries = (
                   }),
                   createAddEventsWatch({
                     id,
+                    // should watch specific events
                     addresses: contracts.map(c => c.address),
                     fromBlock: latestBlockNumber
                   })

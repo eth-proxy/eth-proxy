@@ -20,7 +20,7 @@ export const createComposeQueryFromModel = (
 export const QUERY_EVENTS = 'QUERY_EVENTS';
 
 export interface QueryEvents {
-  type: 'QUERY_EVENTS';
+  type: typeof QUERY_EVENTS;
   payload: {
     id: string;
     queries: ContractQuery[];
