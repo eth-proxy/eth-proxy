@@ -89,13 +89,13 @@ export interface State {
   requests: Requests;
 }
 
-const reducer = combineReducers<State>({
+const reducer = combineReducers({
   requests: requestsReducer,
   events: eventStateReducer
 });
 
 export const createEventCache = () => {
-  const redux = toObservableStore(createStore(reducer));
+  const redux = toObservableStore<State>(createStore(reducer));
 
   return {
     request: (filter: NormalizedFilter) => {
