@@ -28,6 +28,7 @@ export interface QueryModel<T extends {} = {}> {
               };
         }
   };
+  fromBlock?: number;
 }
 
 export interface QueryResult {

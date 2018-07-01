@@ -1,5 +1,10 @@
 import { Observable, NEVER, of, merge } from 'rxjs';
-import { tap, finalize, mergeMapTo } from 'rxjs/operators';
+import {
+  tap,
+  finalize,
+  mergeMapTo,
+  distinctUntilChanged
+} from 'rxjs/operators';
 
 import { getQueryResultFromQueryId } from '../modules/events';
 import * as fromEvents from '../modules/events';
@@ -20,6 +25,9 @@ export const query = ({ genId, options, store }: Context) => (
         )
       ),
       mergeMapTo(store.select(getQueryResultFromQueryId(id))),
+      distinctUntilChanged(
+        (x, y) => x.status === y.status && x.events.length === y.events.length
+      ),
       tap({
         next: x => {
           if (x && x.status === 'error') {

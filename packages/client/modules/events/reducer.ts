@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { indexBy, values, pickBy } from 'ramda';
+import { indexBy, values } from 'ramda';
 import { combineReducers, AnyAction } from 'redux';
 
 import * as actions from './actions';
@@ -126,7 +126,7 @@ export const reducer = combineReducers<State>({
   queries: eventsQueryReducer,
   modelsToCompose: modelsReducer
 });
-
+const loading = { status: 'loading', filters: [] as NormalizedFilter[] };
 export const getSelectors = <T>(getModule: (state: T) => State) => {
   const getEventEntities = createSelector(getModule, m => m.entities);
   const getAllEvents = createSelector(getEventEntities, values);
@@ -134,21 +134,16 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
 
   const getEventQueries = createSelector(getModule, m => m.queries);
   const getEventQuery = (id: string) =>
-    createSelector(
-      getEventQueries,
-      q => q[id] || { status: 'loading', filters: [] as NormalizedFilter[] }
-    );
+    createSelector(getEventQueries, q => q[id] || loading);
 
   const getQueryResultFromQueryId = (id: string) =>
     createSelector(
       getEventQuery(id),
-      getEventEntities,
-      ({ status, filters }, eventsById) => {
+      getAllEventsSorted,
+      ({ status, filters }, events) => {
         return {
           status,
-          events: values(
-            pickBy(e => filters.some(f => isEventMatching(f, e)), eventsById)
-          )
+          events: events.filter(e => filters.some(f => isEventMatching(f, e)))
         };
       }
     );
@@ -159,10 +154,12 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
   };
 };
 
-// ignores ranges since its not yet supported
 function isEventMatching(f: NormalizedFilter, event: DecodedEvent) {
   return (
-    addressMatches(f, event.meta) && topicsMatches(f.topics, event.meta.topics)
+    addressMatches(f, event.meta) &&
+    topicsMatches(f.topics, event.meta.topics) &&
+    // dont know top boundary cause it should also include events from watch
+    event.meta.blockNumber >= f.fromBlock
   );
 }
 

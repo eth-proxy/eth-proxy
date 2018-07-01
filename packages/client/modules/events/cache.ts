@@ -14,6 +14,7 @@ import * as Web3 from 'web3';
 import { Observable } from 'rxjs';
 import { toObservableStore } from '../../utils';
 import { fillFilterWithMany, isEventMatching } from './utils';
+import { tap } from 'rxjs/operators';
 
 export enum Action {
   Load = 'Load',

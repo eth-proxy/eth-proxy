@@ -36,8 +36,12 @@ export const composeQueries = (
               mergeMap(latestBlockNumber => {
                 const queries = contracts.map(
                   ({ address, genesisBlock, abi, name }) => {
+                    const rangeStart = Math.max(
+                      model.fromBlock || genesisBlock,
+                      genesisBlock
+                    );
                     return {
-                      range: [genesisBlock, latestBlockNumber] as BlockRange,
+                      range: [rangeStart, latestBlockNumber] as BlockRange,
                       topics: depsToTopics(abi, model.deps[name]),
                       address
                     };
