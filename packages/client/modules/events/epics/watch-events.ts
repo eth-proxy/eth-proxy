@@ -1,5 +1,5 @@
 import { catchError, takeUntil, mergeMap, filter, map } from 'rxjs/operators';
-import { ActionsObservable, StateObservable } from 'redux-observable';
+import { ActionsObservable, StateObservable, ofType } from 'redux-observable';
 import {
   AddEventsWatch,
   createEventsLoaded,
@@ -20,12 +20,14 @@ export const watchEvents = (
 ) => {
   const takeUnilRemoved = (id: string) =>
     takeUntil(
-      action$
-        .ofType(REMOVE_EVENTS_WATCH)
-        .pipe(filter(({ payload }: RemoveEventsWatch) => payload === id))
+      action$.pipe(
+        ofType(REMOVE_EVENTS_WATCH),
+        filter(({ payload }: RemoveEventsWatch) => payload === id)
+      )
     );
 
-  return action$.ofType(ADD_EVENTS_WATCH).pipe(
+  return action$.pipe(
+    ofType(ADD_EVENTS_WATCH),
     mergeMap(({ payload: { addresses, fromBlock, id } }: AddEventsWatch) => {
       return watchEvents({
         fromBlock,

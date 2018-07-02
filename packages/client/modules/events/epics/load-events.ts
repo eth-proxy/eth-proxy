@@ -8,13 +8,15 @@ import {
   defaultIfEmpty
 } from 'rxjs/operators';
 import { chain, isEmpty } from 'ramda';
-import { ActionsObservable, StateObservable } from 'redux-observable';
+import { ActionsObservable, StateObservable, ofType } from 'redux-observable';
 
 import {
   createQueryEventsSuccess,
   createQueryEventsFailed,
   QUERY_EVENTS,
-  QueryEvents
+  QueryEvents,
+  QueryEventsFailed,
+  QueryEventsSuccess
 } from '../actions';
 import { EpicContext } from '../../../context';
 import {
@@ -32,7 +34,8 @@ export const queryEvents = (
 ) => {
   const cache = createEventCache();
 
-  return action$.ofType(QUERY_EVENTS).pipe(
+  return action$.pipe(
+    ofType(QUERY_EVENTS),
     mergeMap(({ payload: { filters, id } }) => {
       const loadAll$ = of(...filters).pipe(
         mergeMap(f => getFiltersToLoad(cache.getState(), f)),
