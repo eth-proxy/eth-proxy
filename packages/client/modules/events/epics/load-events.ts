@@ -14,9 +14,7 @@ import {
   createQueryEventsSuccess,
   createQueryEventsFailed,
   QUERY_EVENTS,
-  QueryEvents,
-  QueryEventsFailed,
-  QueryEventsSuccess
+  QueryEvents
 } from '../actions';
 import { EpicContext } from '../../../context';
 import {
@@ -33,7 +31,6 @@ export const queryEvents = (
   { getEvents }: EpicContext
 ) => {
   const cache = createEventCache();
-  action$.subscribe(console.log);
 
   return action$.ofType(QUERY_EVENTS).pipe(
     mergeMap(({ payload: { filters, id } }) => {
