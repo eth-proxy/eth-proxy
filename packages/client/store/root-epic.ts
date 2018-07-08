@@ -15,7 +15,7 @@ export const rootEpic = combineEpics(
   fromNetwork.loadNetwork,
   fromAccounts.watchAccount,
   fromBlocks.watchLatestBlock,
-  fromEvents.queryEvents,
+  fromEvents.queryEventsEpic,
   fromEvents.watchEvents,
   fromEvents.composeQueries,
   fromSchema.loadContractSchema,

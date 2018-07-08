@@ -11,8 +11,8 @@ import { chain, isEmpty } from 'ramda';
 import { ActionsObservable, StateObservable, ofType } from 'redux-observable';
 
 import {
-  createQueryEventsSuccess,
-  createQueryEventsFailed,
+  queryEventsSuccess,
+  queryEventsFailed,
   QUERY_EVENTS,
   QueryEvents,
   QueryEventsFailed,
@@ -27,7 +27,7 @@ import {
 import * as fromSchema from '../../schema';
 import { State } from '../../../store';
 
-export const queryEvents = (
+export const queryEventsEpic = (
   action$: ActionsObservable<QueryEvents>,
   state$: StateObservable<State>,
   { getEvents }: EpicContext
@@ -68,10 +68,10 @@ export const queryEvents = (
           rxMap(fromSchema.getLogDecoder(state$.value))
         )
         .pipe(
-          rxMap(events => createQueryEventsSuccess({ id, events })),
+          rxMap(events => queryEventsSuccess({ id, events })),
           catchError(err => {
             console.error(err);
-            return of(createQueryEventsFailed(id));
+            return of(queryEventsFailed(id));
           })
         );
     })
