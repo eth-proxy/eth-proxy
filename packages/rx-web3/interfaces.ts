@@ -17,12 +17,14 @@ export type BlockchainEvent = {
   event: string;
   address: string;
   args: string;
+  blockNumber: number;
+  topics: string[];
 };
 export type FilterObject = {
   fromBlock?: number | string;
   toBlock?: number | string;
   address?: string | string[];
-  topics?: string[];
+  topics?: string[] | string[][];
 };
 export interface Block {
   author: string;

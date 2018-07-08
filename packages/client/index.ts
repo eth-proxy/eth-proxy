@@ -8,12 +8,7 @@ import {
   Provider
 } from '@eth-proxy/rx-web3';
 
-import {
-  createObservableStore,
-  getActiveAccount$,
-  State,
-  rootEpic
-} from './store';
+import { createAppStore, getActiveAccount$, State, rootEpic } from './store';
 import { getDetectedNetwork$ } from './store';
 import { EthProxy, EthProxyOptions } from './model';
 import { sendCall, createSchemaLoader, sendTransaction, query } from './api';
@@ -58,7 +53,7 @@ export function createProxy<T extends {}>(
     dependencies: context
   });
 
-  var store = createObservableStore(epicMiddleware, options.store);
+  var store = createAppStore(epicMiddleware, options.store);
   epicMiddleware.run(rootEpic);
 
   const deps = {

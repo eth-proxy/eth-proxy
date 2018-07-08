@@ -1,4 +1,4 @@
-import { QueryArgs, QueryResult, QueryModel } from './model';
+import { NormalizedFilter, ContractQuery, QueryModel } from './model';
 
 export const COMPOSE_QUERY_FROM_MODEL = 'COMPOSE_QUERY_FROM_MODEL';
 
@@ -21,10 +21,16 @@ export const QUERY_EVENTS = 'QUERY_EVENTS';
 
 export interface QueryEvents {
   type: typeof QUERY_EVENTS;
-  payload: QueryArgs[];
+  payload: {
+    id: string;
+    queries: ContractQuery[];
+    filters: NormalizedFilter[];
+  };
 }
 
-export const createQueryEvents = (payload: QueryArgs[]): QueryEvents => ({
+export const createQueryEvents = (
+  payload: QueryEvents['payload']
+): QueryEvents => ({
   type: QUERY_EVENTS,
   payload
 });
@@ -33,10 +39,15 @@ export const QUERY_EVENTS_SUCCESS = 'QUERY_EVENTS_SUCCESS';
 
 export interface QueryEventsSuccess {
   type: typeof QUERY_EVENTS_SUCCESS;
-  payload: QueryResult[];
+  payload: {
+    id: string;
+    events: any[];
+  };
 }
 
-export const createQueryEventsSuccess = (payload: QueryResult[]) => ({
+export const createQueryEventsSuccess = (
+  payload: QueryEventsSuccess['payload']
+): QueryEventsSuccess => ({
   type: QUERY_EVENTS_SUCCESS,
   payload
 });
@@ -45,10 +56,12 @@ export const QUERY_EVENTS_FAILED = 'QUERY_EVENTS_FAILED';
 
 export interface QueryEventsFailed {
   type: typeof QUERY_EVENTS_FAILED;
-  payload: QueryArgs[];
+  payload: string;
 }
 
-export const createQueryEventsFailed = (payload: QueryArgs[]) => ({
+export const createQueryEventsFailed = (
+  payload: QueryEventsFailed['payload']
+): QueryEventsFailed => ({
   type: QUERY_EVENTS_FAILED,
   payload
 });
@@ -86,7 +99,7 @@ export const createAddEventsWatch = (
 export const REMOVE_EVENTS_WATCH = 'REMOVE_EVENTS_WATCH';
 
 export interface RemoveEventsWatch {
-  type: 'REMOVE_EVENTS_WATCH';
+  type: typeof REMOVE_EVENTS_WATCH;
   payload: string;
 }
 

@@ -31,29 +31,29 @@ npx codegen {{ options - check API section }}
 
 **Output - Required**
 
-* Flag: --output
-* Aliases: --o
-* Default: NONE
-* Expects: path where generated contracts should be saved, path should include file name and extension.
+- Flag: --output
+- Aliases: --o
+- Default: NONE
+- Expects: path where generated contracts should be saved, path should include file name and extension.
 
 Example: --o=\"src/contracts.ts\"
 
 **Contract Directory - Required**
 
-* Flag: --contractsDir
-* Aliases: --cDir
-* Default: NONE
-* Expects: path to folder with all truffle artifacts as json files.
+- Flag: --contractsDir
+- Aliases: --cDir
+- Default: NONE
+- Expects: path to folder with all truffle artifacts as json files.
 
 Example: --cDir=\"../example/contracts\"
 
 **Target**
 
-* Flag: --target
-* Aliases: --t
-* Default: eth-proxy
-* Options: eth-proxy, truffle
-* Expects: target name, see supported targets in options.
+- Flag: --target
+- Aliases: --t
+- Default: eth-proxy
+- Options: eth-proxy, truffle
+- Expects: target name, see supported targets in options.
 
 Example: --t=truffle
 

@@ -50,3 +50,5 @@ export const createDeepEqualSelector = createSelectorCreator(
 
 export const getInterceptor = (key: keyof EthProxyInterceptors, options: any) =>
   ((options.interceptors as any) || {})[key] || identity;
+
+export * from './observable-store';

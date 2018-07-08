@@ -1,53 +1,79 @@
 import { forkJoin, of, Observable } from 'rxjs';
-import { map as rxMap, catchError, mergeMap, map } from 'rxjs/operators';
-import { flatten, filter, pathEq, min, max } from 'ramda';
-import { ActionsObservable, StateObservable } from 'redux-observable';
-import * as actions from '../actions';
-import { BlockRange, QueryResult, QueryArgs } from '../model';
+import {
+  map as rxMap,
+  catchError,
+  mergeMap,
+  tap,
+  first,
+  defaultIfEmpty
+} from 'rxjs/operators';
+import { chain, isEmpty } from 'ramda';
+import { ActionsObservable, StateObservable, ofType } from 'redux-observable';
+
+import {
+  createQueryEventsSuccess,
+  createQueryEventsFailed,
+  QUERY_EVENTS,
+  QueryEvents,
+  QueryEventsFailed,
+  QueryEventsSuccess
+} from '../actions';
 import { EpicContext } from '../../../context';
+import {
+  createEventCache,
+  getFiltersToLoad,
+  getEventsForFilter
+} from '../cache';
 import * as fromSchema from '../../schema';
+import { State } from '../../../store';
 
 export const queryEvents = (
-  action$: ActionsObservable<actions.QueryEvents>,
-  state$: StateObservable<any>,
+  action$: ActionsObservable<QueryEvents>,
+  state$: StateObservable<State>,
   { getEvents }: EpicContext
 ) => {
-  // Could buffer requests by time lets say 10ms
-  return action$.ofType(actions.QUERY_EVENTS).pipe(
-    mergeMap(({ payload }) => {
-      const addresses = payload.map(q => q.address);
-      const genesis = payload.map(x => x.range[0]).reduce(min, Infinity);
-      const toBlock = payload.map(x => x.range[1]).reduce(max, 0);
-      const decodeLogs = fromSchema.getLogDecoder(state$.value);
+  const cache = createEventCache();
 
-      return forkJoin(
-        payload.map(({ range: [fromBlock, toBlock], address }) => {
-          return getEvents({
-            toBlock,
-            fromBlock,
-            address
-          });
-        })
-      ).pipe(
-        rxMap(flatten),
-        rxMap(decodeLogs),
-        rxMap(events => ({
-          range: [genesis, toBlock] as BlockRange,
-          events
-        })),
-        map(({ range, events }) => {
-          const results = addresses.map(address => ({
-            address,
-            events: filter(pathEq(['meta', 'address'], address), events),
-            range
-          }));
-          return actions.createQueryEventsSuccess(results);
-        }),
-        catchError(err => {
-          console.error(err);
-          return of(actions.createQueryEventsFailed(payload));
-        })
+  return action$.pipe(
+    ofType(QUERY_EVENTS),
+    mergeMap(({ payload: { filters, id } }) => {
+      const loadAll$ = of(...filters).pipe(
+        mergeMap(f => getFiltersToLoad(cache.getState(), f)),
+        tap(cache.request),
+        mergeMap(f =>
+          getEvents(f).pipe(
+            tap({
+              next: cache.result(f),
+              error: cache.error(f)
+            })
+          )
+        ),
+        defaultIfEmpty([])
       );
+
+      const pendingLoaded$ = cache
+        .select(state =>
+          filters.every(f => isEmpty(getFiltersToLoad(state, f)))
+        )
+        .pipe(first());
+
+      return forkJoin(loadAll$, pendingLoaded$, of(null))
+        .pipe(
+          mergeMap(() =>
+            cache.select(state =>
+              chain(f => getEventsForFilter(f, state), filters)
+            )
+          ),
+          first(),
+          rxMap(fromSchema.getLogDecoder(state$.value))
+        )
+        .pipe(
+          rxMap(events => createQueryEventsSuccess({ id, events })),
+          catchError(err => {
+            console.error(err);
+            return of(createQueryEventsFailed(id));
+          })
+        );
     })
   );
 };

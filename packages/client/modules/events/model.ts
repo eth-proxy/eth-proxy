@@ -12,28 +12,23 @@ export interface EventMetadata {
   type: string;
   blockHash: string;
   blockNumber: number;
+  topics: string[];
 }
 
 export interface QueryModel<T extends {} = {}> {
   name: string;
   deps: {
     [P in keyof Partial<T>]:
+      | '*'
       | {
           [eventName: string]:
+            | '*'
             | {
                 [inputName: string]: any;
-              }
-            | '*';
+              };
         }
-      | '*'
   };
-}
-
-export type BlockRange = [number, number];
-
-export interface QueryArgs {
-  address: string;
-  range: BlockRange;
+  fromBlock?: number;
 }
 
 export interface QueryResult {
@@ -42,8 +37,24 @@ export interface QueryResult {
   events: any[];
 }
 
-export interface AggregatedQueryResult {
-  failedQueries: QueryArgs[];
-  loading: boolean;
-  events: DecodedEvent[];
+export interface NormalizedFilter {
+  fromBlock: number;
+  toBlock: number;
+  address: string | string[];
+  topics: string[][];
+}
+
+export interface Topics {
+  eventTopic: string[];
+  t1: string[];
+  t2: string[];
+  t3: string[];
+}
+
+export type BlockRange = [number, number];
+
+export interface ContractQuery {
+  address: string;
+  topics: Topics[];
+  range: BlockRange;
 }

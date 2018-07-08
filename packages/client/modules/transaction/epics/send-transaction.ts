@@ -1,4 +1,4 @@
-import { ActionsObservable } from 'redux-observable';
+import { ActionsObservable, ofType } from 'redux-observable';
 import { mergeMap, map, catchError } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
 import * as actions from '../actions';
@@ -24,7 +24,8 @@ export const processTransactionEpic = (
   _,
   { sendTransaction, contractLoader }: EpicContext
 ) => {
-  return actions$.ofType(actions.PROCESS_TRANSACTION).pipe(
+  return actions$.pipe(
+    ofType(actions.PROCESS_TRANSACTION),
     mergeMap(({ payload }) => {
       return contractLoader(payload.contractName).pipe(
         mergeMap(contract =>

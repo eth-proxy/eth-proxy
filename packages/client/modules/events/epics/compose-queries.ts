@@ -1,57 +1,78 @@
 import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
-import { mergeMap, first, map } from 'rxjs/operators';
-import {
-  of,
-  combineLatest,
-  Observable,
-  forkJoin,
-  throwError as _throw
-} from 'rxjs';
-import { keys, isNil } from 'ramda';
+import { mergeMap, first, map as rxMap } from 'rxjs/operators';
+import { forkJoin, Observable } from 'rxjs';
+import { keys, isNil, chain } from 'ramda';
 
-import { QueryArgs } from '../model';
-import * as actions from '../actions';
-import { getEventQueries } from '../reducer';
-import { EpicContext } from '../../../context';
-import { createQueries } from '../create-queries';
+import {
+  COMPOSE_QUERY_FROM_MODEL,
+  ComposeQueryFromModel,
+  createAddEventsWatch,
+  createQueryEvents,
+  Types as ActionTypes
+} from '../actions';
 import { getLatestBlockNumberOrFail } from '../../blocks';
+import { EpicContext } from '../../../context';
+import { BlockRange } from '../model';
+import { depsToTopics } from '../utils/expand-model';
+import { splitQueryByTopics, toTopicList } from '../utils';
 import { State } from '../../../store';
 
 export const composeQueries = (
-  actions$: ActionsObservable<actions.Types>,
+  actions$: ActionsObservable<ActionTypes>,
   state$: StateObservable<State>,
   { contractLoader }: EpicContext
-): Observable<actions.Types> =>
+): Observable<ActionTypes> =>
   actions$.pipe(
-    ofType<actions.ComposeQueryFromModel>(actions.COMPOSE_QUERY_FROM_MODEL),
-    mergeMap(({ payload: { id, model } }) => {
-      return combineLatest(
-        of(id),
-        forkJoin(keys(model.deps).map(contractLoader)),
-        state$.pipe(map(getLatestBlockNumberOrFail)),
-        // was with latest from?
-        state$.pipe(map(getEventQueries))
-      ).pipe(first(args => args.every(x => x !== undefined)));
-    }),
-    mergeMap(([id, contracts, latestBlockNumber, queries]) => {
-      const toQuery = createQueries({
-        contracts,
-        latestBlockNumber,
-        queries
-      });
-      if (toQuery.some(x => isNil(x.address))) {
-        return _throw('Address is not defined');
-      }
+    ofType(COMPOSE_QUERY_FROM_MODEL),
+    mergeMap(({ payload: { id, model } }: ComposeQueryFromModel) => {
+      return forkJoin(keys(model.deps).map(contractLoader)).pipe(
+        mergeMap(contracts => {
+          return state$
+            .pipe(
+              rxMap(getLatestBlockNumberOrFail),
+              first(x => !isNil(x))
+            )
+            .pipe(
+              mergeMap(latestBlockNumber => {
+                const queries = contracts.map(
+                  ({ address, genesisBlock, abi, name }) => {
+                    const rangeStart = Math.max(
+                      model.fromBlock || genesisBlock,
+                      genesisBlock
+                    );
+                    return {
+                      range: [rangeStart, latestBlockNumber] as BlockRange,
+                      topics: depsToTopics(abi, model.deps[name]),
+                      address
+                    };
+                  }
+                );
+                const queryByTopics = chain(splitQueryByTopics, queries);
+                const filters = queryByTopics.map(
+                  ({ range: [fromBlock, toBlock], address, topics }) => ({
+                    toBlock,
+                    fromBlock,
+                    address,
+                    topics: toTopicList(topics)
+                  })
+                );
 
-      const queryEventsAction = actions.createQueryEvents(toQuery);
-
-      return [
-        queryEventsAction,
-        actions.createAddEventsWatch({
-          id,
-          addresses: toQuery.map(x => x.address),
-          fromBlock: latestBlockNumber
+                return [
+                  createQueryEvents({
+                    id,
+                    queries,
+                    filters
+                  }),
+                  createAddEventsWatch({
+                    id,
+                    // should watch specific events
+                    addresses: contracts.map(c => c.address),
+                    fromBlock: latestBlockNumber
+                  })
+                ];
+              })
+            );
         })
-      ];
+      );
     })
   );

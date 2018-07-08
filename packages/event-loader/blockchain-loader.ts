@@ -22,7 +22,7 @@ export function createBlockchainReader(provider: Provider): Reader {
     const result$ = work$.pipe(
       mergeMap(([fromBlock, toBlock]) =>
         splitRead({
-          address: filter.address,
+          ...filter,
           fromBlock,
           toBlock
         }).pipe(
