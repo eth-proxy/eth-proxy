@@ -2,8 +2,7 @@ import { zipObj, chain } from 'ramda';
 import * as Web3 from 'web3';
 import { eventAbiToSignature } from '../../schema';
 import { Topics } from '../model';
-
-const arrify = (value: any | any[]) => (Array.isArray(value) ? value : [value]);
+import { arrify } from '../../../utils';
 
 const formatInput = (type: string) => (value: any) => {
   if (type === 'address') {

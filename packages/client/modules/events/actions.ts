@@ -10,7 +10,7 @@ export interface ComposeQueryFromModel {
   };
 }
 
-export const createComposeQueryFromModel = (
+export const composeQueryFromModel = (
   payload: ComposeQueryFromModel['payload']
 ): ComposeQueryFromModel => ({
   type: COMPOSE_QUERY_FROM_MODEL,
@@ -28,9 +28,7 @@ export interface QueryEvents {
   };
 }
 
-export const createQueryEvents = (
-  payload: QueryEvents['payload']
-): QueryEvents => ({
+export const queryEvents = (payload: QueryEvents['payload']): QueryEvents => ({
   type: QUERY_EVENTS,
   payload
 });
@@ -45,7 +43,7 @@ export interface QueryEventsSuccess {
   };
 }
 
-export const createQueryEventsSuccess = (
+export const queryEventsSuccess = (
   payload: QueryEventsSuccess['payload']
 ): QueryEventsSuccess => ({
   type: QUERY_EVENTS_SUCCESS,
@@ -59,7 +57,7 @@ export interface QueryEventsFailed {
   payload: string;
 }
 
-export const createQueryEventsFailed = (
+export const queryEventsFailed = (
   payload: QueryEventsFailed['payload']
 ): QueryEventsFailed => ({
   type: QUERY_EVENTS_FAILED,
@@ -73,38 +71,20 @@ export interface EventsLoaded {
   payload: any[];
 }
 
-export const createEventsLoaded = (payload: any[]) => ({
+export const eventsLoaded = (payload: any[]) => ({
   type: EVENTS_LOADED,
   payload
 });
 
-export const ADD_EVENTS_WATCH = 'ADD_EVENTS_WATCH';
+export const QUERY_UNSUBSCRIBE = 'QUERY_UNSUBSCRIBE';
 
-export interface AddEventsWatch {
-  type: typeof ADD_EVENTS_WATCH;
-  payload: {
-    id: string;
-    fromBlock: number;
-    addresses: string[];
-  };
-}
-
-export const createAddEventsWatch = (
-  payload: AddEventsWatch['payload']
-): AddEventsWatch => ({
-  type: ADD_EVENTS_WATCH,
-  payload
-});
-
-export const REMOVE_EVENTS_WATCH = 'REMOVE_EVENTS_WATCH';
-
-export interface RemoveEventsWatch {
-  type: typeof REMOVE_EVENTS_WATCH;
+export interface QueryUnsubscribe {
+  type: typeof QUERY_UNSUBSCRIBE;
   payload: string;
 }
 
-export const createRemoveEventsWatch = (payload: string) => ({
-  type: REMOVE_EVENTS_WATCH,
+export const queryUnsubscribe = (payload: string) => ({
+  type: QUERY_UNSUBSCRIBE,
   payload
 });
 
@@ -114,5 +94,4 @@ export type Types =
   | QueryEventsSuccess
   | QueryEventsFailed
   | EventsLoaded
-  | AddEventsWatch
-  | RemoveEventsWatch;
+  | QueryUnsubscribe;
