@@ -1,13 +1,12 @@
 import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
-import { mergeMap, first, map as rxMap } from 'rxjs/operators';
+import { mergeMap, first, map as rxMap, map } from 'rxjs/operators';
 import { forkJoin, Observable } from 'rxjs';
 import { keys, isNil, chain } from 'ramda';
 
 import {
   COMPOSE_QUERY_FROM_MODEL,
   ComposeQueryFromModel,
-  createAddEventsWatch,
-  createQueryEvents,
+  queryEvents,
   Types as ActionTypes
 } from '../actions';
 import { getLatestBlockNumberOrFail } from '../../blocks';
@@ -16,6 +15,7 @@ import { BlockRange } from '../model';
 import { depsToTopics } from '../utils/expand-model';
 import { splitQueryByTopics, toTopicList } from '../utils';
 import { State } from '../../../store';
+import { arrify } from '../../../utils';
 
 export const composeQueries = (
   actions$: ActionsObservable<ActionTypes>,
@@ -33,20 +33,26 @@ export const composeQueries = (
               first(x => !isNil(x))
             )
             .pipe(
-              mergeMap(latestBlockNumber => {
+              map(latestBlockNumber => {
                 const queries = contracts.map(
                   ({ address, genesisBlock, abi, name }) => {
                     const rangeStart = Math.max(
-                      model.fromBlock || genesisBlock,
-                      genesisBlock
+                      model.fromBlock || 0,
+                      genesisBlock || 0
                     );
+                    const queryAddress = model.addresses[name] || address;
+                    if (isNil(queryAddress)) {
+                      throw Error('Query address not found');
+                    }
+
                     return {
                       range: [rangeStart, latestBlockNumber] as BlockRange,
                       topics: depsToTopics(abi, model.deps[name]),
-                      address
+                      address: arrify(queryAddress)
                     };
                   }
                 );
+
                 const queryByTopics = chain(splitQueryByTopics, queries);
                 const filters = queryByTopics.map(
                   ({ range: [fromBlock, toBlock], address, topics }) => ({
@@ -57,19 +63,11 @@ export const composeQueries = (
                   })
                 );
 
-                return [
-                  createQueryEvents({
-                    id,
-                    queries,
-                    filters
-                  }),
-                  createAddEventsWatch({
-                    id,
-                    // should watch specific events
-                    addresses: contracts.map(c => c.address),
-                    fromBlock: latestBlockNumber
-                  })
-                ];
+                return queryEvents({
+                  id,
+                  queries,
+                  filters
+                });
               })
             );
         })

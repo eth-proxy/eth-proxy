@@ -1,3 +1,5 @@
+import { Dictionary } from 'ramda';
+
 export interface DecodedEvent {
   type: string;
   payload?: any;
@@ -28,6 +30,7 @@ export interface QueryModel<T extends {} = {}> {
               };
         }
   };
+  addresses?: Dictionary<string | string[]>;
   fromBlock?: number;
 }
 
@@ -54,7 +57,7 @@ export interface Topics {
 export type BlockRange = [number, number];
 
 export interface ContractQuery {
-  address: string;
+  address: string[];
   topics: Topics[];
   range: BlockRange;
 }

@@ -21,7 +21,13 @@ export const query = ({ genId, options, store }: Context) => (
       getInterceptor('preQuery', options),
       tap(() =>
         store.dispatch(
-          fromEvents.createComposeQueryFromModel({ id, model: queryModel })
+          fromEvents.composeQueryFromModel({
+            id,
+            model: {
+              ...queryModel,
+              addresses: queryModel.addresses || {}
+            }
+          })
         )
       ),
       mergeMapTo(store.select(getQueryResultFromQueryId(id))),
@@ -38,6 +44,6 @@ export const query = ({ genId, options, store }: Context) => (
     )
   ).pipe(
     getInterceptor('postQuery', options),
-    finalize(() => store.dispatch(fromEvents.createRemoveEventsWatch(id)))
+    finalize(() => store.dispatch(fromEvents.queryUnsubscribe(id)))
   );
 };

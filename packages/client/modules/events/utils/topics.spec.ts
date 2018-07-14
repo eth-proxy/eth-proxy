@@ -8,7 +8,7 @@ import {
 } from './topics';
 
 const range = [0, 0] as BlockRange;
-const address = '123';
+const address = ['123'];
 
 const createTopic = (override: Partial<Topics>): Topics => ({
   eventTopic: [],
