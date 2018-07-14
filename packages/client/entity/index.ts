@@ -94,7 +94,7 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
           values,
           flatten
         )(model);
-        const hasRoot = handlers.some(x => x.root);
+        const hasRoot = handlers.some((x: any) => x.root);
         const isEventInvolved = (x: fromEvents.DecodedEvent) =>
           eventTypes.find(
             ({ type, address }) =>
@@ -103,7 +103,7 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
               x.meta.blockNumber > snapshot.toBlock
           );
 
-        const initialState = map(e => e.entity, snapshot.entities);
+        const initialState = mapObjIndexed(e => e.entity, snapshot.entities);
         return allEvents.filter(isEventInvolved).reduce((state: any, e) => {
           const handler = model[byAddress[e.meta.address].name][e.type];
           const id = handler.identity(e.payload);

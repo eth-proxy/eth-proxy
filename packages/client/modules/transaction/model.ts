@@ -70,7 +70,11 @@ export type TransactionHandler<T> = <
   M extends keyof T[I],
   V extends T[I][M]
 >(
-  request: Request<I, M, T[I][M] extends { in: infer In } ? In : never>
+  request: Request<
+    Extract<keyof I, string>,
+    Extract<keyof M, string>,
+    T[I][M] extends { in: infer In } ? In : never
+  >
 ) => TransactionResult<
   T[I][M] extends { events: infer Events } ? Events : never
 >;

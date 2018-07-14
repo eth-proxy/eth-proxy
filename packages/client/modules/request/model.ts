@@ -20,9 +20,9 @@ export interface Request<I extends string, M extends string, P>
 }
 
 export type ObjHas<Obj extends {}, K extends string> = ({
-  [K in keyof Obj]: '1'
+  [K in keyof Obj]: 1
 } & {
-  [k: string]: '0';
+  [k: string]: 0;
 })[K];
 
 export type CreateRequestWithPayload<C extends string, M extends string, P> = (
@@ -44,7 +44,13 @@ export type CreateRequest<
 }[ObjHas<T[C][M], 'in'>];
 
 export type RequestFactory<T extends {}> = {
-  [C in keyof T]: { [M in keyof T[C]]: CreateRequest<T, C, M> }
+  [C in keyof T]: {
+    [M in keyof T[C]]: CreateRequest<
+      T,
+      Extract<keyof C, string>,
+      Extract<keyof M, string>
+    >
+  }
 };
 
 export type ContractDefinition<T> = {

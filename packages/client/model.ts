@@ -15,7 +15,9 @@ export class EthProxy<T extends {} = {}> implements RxWeb3 {
   defaultAccount$: Observable<string | undefined>;
 
   query: (queryModel: QueryModel<T>) => Observable<any>;
-  loadContractSchema: (name: keyof T) => Observable<ContractInfo>;
+  loadContractSchema: (
+    name: Extract<keyof T, string>
+  ) => Observable<ContractInfo>;
 
   // rxweb3
   getBalance: RxWeb3['getBalance'];
