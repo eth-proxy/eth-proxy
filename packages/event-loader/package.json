@@ -1,9 +1,10 @@
 {
   "name": "@eth-proxy/event-loader",
-  "version": "0.5.1-y.4",
+  "version": "0.5.1-y.5",
   "description": "Enhancers for loading events",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
@@ -13,7 +14,7 @@
     "postpublish": "rimraf dist"
   },
   "dependencies": {
-    "@eth-proxy/rx-web3": "^0.5.1-y.4",
+    "@eth-proxy/rx-web3": "^0.5.1-y.5",
     "ramda": "^0.25.0"
   },
   "peerDependencies": {
