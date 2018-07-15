@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/codegen",
-  "version": "0.5.1-y.2",
+  "version": "0.5.1-y.5",
   "description": "Contracts code generation for @eth-proxy/client",
   "main": "dist/index.js",
   "bin": "dist/index.js",
@@ -21,15 +21,15 @@
     "glob": "7.1.2",
     "minimist": "1.2.0",
     "ramda": "^0.25.0",
-    "require-dir": "0.3.2",
-    "ts-simple-ast": "^10.3.2"
+    "require-dir": "1.0.0",
+    "ts-simple-ast": "^12.5.4"
   },
   "devDependencies": {
-    "@types/glob": "5.0.34",
+    "@types/glob": "5.0.35",
     "@types/minimist": "1.2.0",
-    "@types/node": "8.5.2",
-    "@types/ramda": "0.25.12",
+    "@types/node": "10.5.2",
+    "@types/ramda": "0.25.34",
     "rimraf": "^2.6.2",
-    "typescript": "^2.8.1"
+    "typescript": "3.0.0-dev.20180712"
   }
 }

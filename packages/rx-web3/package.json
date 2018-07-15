@@ -1,9 +1,10 @@
 {
   "name": "@eth-proxy/rx-web3",
-  "version": "0.5.1-y.2",
+  "version": "0.5.1-y.5",
   "description": "Web3 using rxjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
@@ -22,6 +23,6 @@
   },
   "devDependencies": {
     "rimraf": "^2.6.2",
-    "typescript": "~2.8.1"
+    "typescript": "3.0.0-dev.20180712"
   }
 }

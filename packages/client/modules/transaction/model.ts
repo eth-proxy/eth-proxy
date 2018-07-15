@@ -66,8 +66,8 @@ export enum TransactionResultCode {
 export type TransactionResult<T> = Observable<Transaction>;
 
 export type TransactionHandler<T> = <
-  I extends keyof T,
-  M extends keyof T[I],
+  I extends Extract<keyof T, string>,
+  M extends Extract<keyof T[I], string>,
   V extends T[I][M]
 >(
   request: Request<I, M, T[I][M] extends { in: infer In } ? In : never>
