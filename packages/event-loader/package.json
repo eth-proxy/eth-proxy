@@ -4,7 +4,6 @@
   "description": "Enhancers for loading events",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },

@@ -4,7 +4,6 @@
   "description": "Web3 using rxjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
