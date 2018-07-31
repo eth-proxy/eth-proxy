@@ -21,6 +21,6 @@
   },
   "devDependencies": {
     "rimraf": "^2.6.2",
-    "typescript": "3.0.0-dev.20180712"
+    "typescript": "~3.0.0"
   }
 }
