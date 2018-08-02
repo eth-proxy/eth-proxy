@@ -1,31 +1,9 @@
 import * as Web3 from 'web3';
 import { createWeb3 } from '../utils';
-import { CurriedFunction2, curry } from 'ramda';
-import { Observable, forkJoin } from 'rxjs';
-import { flatten } from 'ramda';
+import { curry } from 'ramda';
+import { Observable } from 'rxjs';
 
-// TESTRPC WATCH DOES NOT WORK WITH ADDRESS LIST
 export const getEvents = curry(
-  (provider: Web3.Provider, options: Web3.FilterObject) => {
-    const addressList = Array.isArray(options.address)
-      ? options.address
-      : [options.address];
-
-    const eventLoader = getAddressEvents(provider);
-
-    const eventLoaders$ = addressList.map(address =>
-      eventLoader(
-        Object.assign({}, options, {
-          address
-        })
-      )
-    );
-
-    return forkJoin(eventLoaders$, flatten);
-  }
-);
-
-const getAddressEvents = curry(
   (
     provider: Web3.Provider,
     options: Web3.FilterObject
