@@ -1,10 +1,9 @@
 {
   "name": "@eth-proxy/platform-browser",
-  "version": "0.5.1-y.5",
+  "version": "0.5.1-y.8",
   "description": "@eth-proxy/client utilities for browser",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
@@ -21,6 +20,6 @@
   },
   "devDependencies": {
     "rimraf": "^2.6.2",
-    "typescript": "3.0.0-dev.20180712"
+    "typescript": "~3.0.0"
   }
 }
