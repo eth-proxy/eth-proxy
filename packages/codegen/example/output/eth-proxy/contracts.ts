@@ -43,7 +43,7 @@ export interface ERC20ApproveDefinition {
 }
 
 export interface ERC20TestFixedArrayDefinition {
-  in: string[3];
+  in: string[];
   out: boolean;
   events: ContractsEvents;
 }

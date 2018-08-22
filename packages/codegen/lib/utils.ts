@@ -10,7 +10,7 @@ export function solidityToJsOutputType(type: string): string {
   if (arrayMatch) {
     const itemType = type.replace(arrayIndexRe, '');
     const jsItemType = solidityToJsOutputType(itemType);
-    return jsItemType + arrayMatch[0];
+    return jsItemType + '[]';
   }
   if (type.startsWith('uint') || type.startsWith('int')) {
     return 'BigNumber';
