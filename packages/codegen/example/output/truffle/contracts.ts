@@ -32,7 +32,7 @@ export interface ERC20 extends TruffleContractInstance {
     options?: TransactionOptions
   ): Promise<TransactionResult>;
   testFixedArray(
-    someBytes32Arr3: string[3],
+    someBytes32Arr3: string[],
     options?: TransactionOptions
   ): Promise<TransactionResult>;
   totalSupply(options?: TransactionOptions): Promise<BigNumber>;
