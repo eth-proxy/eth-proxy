@@ -28,6 +28,7 @@ export interface Contracts {
 
 export interface ERC20 {
   approve: ERC20ApproveDefinition;
+  testFixedArray: ERC20TestFixedArrayDefinition;
   totalSupply: ERC20TotalSupplyDefinition;
   transferFrom: ERC20TransferFromDefinition;
   balanceOf: ERC20BalanceOfDefinition;
@@ -37,6 +38,12 @@ export interface ERC20 {
 
 export interface ERC20ApproveDefinition {
   in: ERC20ApproveInput;
+  out: boolean;
+  events: ContractsEvents;
+}
+
+export interface ERC20TestFixedArrayDefinition {
+  in: string[3];
   out: boolean;
   events: ContractsEvents;
 }
