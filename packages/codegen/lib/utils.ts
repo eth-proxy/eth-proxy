@@ -3,10 +3,14 @@ import { PropertySignatureStructure } from 'ts-simple-ast';
 import { FunctionParameter } from '../interfaces';
 
 export function solidityToJsOutputType(type: string): string {
-  if (type.includes('[]')) {
-    const itemType = type.replace('[]', '');
+  const arrayIndexRe = /\[\d*\]/;
+
+  const arrayMatch = type.match(arrayIndexRe);
+
+  if (arrayMatch) {
+    const itemType = type.replace(arrayIndexRe, '');
     const jsItemType = solidityToJsOutputType(itemType);
-    return jsItemType + '[]';
+    return jsItemType + arrayMatch[0];
   }
   if (type.startsWith('uint') || type.startsWith('int')) {
     return 'BigNumber';
