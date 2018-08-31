@@ -33,8 +33,11 @@ export function formatArgs(inputs: Web3.FunctionParameter[], args: any[]) {
 }
 
 export function formatArg(type: string, value: any) {
-  if (contains('[]', type)) {
-    return value.map(arg => formatArg(type.replace('[]', ''), arg));
+  const arrayIndexRe = /\[\d*\]/;
+
+  if (type.match(arrayIndexRe)) {
+    // could validate array length
+    return value.map(arg => formatArg(type.replace(arrayIndexRe, ''), arg));
   }
   if (type === 'bool') {
     return Boolean(value);
