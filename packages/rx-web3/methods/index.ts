@@ -1,3 +1,4 @@
+export * from './request';
 export * from './get-balance';
 export * from './get-block';
 export * from './get-default-account';
@@ -5,6 +6,6 @@ export * from './get-events';
 export * from './get-network';
 export * from './get-receipt';
 export * from './get-transaction';
-export * from './request';
+export * from './sign';
 export * from './watch-events';
 export * from './watch-latest-block';
