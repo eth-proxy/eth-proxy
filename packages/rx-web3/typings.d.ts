@@ -61,6 +61,9 @@ declare module 'web3' {
     public isAddress(address: string): boolean;
     toBigNumber(number: string | number | BigNumber): BigNumber;
     sha3(text: string): string;
+    toHex(data: any): string;
+    toAscii(hex: string): string;
+    fromAscii(ascii: string): string;
   }
 
   namespace providers {
