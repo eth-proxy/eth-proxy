@@ -22,6 +22,11 @@ export const transactionOptions: InterfaceDeclarationStructure = {
       name: 'gasPrice',
       type: 'NumberLike',
       hasQuestionToken: true
+    },
+    {
+      name: 'nonce',
+      type: 'NumberLike',
+      hasQuestionToken: true
     }
   ]
 };
