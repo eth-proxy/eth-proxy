@@ -19,6 +19,7 @@ export interface TransactionOptions {
   value?: NumberLike;
   gas?: NumberLike;
   gasPrice?: NumberLike;
+  nonce?: NumberLike;
 }
 
 export interface Contracts {
