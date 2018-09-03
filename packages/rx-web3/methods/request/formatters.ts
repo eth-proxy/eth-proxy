@@ -1,5 +1,5 @@
 import * as Web3 from 'web3';
-import { isNil, contains } from 'ramda';
+import { isNil } from 'ramda';
 
 export function formatPayload(userPayload, { inputs }: Web3.AbiDefinition) {
   return formatArgs(inputs, arraifyArgs(inputs, userPayload));

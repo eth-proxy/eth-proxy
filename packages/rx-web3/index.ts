@@ -23,4 +23,4 @@ export function createRxWeb3(provider: Observable<Web3.Provider>): RxWeb3 {
 
 export * from './methods';
 export * from './interfaces';
-export { sha3 } from './utils';
+export { sha3, toSignature } from './utils';

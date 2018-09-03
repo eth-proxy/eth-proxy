@@ -1,32 +1,59 @@
 import * as Web3 from 'web3';
-import { clone, curry, CurriedFunction2 } from 'ramda';
-import { createWeb3, getMethodAbi } from '../../utils';
-import { bindNodeCallback, Observable } from 'rxjs';
-import { formatPayload } from './formatters';
+import { curry, evolve, pick } from 'ramda';
+import {
+  getMethodAbi,
+  toEncodedSignature,
+  encodeArgs,
+  bind
+} from '../../utils';
+import { Observable, bindNodeCallback } from 'rxjs';
+import { formatQuantity } from '../../formatters';
+import { Provider, TransactionPayload } from '../../interfaces';
+import { map } from 'rxjs/operators';
 
-export interface TransactionInput {
+export interface TransactionInput<T = any> {
   abi: Web3.AbiDefinition[];
   address: string;
   method: string;
-  args: any;
-  txParams;
+  args: T;
+  txParams: TransactionPayload;
 }
 
 export const sendTransaction = curry(
-  (
-    provider: Web3.Provider,
-    { abi, address, method, args, txParams }: TransactionInput
-  ): Observable<string> => {
-    const { sendTransaction } = createWeb3(provider)
-      .eth.contract(abi)
-      .at(address)[method];
-
-    const methodAbi = getMethodAbi(abi, method);
-    const web3Args = formatPayload(args, methodAbi);
-
-    return (bindNodeCallback as any)(sendTransaction)(
-      ...clone(web3Args),
-      clone(txParams)
-    );
+  (provider: Web3.Provider, input: TransactionInput): Observable<string> => {
+    return sendTransactionWithPayload(provider, {
+      ...input.txParams,
+      // Should use only input.txParams.to
+      to: input.address || input.txParams.to,
+      data: toTxData(input)
+    });
   }
 );
+
+function toTxData({ abi, args, method }: TransactionInput) {
+  const methodAbi = getMethodAbi(abi, method);
+  return toEncodedSignature(methodAbi) + encodeArgs(methodAbi, args);
+}
+
+export function sendTransactionWithPayload<T>(
+  provider: Provider,
+  payload: TransactionPayload
+) {
+  return bindNodeCallback(bind(provider.sendAsync, provider))({
+    method: 'eth_sendTransaction',
+    params: [formatTxPayload(payload)]
+  }).pipe(map((x: any) => x.result)) as Observable<T>;
+}
+
+const paramsKeys = ['from', 'to', 'gas', 'gasPrice', 'value', 'data'];
+function formatTxPayload(txParams) {
+  return evolve(
+    {
+      gasPrice: formatQuantity,
+      gas: formatQuantity,
+      value: formatQuantity,
+      nonce: formatQuantity
+    },
+    pick(paramsKeys, txParams)
+  );
+}

@@ -105,3 +105,12 @@ export interface EventDescription {
 
 export type ContractAbi = AbiDefinition[];
 export type AbiDefinition = FunctionDescription | EventDescription;
+
+export interface TransactionPayload {
+  from?: string;
+  to?: string;
+  gas?: string | number | BigNumber;
+  gasPrice?: string | number | BigNumber;
+  value?: string | number | BigNumber;
+  data?: string;
+}

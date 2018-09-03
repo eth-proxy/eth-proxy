@@ -1,6 +1,7 @@
 import * as ethJSABI from 'ethjs-abi';
 import { sha3 } from '@eth-proxy/rx-web3';
 import { BigNumber } from 'bignumber.js';
+import { toSignature } from '@eth-proxy/rx-web3';
 
 export const decodeLogs = abi => (logs: any[]) => {
   const events = eventsFromAbi(abi);
@@ -62,19 +63,11 @@ function parseArg(type: string, value: any) {
 
 export function eventsFromAbi(abi) {
   return abi.filter(item => item.type === 'event').reduce((current, item) => {
-    const signature = eventAbiToSignature(item);
-
     return {
       ...current,
-      [signature]: item
+      [toSignature(item)]: item
     };
   }, {});
-}
-
-export function eventAbiToSignature(item: any) {
-  const args = item.inputs.map(x => x.type).join(',');
-
-  return sha3(`${item.name}(${args})`);
 }
 
 function partialABI(fullABI, indexed) {

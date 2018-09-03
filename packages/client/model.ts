@@ -32,6 +32,7 @@ export class EthProxy<T extends {} = {}> implements RxWeb3 {
   sendTransaction: RxWeb3['sendTransaction'];
   sendCall: RxWeb3['sendCall'];
   sign: RxWeb3['sign'];
+  deployContract: RxWeb3['deployContract'];
 }
 
 export {

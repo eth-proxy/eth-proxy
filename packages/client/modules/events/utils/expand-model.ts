@@ -1,8 +1,8 @@
 import { zipObj, chain } from 'ramda';
 import * as Web3 from 'web3';
-import { eventAbiToSignature } from '../../schema';
 import { Topics } from '../model';
 import { arrify } from '../../../utils';
+import { toSignature } from '@eth-proxy/rx-web3';
 
 const formatInput = (type: string) => (value: any) => {
   if (type === 'address') {
@@ -52,7 +52,7 @@ export function depsToTopics(abi: Web3.AbiDefinition[], contractDeps: {}) {
 
     return eventDeps.map(filter => {
       return {
-        eventTopic: [eventAbiToSignature(eventDefinition)],
+        eventTopic: [toSignature(eventDefinition)],
         ...expandArgumentTopics(eventDefinition, filter)
       };
     });
