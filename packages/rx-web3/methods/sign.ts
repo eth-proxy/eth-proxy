@@ -10,7 +10,7 @@ interface SignArgs {
 
 export const sign = curry(
   (provider: Web3.Provider, { address, data }: SignArgs) => {
-    return new Observable(obs => {
+    return new Observable<string>(obs => {
       provider.sendAsync(
         {
           method: 'personal_sign',
