@@ -105,3 +105,16 @@ export interface EventDescription {
 
 export type ContractAbi = AbiDefinition[];
 export type AbiDefinition = FunctionDescription | EventDescription;
+export type Callback<T> = (err: Error | null, value: T) => void;
+
+export interface RawSolidityEvent {
+  address: string;
+  topics: string[];
+  data: string;
+  blockNumber: string;
+  transactionHash: string;
+  transactionIndex: string;
+  blockHash: string;
+  logIndex: string;
+  removed: boolean;
+}
