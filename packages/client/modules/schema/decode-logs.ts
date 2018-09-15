@@ -1,7 +1,6 @@
 import * as ethJSABI from 'ethjs-abi';
-import { sha3 } from '@eth-proxy/rx-web3';
 import { BigNumber } from 'bignumber.js';
-import { toSignature } from '@eth-proxy/rx-web3';
+import { toSignatureHash } from '@eth-proxy/rx-web3';
 
 export const decodeLogs = abi => (logs: any[]) => {
   const events = eventsFromAbi(abi);
@@ -65,7 +64,7 @@ export function eventsFromAbi(abi) {
   return abi.filter(item => item.type === 'event').reduce((current, item) => {
     return {
       ...current,
-      [toSignature(item)]: item
+      [toSignatureHash(item)]: item
     };
   }, {});
 }

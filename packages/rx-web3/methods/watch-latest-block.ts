@@ -1,10 +1,10 @@
-import * as Web3 from 'web3';
 import { createWeb3 } from '../utils';
 import { bindNodeCallback, Observable } from 'rxjs';
 import { getBlock } from './get-block';
 import { concat, switchMap, distinctUntilKeyChanged } from 'rxjs/operators';
+import { Provider, Block } from '../interfaces';
 
-const watchLatestBlockHash = (provider: Web3.Provider): Observable<string> => {
+const watchLatestBlockHash = (provider: Provider): Observable<string> => {
   const web3 = createWeb3(provider);
   const filter = web3.eth.filter('latest');
 
@@ -20,9 +20,7 @@ const watchLatestBlockHash = (provider: Web3.Provider): Observable<string> => {
   });
 };
 
-export function watchLatestBlock(
-  provider: Web3.Provider
-): Observable<Web3.Block> {
+export function watchLatestBlock(provider: Provider): Observable<Block> {
   // getBlock is faster then filter
   return getBlock(provider, 'latest').pipe(
     concat(

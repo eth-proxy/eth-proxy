@@ -1,16 +1,15 @@
 /// <reference path="typings.d.ts" />
-import * as Web3 from 'web3';
 import { Observable } from 'rxjs';
 import { mergeMap, first } from 'rxjs/operators';
 import { mapObjIndexed } from 'ramda';
 import * as allMethods from './methods';
-import { ProviderBound } from './interfaces';
+import { ProviderBound, Provider } from './interfaces';
 
 export type RxWeb3 = {
   [P in keyof typeof allMethods]: ProviderBound<typeof allMethods[P]>
 };
 
-export function createRxWeb3(provider: Observable<Web3.Provider>): RxWeb3 {
+export function createRxWeb3(provider: Observable<Provider>): RxWeb3 {
   return mapObjIndexed((method: any) => {
     return (...args: any[]) => {
       return provider.pipe(
@@ -23,4 +22,17 @@ export function createRxWeb3(provider: Observable<Web3.Provider>): RxWeb3 {
 
 export * from './methods';
 export * from './interfaces';
-export { sha3, toSignature } from './utils';
+export {
+  sha3,
+  toSignatureHash,
+  toAscii,
+  toHex,
+  fromAscii,
+  getFunction,
+  isEventAbi,
+  isConstructorAbi
+} from './utils';
+export { TransactionInput } from './methods/request/send-transaction';
+export { CallInput } from './methods/request/send-call';
+export { DeploymentInput } from './methods/request/deploy';
+export * from './providers';

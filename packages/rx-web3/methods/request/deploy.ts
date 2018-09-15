@@ -1,30 +1,27 @@
 import { curry } from 'ramda';
-import { getMethodAbi, encodeArgs } from '../../utils';
-import { TransactionPayload, AbiDefinition, Provider } from '../../interfaces';
-import { sendTransactionWithPayload } from './send-transaction';
+import { ConstructorDescription, Provider } from '../../interfaces';
+import {
+  sendTransactionWithData,
+  TransactionInputParams
+} from './send-transaction';
+import { encodeArgs } from './formatters';
 
-interface DeploymentInput<T = any> {
-  abi: AbiDefinition[];
+export interface DeploymentInput<T = any> {
+  abi: ConstructorDescription;
   args: T;
-  txParams: TransactionPayload;
+  txParams: TransactionInputParams;
   bytecode: string;
 }
 
 export const deployContract = curry(
   (provider: Provider, input: DeploymentInput) => {
-    return sendTransactionWithPayload<string>(provider, {
+    return sendTransactionWithData<string>(provider, {
       ...input.txParams,
       data: toDeploymentData(input)
     });
   }
 );
 
-function toDeploymentData({ abi, args, bytecode }: DeploymentInput) {
-  const constructorAbi = getMethodAbi(abi, 'constructor');
-
-  const constructorBytecode = constructorAbi
-    ? encodeArgs(constructorAbi, args)
-    : '';
-
-  return bytecode + constructorBytecode;
+export function toDeploymentData({ abi, args, bytecode }: DeploymentInput) {
+  return `${bytecode}${encodeArgs(abi, args)}`;
 }

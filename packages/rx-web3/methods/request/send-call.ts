@@ -1,29 +1,63 @@
-import * as Web3 from 'web3';
-import { clone, curry, CurriedFunction2 } from 'ramda';
-import { createWeb3, getMethodAbi } from '../../utils';
-import { bindNodeCallback, Observable } from 'rxjs';
-import { formatPayload } from './formatters';
+import { curry, pipe } from 'ramda';
+import { getMethodID, send, strip0x, extractNonTuple } from '../../utils';
+import { Observable } from 'rxjs';
+import {
+  Provider,
+  RequestInputParams,
+  Tag,
+  NumberLike,
+  FunctionDescription
+} from '../../interfaces';
+import { map } from 'rxjs/operators';
+import { formatRequestInput, encodeArgs, decodeArgs } from './formatters';
+import { formatDefaultBlock } from '../../formatters';
 
-export interface CallInput {
-  abi: Web3.AbiDefinition[];
-  address: string;
-  method: string;
-  args: any;
-  txParams;
+export interface CallInput<T = any> {
+  abi: FunctionDescription;
+  args: T;
+  txParams: RequestInputParams;
+  atBlock?: Tag | NumberLike;
 }
 
 export const sendCall = curry(
-  (
-    provider: Web3.Provider,
-    { abi, address, method, args, txParams }: CallInput
-  ): Observable<any> => {
-    const { call } = createWeb3(provider)
-      .eth.contract(abi)
-      .at(address)[method];
-
-    const methodAbi = getMethodAbi(abi, method);
-    const web3Args = formatPayload(args, methodAbi);
-
-    return (bindNodeCallback as any)(call)(...clone(web3Args), clone(txParams));
+  (provider: Provider, input: CallInput): Observable<string> => {
+    return sendCallWithPayload(
+      provider,
+      {
+        ...input.txParams,
+        data: toData(input)
+      },
+      input.atBlock
+    ).pipe(map(fromResult(input)));
   }
 );
+
+function toData({ abi, args }: CallInput) {
+  return getMethodID(abi) + encodeArgs(abi, args);
+}
+
+export function sendCallWithPayload<T>(
+  provider: Provider,
+  payload: RequestInputParams,
+  defaultBlock: Tag | NumberLike = 'latest'
+) {
+  return send(provider)({
+    method: 'eth_call',
+    params: [formatRequestInput(payload), formatDefaultBlock(defaultBlock)]
+  }).pipe(map(x => x.result)) as Observable<T>;
+}
+
+const fromResult = curry(({ abi }: CallInput, result: string) => {
+  // Is this necessary?
+  if (!result) {
+    return result;
+  }
+
+  const decoder = decodeArgs(abi);
+
+  return pipe(
+    strip0x,
+    decoder,
+    extractNonTuple
+  )(result);
+});

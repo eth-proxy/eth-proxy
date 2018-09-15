@@ -1,59 +1,65 @@
-import * as Web3 from 'web3';
-import { curry, evolve, pick } from 'ramda';
-import {
-  getMethodAbi,
-  toEncodedSignature,
-  encodeArgs,
-  bind
-} from '../../utils';
-import { Observable, bindNodeCallback } from 'rxjs';
+import { curry } from 'ramda';
+import { getMethodID, send } from '../../utils';
+import { Observable } from 'rxjs';
 import { formatQuantity } from '../../formatters';
-import { Provider, TransactionPayload } from '../../interfaces';
+import {
+  Provider,
+  RequestInputParams,
+  NumberLike,
+  FunctionDescription
+} from '../../interfaces';
 import { map } from 'rxjs/operators';
+import { formatRequestInput, encodeArgs } from './formatters';
+
+export type TransactionInputParams = RequestInputParams & {
+  nonce?: NumberLike;
+};
 
 export interface TransactionInput<T = any> {
-  abi: Web3.AbiDefinition[];
-  address: string;
-  method: string;
+  abi: FunctionDescription;
   args: T;
-  txParams: TransactionPayload;
+  txParams: TransactionInputParams;
 }
 
 export const sendTransaction = curry(
-  (provider: Web3.Provider, input: TransactionInput): Observable<string> => {
-    return sendTransactionWithPayload(provider, {
+  (provider: Provider, input: TransactionInput): Observable<string> => {
+    validateInput(input);
+
+    return sendTransactionWithData(provider, {
       ...input.txParams,
-      // Should use only input.txParams.to
-      to: input.address || input.txParams.to,
       data: toTxData(input)
     });
   }
 );
 
-function toTxData({ abi, args, method }: TransactionInput) {
-  const methodAbi = getMethodAbi(abi, method);
-  return toEncodedSignature(methodAbi) + encodeArgs(methodAbi, args);
+function toTxData({ abi, args }: TransactionInput) {
+  return getMethodID(abi) + encodeArgs(abi, args);
 }
 
-export function sendTransactionWithPayload<T>(
+export function sendTransactionWithData<T>(
   provider: Provider,
-  payload: TransactionPayload
+  payload: TransactionInputParams
 ) {
-  return bindNodeCallback(bind(provider.sendAsync, provider))({
+  return send(provider)({
     method: 'eth_sendTransaction',
     params: [formatTxPayload(payload)]
-  }).pipe(map((x: any) => x.result)) as Observable<T>;
+  }).pipe(map(x => x.result as string));
 }
 
-const paramsKeys = ['from', 'to', 'gas', 'gasPrice', 'value', 'data'];
-function formatTxPayload(txParams) {
-  return evolve(
-    {
-      gasPrice: formatQuantity,
-      gas: formatQuantity,
-      value: formatQuantity,
-      nonce: formatQuantity
-    },
-    pick(paramsKeys, txParams)
-  );
+function formatTxPayload(txParams: TransactionInputParams) {
+  return {
+    ...formatRequestInput(txParams),
+    ...(txParams.nonce && { nonce: formatQuantity(txParams.nonce) })
+  };
+}
+
+function validateInput(input: TransactionInput) {
+  return validateValue(input);
+}
+
+function validateValue(input: TransactionInput) {
+  const value = new BigNumber(input.txParams.value || 0);
+  if (value.gt(0) && !input.abi.payable) {
+    throw new Error('Cannot send value to non-payable constructor');
+  }
 }

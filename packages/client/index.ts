@@ -13,7 +13,7 @@ import { getDetectedNetwork$ } from './store';
 import { EthProxy, EthProxyOptions } from './model';
 import { sendCall, createSchemaLoader, sendTransaction, query } from './api';
 
-const defaultOptions = {
+const defaultOptions: Partial<EthProxyOptions> = {
   eventReader: getEvents,
   interceptors: {},
   store: undefined
@@ -78,7 +78,7 @@ export function createProxy<T extends {}>(
 export * from './model';
 export * from './utils';
 export { ethProxyIntegrationReducer, State as EthProxyState } from './store';
-export { ContractInfo } from './modules/schema';
+export { ContractInfo, ContractSchema } from './modules/schema';
 export * from './modules/request';
 export {
   EntityModel,

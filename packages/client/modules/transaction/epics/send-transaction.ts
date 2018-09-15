@@ -4,20 +4,7 @@ import { of, Observable } from 'rxjs';
 import * as actions from '../actions';
 import { ContractInfo } from '../../schema';
 import { EpicContext } from '../../../context';
-import { ProcessRequestArgs } from '../../request';
-
-function prepareRequestArgs(
-  { txParams, args, address, method }: actions.ProcessTransaction['payload'],
-  contract: ContractInfo
-): ProcessRequestArgs {
-  return {
-    abi: contract.abi,
-    address: address || contract.address,
-    args,
-    method,
-    txParams
-  };
-}
+import { TransactionInput, getFunction } from '@eth-proxy/rx-web3';
 
 export const processTransactionEpic = (
   actions$: ActionsObservable<actions.ProcessTransaction>,
@@ -29,7 +16,7 @@ export const processTransactionEpic = (
     mergeMap(({ payload }) => {
       return contractLoader(payload.contractName).pipe(
         mergeMap(contract =>
-          sendTransaction(prepareRequestArgs(payload, contract)).pipe(
+          sendTransaction(toTxInput(payload, contract)).pipe(
             map(actions.createTxGenerated(payload.initId)),
             catchError(err => {
               return of(
@@ -45,3 +32,18 @@ export const processTransactionEpic = (
     })
   );
 };
+
+function toTxInput(
+  { txParams, args, address, method }: actions.ProcessTransaction['payload'],
+  contract: ContractInfo
+): TransactionInput {
+  const to = address || contract.address;
+  return {
+    abi: getFunction(method, contract.abi),
+    args,
+    txParams: {
+      ...(txParams || {}),
+      to
+    }
+  };
+}

@@ -1,8 +1,13 @@
 import { zipObj, chain } from 'ramda';
-import * as Web3 from 'web3';
 import { Topics } from '../model';
 import { arrify } from '../../../utils';
-import { toSignature } from '@eth-proxy/rx-web3';
+import {
+  toSignatureHash,
+  AbiDefinition,
+  isEventAbi,
+  EventDescription,
+  EventParameter
+} from '@eth-proxy/rx-web3';
 
 const formatInput = (type: string) => (value: any) => {
   if (type === 'address') {
@@ -15,12 +20,10 @@ const formatInput = (type: string) => (value: any) => {
 const TOPICS = ['t1', 't2', 't3'];
 
 export const expandArgumentTopics = (
-  { inputs }: Web3.AbiDefinition,
+  { inputs }: EventDescription,
   filter: {}
 ): {} => {
-  const indexedArgs = (inputs as Web3.EventParameter[]).filter(
-    arg => arg.indexed
-  );
+  const indexedArgs = (inputs as EventParameter[]).filter(arg => arg.indexed);
 
   const topicValues = TOPICS.map((_, index) => {
     const arg = indexedArgs[index];
@@ -35,9 +38,9 @@ export const expandArgumentTopics = (
   return zipObj(TOPICS, topicValues) as any;
 };
 
-export function depsToTopics(abi: Web3.AbiDefinition[], contractDeps: {}) {
+export function depsToTopics(abi: AbiDefinition[], contractDeps: {}) {
   const isWildcardContract = contractDeps === '*';
-  const allEvents = abi.filter(x => x.type === 'event');
+  const allEvents = abi.filter(isEventAbi);
 
   const events = allEvents.filter(
     e => isWildcardContract || !!contractDeps[e.name]
@@ -52,7 +55,7 @@ export function depsToTopics(abi: Web3.AbiDefinition[], contractDeps: {}) {
 
     return eventDeps.map(filter => {
       return {
-        eventTopic: [toSignature(eventDefinition)],
+        eventTopic: [toSignatureHash(eventDefinition)],
         ...expandArgumentTopics(eventDefinition, filter)
       };
     });
