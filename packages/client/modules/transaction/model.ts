@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { TransactionReceipt } from '@eth-proxy/rx-web3';
+import { TransactionReceipt, NumberLike } from '@eth-proxy/rx-web3';
 import { Request } from '../request';
 import { DecodedEvent } from '../events';
 
@@ -74,3 +74,12 @@ export type TransactionHandler<T> = <
 ) => TransactionResult<
   T[I][M] extends { events: infer Events } ? Events : never
 >;
+
+export interface DeploymentInput<I extends string, P> {
+  interface: I;
+  payload: P;
+  gas?: NumberLike;
+  gasPrice?: NumberLike;
+  value?: NumberLike;
+  from?: string;
+}

@@ -34,14 +34,21 @@ export function reducer(state: State = {}, action: actions.Types): State {
       };
     }
     case actions.LOAD_CONTRACT_SCHEMA_SUCCESS: {
-      const { address, abi, contractName, genesisBlock } = action.payload;
+      const {
+        address,
+        abi,
+        contractName,
+        genesisBlock,
+        bytecode
+      } = action.payload;
       return {
         ...state,
         [contractName]: {
           address,
           abi,
           name: contractName,
-          genesisBlock
+          genesisBlock,
+          bytecode
         }
       };
     }

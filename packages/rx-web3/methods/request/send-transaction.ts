@@ -10,6 +10,7 @@ import {
 } from '../../interfaces';
 import { map } from 'rxjs/operators';
 import { formatRequestInput, encodeArgs } from './formatters';
+import { BigNumber } from 'bignumber.js';
 
 export type TransactionInputParams = RequestInputParams & {
   nonce?: NumberLike;

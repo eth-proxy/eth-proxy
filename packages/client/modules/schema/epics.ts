@@ -12,8 +12,8 @@ import { State } from '../../store';
 export const mapResolvedContractSchema = (
   schema: ResolvedContractSchema,
   networkId: string
-): ContractSchema =>
-  Object.assign(
+): ContractSchema => {
+  return Object.assign(
     {
       address: pathOr<string | undefined>(
         undefined,
@@ -24,6 +24,7 @@ export const mapResolvedContractSchema = (
     },
     schema
   );
+};
 
 export const loadContractSchema = (
   actions$: ActionsObservable<actions.LoadContractSchema>,

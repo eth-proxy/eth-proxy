@@ -51,6 +51,7 @@ export interface ContractInfo {
   name: string;
   genesisBlock: number;
   abi: AbiDefinition[];
+  bytecode?: string;
 }
 
 export interface TruffleJson {
