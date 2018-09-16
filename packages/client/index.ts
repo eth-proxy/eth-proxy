@@ -11,9 +11,15 @@ import {
 import { createAppStore, getActiveAccount$, State, rootEpic } from './store';
 import { getDetectedNetwork$ } from './store';
 import { EthProxy, EthProxyOptions } from './model';
-import { sendCall, createSchemaLoader, sendTransaction, query } from './api';
+import {
+  sendCall,
+  createSchemaLoader,
+  sendTransaction,
+  query,
+  deploy
+} from './api';
 
-const defaultOptions = {
+const defaultOptions: Partial<EthProxyOptions> = {
   eventReader: getEvents,
   interceptors: {},
   store: undefined
@@ -61,8 +67,23 @@ export function createProxy<T extends {}>(
     store
   };
 
+  const {
+    getBalance,
+    getBlock,
+    getReceipt,
+    getTransaction,
+    watchLatestBlock,
+    sign
+  } = rxWeb3;
+
   return {
-    ...rxWeb3,
+    getBalance,
+    getBlock,
+    getReceipt,
+    getTransaction,
+    watchLatestBlock,
+    sign,
+
     provider$: replayProvider$,
     query: query(deps),
 
@@ -71,14 +92,15 @@ export function createProxy<T extends {}>(
 
     loadContractSchema: contractLoader,
     transaction: sendTransaction(deps) as any,
-    ethCall: sendCall(deps) as any
+    ethCall: sendCall(deps) as any,
+    deploy: deploy(deps)
   };
 }
 
 export * from './model';
 export * from './utils';
 export { ethProxyIntegrationReducer, State as EthProxyState } from './store';
-export { ContractInfo } from './modules/schema';
+export { ContractInfo, ContractSchema } from './modules/schema';
 export * from './modules/request';
 export {
   EntityModel,

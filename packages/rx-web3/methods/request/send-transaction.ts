@@ -1,32 +1,66 @@
-import * as Web3 from 'web3';
-import { clone, curry, CurriedFunction2 } from 'ramda';
-import { createWeb3, getMethodAbi } from '../../utils';
-import { bindNodeCallback, Observable } from 'rxjs';
-import { formatPayload } from './formatters';
+import { curry } from 'ramda';
+import { getMethodID, send } from '../../utils';
+import { Observable } from 'rxjs';
+import { formatQuantity } from '../../formatters';
+import {
+  Provider,
+  RequestInputParams,
+  NumberLike,
+  FunctionDescription
+} from '../../interfaces';
+import { map } from 'rxjs/operators';
+import { formatRequestInput, encodeArgs } from './formatters';
+import { BigNumber } from 'bignumber.js';
 
-export interface TransactionInput {
-  abi: Web3.AbiDefinition[];
-  address: string;
-  method: string;
-  args: any;
-  txParams;
+export type TransactionInputParams = RequestInputParams & {
+  nonce?: NumberLike;
+};
+
+export interface TransactionInput<T = any> {
+  abi: FunctionDescription;
+  args: T;
+  txParams: TransactionInputParams;
 }
 
 export const sendTransaction = curry(
-  (
-    provider: Web3.Provider,
-    { abi, address, method, args, txParams }: TransactionInput
-  ): Observable<string> => {
-    const { sendTransaction } = createWeb3(provider)
-      .eth.contract(abi)
-      .at(address)[method];
+  (provider: Provider, input: TransactionInput): Observable<string> => {
+    validateInput(input);
 
-    const methodAbi = getMethodAbi(abi, method);
-    const web3Args = formatPayload(args, methodAbi);
-
-    return (bindNodeCallback as any)(sendTransaction)(
-      ...clone(web3Args),
-      clone(txParams)
-    );
+    return sendTransactionWithData(provider, {
+      ...input.txParams,
+      data: toTxData(input)
+    });
   }
 );
+
+function toTxData({ abi, args }: TransactionInput) {
+  return getMethodID(abi) + encodeArgs(abi, args);
+}
+
+export function sendTransactionWithData<T>(
+  provider: Provider,
+  payload: TransactionInputParams
+) {
+  return send(provider)({
+    method: 'eth_sendTransaction',
+    params: [formatTxPayload(payload)]
+  }).pipe(map(x => x.result as string));
+}
+
+function formatTxPayload(txParams: TransactionInputParams) {
+  return {
+    ...formatRequestInput(txParams),
+    ...(txParams.nonce && { nonce: formatQuantity(txParams.nonce) })
+  };
+}
+
+function validateInput(input: TransactionInput) {
+  return validateValue(input);
+}
+
+function validateValue(input: TransactionInput) {
+  const value = new BigNumber(input.txParams.value || 0);
+  if (value.gt(0) && !input.abi.payable) {
+    throw new Error('Cannot send value to non-payable constructor');
+  }
+}

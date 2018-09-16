@@ -3,22 +3,9 @@ import { mergeMap, map, catchError } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
 
 import * as actions from './actions';
-import { ProcessRequestArgs } from '../request';
 import { EpicContext } from '../../context';
 import { ContractInfo } from '../schema';
-
-function prepareRequestArgs(
-  { txParams, args, address, method }: actions.CallPayload,
-  contract: ContractInfo
-): ProcessRequestArgs {
-  return {
-    abi: contract.abi,
-    address: address || contract.address,
-    args,
-    method,
-    txParams
-  };
-}
+import { CallInput, getFunction } from '@eth-proxy/rx-web3';
 
 export const processCallEpic = (
   actions$: ActionsObservable<actions.ProcessCall>,
@@ -30,7 +17,7 @@ export const processCallEpic = (
     mergeMap(({ payload }) => {
       return contractLoader(payload.contractName).pipe(
         mergeMap(contract =>
-          sendCall(prepareRequestArgs(payload, contract)).pipe(
+          sendCall(toCallInput(payload, contract)).pipe(
             map(actions.createProcessCallSuccess(payload.id)),
             catchError(err => {
               return of(
@@ -46,3 +33,18 @@ export const processCallEpic = (
     })
   );
 };
+
+function toCallInput(
+  { txParams, args, address, method }: actions.CallPayload,
+  contract: ContractInfo
+): CallInput {
+  const to = address || contract.address;
+  return {
+    abi: getFunction(method, contract.abi),
+    args,
+    txParams: {
+      ...(txParams || {}),
+      to
+    }
+  };
+}

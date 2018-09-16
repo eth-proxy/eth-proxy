@@ -1,18 +1,46 @@
-import * as Web3 from 'web3';
-import { isNil, contains } from 'ramda';
+import { isNil, evolve, pick, curry } from 'ramda';
+import { formatQuantity } from '../../formatters';
+import {
+  ContractRequestParams,
+  RequestInputParams,
+  FunctionDescription,
+  ConstructorDescription,
+  FunctionParameter,
+  AbiDefinition
+} from '../../interfaces';
+import * as Coder from 'web3/lib/solidity/coder';
 
-export function formatPayload(userPayload, { inputs }: Web3.AbiDefinition) {
+export function encodeArgs(
+  methodAbi: FunctionDescription | ConstructorDescription,
+  args: any
+) {
+  return Coder.encodeParams(
+    methodAbi.inputs.map(x => x.type),
+    formatPayload(args, methodAbi)
+  );
+}
+
+export const decodeArgs = curry(
+  ({ outputs = [] }: FunctionDescription, data: string) => {
+    return Coder.decodeParams(outputs.map(x => x.type), data);
+  }
+);
+
+export function formatPayload(
+  userPayload,
+  { inputs }: FunctionDescription | ConstructorDescription
+) {
   return formatArgs(inputs, arraifyArgs(inputs, userPayload));
 }
 
-export function arraifyArgs(inputs: Web3.FunctionParameter[], args): any[] {
+export function arraifyArgs(inputs: FunctionParameter[], args): any[] {
   if (inputs.length === 1) {
     return [args];
   }
   return orderArgs(inputs, args);
 }
 
-export function orderArgs(inputs: Web3.FunctionParameter[], args: any) {
+export function orderArgs(inputs: FunctionParameter[], args: any) {
   return inputs.map(({ name }) => {
     const arg = args[name];
     if (isNil(arg)) {
@@ -22,7 +50,7 @@ export function orderArgs(inputs: Web3.FunctionParameter[], args: any) {
   });
 }
 
-export function formatArgs(inputs: Web3.FunctionParameter[], args: any[]) {
+export function formatArgs(inputs: FunctionParameter[], args: any[]) {
   return inputs.map(({ name, type }, index) => {
     const argValue = args[index];
     if (isNil(argValue)) {
@@ -43,4 +71,23 @@ export function formatArg(type: string, value: any) {
     return Boolean(value);
   }
   return value.toString();
+}
+
+export const requestParamsKeys = [
+  'from',
+  'to',
+  'gas',
+  'gasPrice',
+  'value',
+  'data'
+];
+export function formatRequestInput(params: RequestInputParams) {
+  return evolve(
+    {
+      gasPrice: formatQuantity,
+      gas: formatQuantity,
+      value: formatQuantity
+    },
+    pick(requestParamsKeys, params)
+  ) as ContractRequestParams;
 }

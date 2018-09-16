@@ -6,15 +6,12 @@ import {
   Dictionary,
   indexBy,
   curry,
-  CurriedFunction2,
   values,
   flatten
 } from 'ramda';
-import * as Web3 from 'web3';
-import { Observable } from 'rxjs';
 import { toObservableStore } from '../../utils';
 import { fillFilterWithMany, isEventMatching } from './utils';
-import { tap } from 'rxjs/operators';
+import { BlockchainEvent } from '@eth-proxy/rx-web3';
 
 export enum Action {
   Load = 'Load',
@@ -28,7 +25,7 @@ const idFromNativeEvent = e =>
   e.transactionHash + e.transactionIndex + e.logIndex;
 
 export const eventStateReducer = (
-  state: Dictionary<Web3.SolidityEvent<any>> = {},
+  state: Dictionary<BlockchainEvent> = {},
   action: ActionTypes
 ) => {
   switch (action.type) {
@@ -86,7 +83,7 @@ export interface Requests {
 }
 
 export interface State {
-  events: Dictionary<Web3.SolidityEvent<any>>;
+  events: Dictionary<BlockchainEvent>;
   requests: Requests;
 }
 

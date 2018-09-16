@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/platform-browser",
-  "version": "0.5.1-y.17",
+  "version": "0.5.1-y.19",
   "description": "@eth-proxy/client utilities for browser",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -8,9 +8,10 @@
     "access": "public"
   },
   "scripts": {
+    "clean": "rimraf dist",
     "compile": "tsc -p tsconfig.build.json",
-    "prepublish": "rimraf dist && npm run compile",
-    "postpublish": "rimraf dist"
+    "prepublish": "npm run clean && npm run compile",
+    "postpublish": "npm run clean"
   },
   "dependencies": {
     "ramda": "^0.25.0"

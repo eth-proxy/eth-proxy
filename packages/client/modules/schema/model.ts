@@ -9,6 +9,7 @@ export interface ContractSchemaExtras {
 export interface ContractSchema extends Partial<ContractSchemaExtras> {
   contractName: string;
   abi: ContractAbi;
+  bytecode?: string;
 }
 
 export interface ResolvedContractSchema extends ContractSchema {
@@ -50,6 +51,7 @@ export interface ContractInfo {
   name: string;
   genesisBlock: number;
   abi: AbiDefinition[];
+  bytecode?: string;
 }
 
 export interface TruffleJson {

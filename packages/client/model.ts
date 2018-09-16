@@ -2,12 +2,12 @@ import { Observable } from 'rxjs';
 import { RxWeb3, Provider } from '@eth-proxy/rx-web3';
 import { QueryModel, EventMetadata } from './modules/events';
 import { ContractInfo } from './modules/schema';
-import { TransactionHandler } from './modules/transaction';
+import { TransactionHandler, DeploymentInput } from './modules/transaction';
 import { EthProxyInterceptors } from './interceptors';
 import { EthProxyOptions } from './options';
 import { CallHandler } from './modules/call';
 
-export class EthProxy<T extends {} = {}> implements RxWeb3 {
+export class EthProxy<T extends {} = {}> {
   ethCall: CallHandler<T>;
   transaction: TransactionHandler<T>;
   provider$: Observable<Provider>;
@@ -18,19 +18,14 @@ export class EthProxy<T extends {} = {}> implements RxWeb3 {
   loadContractSchema: (
     name: Extract<keyof T, string>
   ) => Observable<ContractInfo>;
+  deploy: (request: DeploymentInput<string, any>) => Observable<string>;
 
   // rxweb3
   getBalance: RxWeb3['getBalance'];
   getBlock: RxWeb3['getBlock'];
-  getDefaultAccount: RxWeb3['getDefaultAccount'];
-  getEvents: RxWeb3['getEvents'];
-  getNetwork: RxWeb3['getNetwork'];
   getReceipt: RxWeb3['getReceipt'];
   getTransaction: RxWeb3['getTransaction'];
-  watchEvents: RxWeb3['watchEvents'];
   watchLatestBlock: RxWeb3['watchLatestBlock'];
-  sendTransaction: RxWeb3['sendTransaction'];
-  sendCall: RxWeb3['sendCall'];
   sign: RxWeb3['sign'];
 }
 
