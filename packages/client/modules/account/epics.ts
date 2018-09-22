@@ -8,9 +8,9 @@ import { EpicContext } from '../../context';
 export const watchAccount = (
   _: ActionsObservable<actions.Types>,
   __,
-  { getDefaultAccount }: EpicContext
+  { getDefaultAccount, options }: EpicContext
 ): Observable<any> => {
-  return timer(0, 500).pipe(
+  return options.watchAccountTimer.pipe(
     mergeMap(getDefaultAccount),
     distinctUntilChanged(),
     map(actions.createSetActiveAccount)

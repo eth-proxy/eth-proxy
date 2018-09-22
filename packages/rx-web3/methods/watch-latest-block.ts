@@ -1,7 +1,7 @@
 import { createWeb3 } from '../utils';
-import { bindNodeCallback, Observable } from 'rxjs';
+import { Observable, EMPTY } from 'rxjs';
 import { getBlock } from './get-block';
-import { concat, switchMap, distinctUntilKeyChanged } from 'rxjs/operators';
+import { switchMap, distinctUntilKeyChanged, catchError } from 'rxjs/operators';
 import { Provider, Block } from '../interfaces';
 
 const watchLatestBlockHash = (provider: Provider): Observable<string> => {
@@ -21,13 +21,10 @@ const watchLatestBlockHash = (provider: Provider): Observable<string> => {
 };
 
 export function watchLatestBlock(provider: Provider): Observable<Block> {
-  // getBlock is faster then filter
-  return getBlock(provider, 'latest').pipe(
-    concat(
-      watchLatestBlockHash(provider).pipe(
-        switchMap(hash => getBlock(provider, hash))
-      )
-    ),
+  const blockLoader = getBlock(provider);
+
+  return watchLatestBlockHash(provider).pipe(
+    switchMap(hash => blockLoader(hash).pipe(catchError(() => EMPTY))),
     distinctUntilKeyChanged('hash')
   );
 }

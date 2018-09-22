@@ -2,6 +2,9 @@ import { ascend, sortWith, path, equals, identity } from 'ramda';
 import { createSelectorCreator, defaultMemoize } from 'reselect';
 import { DecodedEvent } from '../modules/events';
 import { EthProxyInterceptors } from '../model';
+import { DataError, DataLoaded, Data, DataNotAsked } from '../interfaces';
+import { Observable } from 'rxjs';
+import { filter, map, tap } from 'rxjs/operators';
 
 export const networkNameFromId = (networkId: string) => {
   switch (networkId) {
@@ -53,5 +56,41 @@ export const getInterceptor = (key: keyof EthProxyInterceptors, options: any) =>
 
 export const arrify = <T>(value: T | T[]) =>
   Array.isArray(value) ? value : [value];
+
+export function dataError(error: any): DataError {
+  return {
+    status: 'Error',
+    value: error
+  };
+}
+
+export function dataOf<T>(value: T): DataLoaded<T> {
+  return {
+    status: 'Loaded',
+    value
+  };
+}
+
+export function getLoadedValue() {
+  return <T>(data$: Observable<Data<T>>) =>
+    data$.pipe(
+      tap(x => {
+        if (isError(x)) {
+          throw Error(x.value);
+        }
+      }),
+      filter(isLoaded),
+      map(x => x.value)
+    );
+}
+
+export const isError = (data: Data<any>): data is DataError =>
+  data.status === 'Error';
+
+export const isLoaded = <T>(data: Data<T>): data is DataLoaded<T> =>
+  data.status === 'Loaded';
+
+export const isNotAsked = <T>(data: Data<T>): data is DataNotAsked =>
+  data.status === 'NotAsked';
 
 export * from './observable-store';

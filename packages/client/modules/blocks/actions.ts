@@ -1,21 +1,54 @@
 import { Block } from '@eth-proxy/rx-web3';
+import { curry } from 'ramda';
 
-export const UPDATE_LATEST_BLOCK = 'UPDATE_LATEST_BLOCK';
+export const LOAD_BLOCK = 'LOAD_BLOCK';
 
-export interface UpdateLatestBlock {
-  type: 'UPDATE_LATEST_BLOCK';
+export interface LoadBlock {
+  type: typeof LOAD_BLOCK;
+  payload: number;
+}
+
+export const createLoadBlock = (number: number): LoadBlock => ({
+  type: LOAD_BLOCK,
+  payload: number
+});
+
+export const LOAD_BLOCK_SUCCESS = 'LOAD_BLOCK_SUCCESS';
+
+export interface LoadBlockSuccess {
+  type: typeof LOAD_BLOCK_SUCCESS;
   payload: Block;
 }
 
-export const createUpdateLatestBlock = (payload: Block): UpdateLatestBlock => ({
-  type: UPDATE_LATEST_BLOCK,
+export const createLoadBlockSuccess = (payload: Block): LoadBlockSuccess => ({
+  type: LOAD_BLOCK_SUCCESS,
   payload
 });
+
+export const LOAD_BLOCK_FAILED = 'LOAD_BLOCK_FAILED';
+
+export interface LoadBlockFailed {
+  type: typeof LOAD_BLOCK_FAILED;
+  payload: {
+    number: number;
+    err: any;
+  };
+}
+
+export const createLoadBlockFailed = curry(
+  (number: number, err: any): LoadBlockFailed => ({
+    type: LOAD_BLOCK_FAILED,
+    payload: {
+      number,
+      err
+    }
+  })
+);
 
 export const UPDATE_LATEST_BLOCK_FAILED = 'UPDATE_LATEST_BLOCK_FAILED';
 
 export interface UpdateLatestBlockFailed {
-  type: 'UPDATE_LATEST_BLOCK_FAILED';
+  type: typeof UPDATE_LATEST_BLOCK_FAILED;
   payload: Error;
 }
 
@@ -26,4 +59,8 @@ export const createUpdateLatestBlockFailed = (
   payload
 });
 
-export type Types = UpdateLatestBlock | UpdateLatestBlockFailed;
+export type Types =
+  | LoadBlock
+  | LoadBlockSuccess
+  | LoadBlockFailed
+  | UpdateLatestBlockFailed;
