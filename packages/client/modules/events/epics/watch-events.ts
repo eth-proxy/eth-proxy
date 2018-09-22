@@ -36,7 +36,6 @@ export const watchEvents = (
         map(log => fromSchema.getLogDecoder(state$.value)([log])),
         map(actions.eventsLoaded),
         catchError((err, err$) => {
-          console.error(err);
           return err$;
         })
       );
