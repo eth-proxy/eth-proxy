@@ -23,8 +23,13 @@ const myToken = {
 };
 
 describe('ERC20', () => {
-  beforeEach(snapshot);
-  afterEach(revert);
+  beforeEach(() => {
+    snapshot();
+  });
+  afterEach(() => {
+    proxy.stop();
+    revert();
+  });
 
   it('Can use Sample Token', done => {
     proxy

@@ -13,4 +13,6 @@ export interface EthProxyOptions {
   };
   interceptors?: Partial<EthProxyInterceptors>;
   contractSchemaResolver: ContractSchemaResolver;
+  watchBlocks?: boolean;
+  watchAccountTimer?: Observable<any>;
 }

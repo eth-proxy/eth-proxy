@@ -1,14 +1,16 @@
 import { Block } from '@eth-proxy/rx-web3';
 import * as actions from './actions';
 import { createSelector } from 'reselect';
-import { isNil } from 'ramda';
 import { moduleId } from './constants';
+import { Data } from '../../interfaces';
+import { dataOf, dataError } from '../../utils';
+import { LOADING, NOT_ASKED } from '../../constants';
 
 export interface State {
-  latest?: number;
   errorLoadingLatest: boolean;
+  latestNr?: number;
   entities: {
-    [blockNumber: number]: Block;
+    [blockNumber: number]: Data<Block>;
   };
 }
 
@@ -22,15 +24,41 @@ export function reducer(
   action: actions.Types
 ): State {
   switch (action.type) {
-    case actions.UPDATE_LATEST_BLOCK:
+    case actions.LOAD_BLOCK: {
       return {
         ...state,
-        latest: action.payload.number,
         entities: {
           ...state.entities,
-          [action.payload.number]: action.payload
+          [action.payload]: LOADING
         }
       };
+    }
+
+    case actions.LOAD_BLOCK_FAILED: {
+      return {
+        ...state,
+        entities: {
+          ...state.entities,
+          [action.payload.number]: dataError(action.payload)
+        }
+      };
+    }
+
+    case actions.LOAD_BLOCK_SUCCESS: {
+      const { number } = action.payload;
+
+      const entities = {
+        ...state.entities,
+        [number]: dataOf(action.payload)
+      };
+
+      return {
+        ...state,
+        entities,
+        latestNr: number > (state.latestNr || 0) ? number : state.latestNr
+      };
+    }
+
     case actions.UPDATE_LATEST_BLOCK_FAILED:
       return {
         ...state,
@@ -42,42 +70,40 @@ export function reducer(
 }
 
 export const getSelectors = <T>(getModule: (state: T) => State) => {
-  const getBlockForNumber = createSelector(
-    getModule,
-    state => (number: number) => state.entities[number]
-  );
-  const getLatestBlockNumber = createSelector(
-    getModule,
-    (state: State) => state.latest
-  );
-  const getErrorLoadingLatest = createSelector(
-    getModule,
-    m => m.errorLoadingLatest
+  const getState = createSelector(getModule, (state: State) => state);
+  const getBlocksByNumber = createSelector(getState, x => x.entities);
+  const getBlock = (number: number) =>
+    createSelector(getBlocksByNumber, blocks => blocks[number] || NOT_ASKED);
+
+  const getLatestBlockNumberOrNull = createSelector(
+    getState,
+    state => state.latestNr
   );
 
-  const getLatestBlockNumberOrFail = createSelector(
-    getLatestBlockNumber,
-    getErrorLoadingLatest,
-    (latest, errors) => {
-      if (!isNil(latest)) {
-        return latest;
+  const getLatestBlock = createSelector(
+    getState,
+    ({ entities, errorLoadingLatest, latestNr }) => {
+      if (latestNr) {
+        return entities[latestNr];
       }
-      if (errors) {
-        throw 'Could not load latest block';
+      if (errorLoadingLatest) {
+        return dataError('Could not load latest block');
       }
+      return LOADING;
     }
   );
 
   return {
-    getLatestBlockNumberOrFail,
-    getLatestBlock: createSelector(
-      getBlockForNumber,
-      getLatestBlockNumber,
-      (getBlock, number) => getBlock(number)
-    )
+    getBlock,
+    getBlocksByNumber,
+    getLatestBlockNumberOrNull,
+    getLatestBlock
   };
 };
 
-export const { getLatestBlock, getLatestBlockNumberOrFail } = getSelectors(
-  m => m[moduleId]
-);
+export const {
+  getBlock,
+  getLatestBlock,
+  getBlocksByNumber,
+  getLatestBlockNumberOrNull
+} = getSelectors(m => m[moduleId]);

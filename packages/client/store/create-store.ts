@@ -16,14 +16,19 @@ export function createAppStore(
     )
   );
 
-  redux.subscribe(() => {
-    if (externalStore) {
-      externalStore.dispatch({
-        type: 'SET_ETH-PROXY_STATE',
-        payload: redux.getState()
-      });
-    }
-  });
+  if (externalStore) {
+    let prevState = redux.getState();
+    redux.subscribe(() => {
+      const newState = redux.getState();
+      if (newState !== prevState) {
+        externalStore.dispatch({
+          type: 'SET_ETH-PROXY_STATE',
+          payload: newState
+        });
+        prevState = newState;
+      }
+    });
+  }
 
   return redux;
 }

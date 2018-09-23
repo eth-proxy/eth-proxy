@@ -70,7 +70,6 @@ export const queryEventsEpic = (
         .pipe(
           rxMap(events => queryEventsSuccess({ id, events })),
           catchError(err => {
-            console.error(err);
             return of(queryEventsFailed(id));
           })
         );

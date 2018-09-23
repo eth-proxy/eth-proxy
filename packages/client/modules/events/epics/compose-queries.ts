@@ -9,13 +9,13 @@ import {
   queryEvents,
   Types as ActionTypes
 } from '../actions';
-import { getLatestBlockNumberOrFail } from '../../blocks';
+import { getLatestBlock } from '../../blocks';
 import { EpicContext } from '../../../context';
 import { BlockRange } from '../model';
 import { depsToTopics } from '../utils/expand-model';
 import { splitQueryByTopics, toTopicList } from '../utils';
 import { State } from '../../../store';
-import { arrify } from '../../../utils';
+import { arrify, getLoadedValue } from '../../../utils';
 
 export const composeQueries = (
   actions$: ActionsObservable<ActionTypes>,
@@ -29,8 +29,10 @@ export const composeQueries = (
         mergeMap(contracts => {
           return state$
             .pipe(
-              rxMap(getLatestBlockNumberOrFail),
-              first(x => !isNil(x))
+              rxMap(getLatestBlock),
+              getLoadedValue(),
+              first(),
+              rxMap(x => x.number)
             )
             .pipe(
               map(latestBlockNumber => {

@@ -1,4 +1,4 @@
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, timer } from 'rxjs';
 import { shareReplay, take, mergeMap } from 'rxjs/operators';
 import { createEpicMiddleware } from 'redux-observable';
 import {
@@ -18,11 +18,19 @@ import {
   query,
   deploy
 } from './api';
+import { createBlockLoader } from './api/get-block';
+import {
+  createEthProxyStopped,
+  createEthProxyStarted
+} from './modules/lifecycle';
+import { EpicContext } from './context';
 
 const defaultOptions: Partial<EthProxyOptions> = {
   eventReader: getEvents,
   interceptors: {},
-  store: undefined
+  store: undefined,
+  watchBlocks: false,
+  watchAccountTimer: timer(0)
 };
 
 let globalId = 0;
@@ -46,21 +54,23 @@ export function createProxy<T extends {}>(
     );
 
   const contractLoader = (name: string) => createSchemaLoader(store)(name);
+  const blockLoader = (number: number) => createBlockLoader(store)(number);
 
   const context = {
     ...rxWeb3,
     getEvents,
     options,
     contractLoader,
+    blockLoader,
     genId
   };
 
-  const epicMiddleware = createEpicMiddleware({
+  const epicMiddleware = createEpicMiddleware<any, any, State, EpicContext>({
     dependencies: context
   });
-
   var store = createAppStore(epicMiddleware, options.store);
   epicMiddleware.run(rootEpic);
+  store.dispatch(createEthProxyStarted());
 
   const deps = {
     ...context,
@@ -69,7 +79,6 @@ export function createProxy<T extends {}>(
 
   const {
     getBalance,
-    getBlock,
     getReceipt,
     getTransaction,
     watchLatestBlock,
@@ -78,7 +87,7 @@ export function createProxy<T extends {}>(
 
   return {
     getBalance,
-    getBlock,
+    getBlock: blockLoader,
     getReceipt,
     getTransaction,
     watchLatestBlock,
@@ -93,23 +102,28 @@ export function createProxy<T extends {}>(
     loadContractSchema: contractLoader,
     transaction: sendTransaction(deps) as any,
     ethCall: sendCall(deps) as any,
-    deploy: deploy(deps)
+    deploy: deploy(deps),
+    stop: () => store.dispatch(createEthProxyStopped())
   };
 }
 
 export * from './model';
 export * from './utils';
-export { ethProxyIntegrationReducer, State as EthProxyState } from './store';
+export {
+  ethProxyIntegrationReducer,
+  State as EthProxyState,
+  getSelectors
+} from './store';
 export { ContractInfo, ContractSchema } from './modules/schema';
 export * from './modules/request';
+export { on, once } from './modules/transaction';
+export { at, withOptions } from './modules/request';
 export {
   EntityModel,
   EventHandler,
   TransactionHandler,
-  getSelectors
+  getSelectors as getEntitySelectors
 } from './entity';
-export { on, once } from './modules/transaction';
-export { at, withOptions } from './modules/request';
 
 export function entity(arg) {
   return arg;

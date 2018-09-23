@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { RxWeb3, Provider } from '@eth-proxy/rx-web3';
+import { RxWeb3, Provider, Block } from '@eth-proxy/rx-web3';
 import { QueryModel, EventMetadata } from './modules/events';
 import { ContractInfo } from './modules/schema';
 import { TransactionHandler, DeploymentInput } from './modules/transaction';
@@ -19,14 +19,15 @@ export class EthProxy<T extends {} = {}> {
     name: Extract<keyof T, string>
   ) => Observable<ContractInfo>;
   deploy: (request: DeploymentInput<string, any>) => Observable<string>;
+  getBlock: (block: number) => Observable<Block>;
 
   // rxweb3
   getBalance: RxWeb3['getBalance'];
-  getBlock: RxWeb3['getBlock'];
   getReceipt: RxWeb3['getReceipt'];
   getTransaction: RxWeb3['getTransaction'];
   watchLatestBlock: RxWeb3['watchLatestBlock'];
   sign: RxWeb3['sign'];
+  stop: () => void;
 }
 
 export {
