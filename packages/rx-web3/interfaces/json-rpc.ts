@@ -39,41 +39,66 @@ export interface Rpc<Request extends BaseRpcRequest, Result> {
 
 // JSON RPC METHODS
 
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call
+ */
 export interface EthCallRequest extends BaseRpcRequest {
   method: 'eth_call';
   params: [ContractRequestParams, Quantity | Tag];
 }
 export type EthCall = Rpc<EthCallRequest, Data>;
 
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendtransaction
+ */
 export interface EthSendTransactionRequest extends BaseRpcRequest {
   method: 'eth_sendTransaction';
   params: [TransactionParams];
 }
 export type EthSendTransaction = Rpc<EthSendTransactionRequest, Data>;
 
+/**
+ * https://github.com/ethereum/go-ethereum/wiki/Management-APIs#personal_sign
+ */
 export interface PersonalSignRequest extends BaseRpcRequest {
   method: 'personal_sign';
   params: [Data, Data];
 }
 export type PersonalSign = Rpc<PersonalSignRequest, Data>;
 
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbyhash
+ */
 export interface GetBlockByNumberRequest extends BaseRpcRequest {
   method: 'eth_getBlockByNumber';
   params: [Quantity | Tag, boolean];
 }
-export type GetBlockByNumber = Rpc<GetBlockByNumberRequest, RawBlock>;
+export type EthGetBlockByNumber = Rpc<GetBlockByNumberRequest, RawBlock>;
 
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbyhash
+ */
 export interface GetBlockByHashRequest extends BaseRpcRequest {
   method: 'eth_getBlockByHash';
   params: [Data, boolean];
 }
-export type GetBlockByHash = Rpc<GetBlockByHashRequest, RawBlock>;
+export type EthGetBlockByHash = Rpc<GetBlockByHashRequest, RawBlock>;
+
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_accounts
+ */
+export interface EthAccountsRequest extends BaseRpcRequest {
+  method: 'eth_accounts';
+  params: [];
+}
+export type EthAccounts = Rpc<EthAccountsRequest, Data[]>;
 
 export type RpcMethod =
   | EthCall
   | EthSendTransaction
   | PersonalSign
-  | GetBlockByNumber
-  | GetBlockByHash;
+  | EthGetBlockByNumber
+  | EthGetBlockByHash
+  | EthAccounts;
 
 export type RpcRequest = RpcMethod['request'];
