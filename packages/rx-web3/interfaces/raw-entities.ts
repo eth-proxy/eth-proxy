@@ -39,3 +39,30 @@ export interface RawTransaction {
   r: Data;
   s: Data;
 }
+
+export interface RawTransactionReceipt {
+  blockHash: Data;
+  blockNumber: Quantity;
+  contractAddress: null | Data;
+  cumulativeGasUsed: Quantity;
+  from: Data;
+  gasUsed: Quantity;
+  logs: RawLog[];
+  logsBloom: Data;
+  status: Quantity;
+  to: Data;
+  transactionIndex: Quantity;
+  transactionHash: Data;
+}
+
+export interface RawLog {
+  address: Data;
+  blockHash: Data;
+  blockNumber: Quantity;
+  data: Data;
+  logIndex: Quantity;
+  removed: boolean;
+  topics: Data[];
+  transactionHash: Data;
+  transactionIndex: Quantity;
+}

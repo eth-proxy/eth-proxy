@@ -15,4 +15,4 @@ export function formatBlockNr(input: string | NumberLike) {
   return isTag(input) ? input : formatQuantity(input);
 }
 
-export * from './block';
+export * from './output';

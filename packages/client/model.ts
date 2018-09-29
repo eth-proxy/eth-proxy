@@ -24,7 +24,7 @@ export class EthProxy<T extends {} = {}> {
   // rxweb3
   getBalance: RxWeb3['getBalance'];
   getReceipt: RxWeb3['getReceipt'];
-  getTransaction: RxWeb3['getTransaction'];
+  getTransactionByHash: RxWeb3['getTransactionByHash'];
   watchLatestBlock: RxWeb3['watchLatestBlock'];
   sign: RxWeb3['sign'];
   stop: () => void;

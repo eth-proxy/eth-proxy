@@ -1,4 +1,8 @@
-import { RawBlock } from './raw-entities';
+import {
+  RawBlock,
+  RawTransaction,
+  RawTransactionReceipt
+} from './raw-entities';
 
 export type Data = string;
 export type Quantity = string;
@@ -93,12 +97,58 @@ export interface EthAccountsRequest extends BaseRpcRequest {
 }
 export type EthAccounts = Rpc<EthAccountsRequest, Data[]>;
 
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance
+ */
+export interface EthGetBalanceRequest extends BaseRpcRequest {
+  method: 'eth_getBalance';
+  params: [Data, Quantity | Tag];
+}
+export type EthGetBalance = Rpc<EthGetBalanceRequest, Quantity>;
+
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version
+ */
+export interface NetVersionRequest extends BaseRpcRequest {
+  method: 'net_version';
+  params: [];
+}
+export type NetVersion = Rpc<NetVersionRequest, string>;
+
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionreceipt
+ */
+export interface EthGetTransactionReceiptRequest extends BaseRpcRequest {
+  method: 'eth_getTransactionReceipt';
+  params: [Data];
+}
+export type EthGetTransactionReceipt = Rpc<
+  EthGetTransactionReceiptRequest,
+  RawTransactionReceipt
+>;
+
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash
+ */
+export interface EthGetTransactionByHashRequest extends BaseRpcRequest {
+  method: 'eth_getTransactionByHash';
+  params: [Data];
+}
+export type EthGetTransactionByHash = Rpc<
+  EthGetTransactionByHashRequest,
+  RawTransaction
+>;
+
 export type RpcMethod =
   | EthCall
   | EthSendTransaction
-  | PersonalSign
   | EthGetBlockByNumber
   | EthGetBlockByHash
-  | EthAccounts;
+  | EthAccounts
+  | EthGetBalance
+  | EthGetTransactionReceipt
+  | EthGetTransactionByHash
+  | PersonalSign
+  | NetVersion;
 
 export type RpcRequest = RpcMethod['request'];

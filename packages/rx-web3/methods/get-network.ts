@@ -1,10 +1,10 @@
-import { createWeb3, bind } from '../utils';
-import { CurriedFunction2 } from 'ramda';
-import { bindNodeCallback, Observable } from 'rxjs';
+import { send } from '../utils';
 import { Provider } from '../interfaces';
+import { map } from 'rxjs/operators';
 
 export function getNetwork(provider: Provider) {
-  const web3 = createWeb3(provider);
-  const callback = bind(web3.version.getNetwork, web3);
-  return bindNodeCallback(callback)();
+  return send(provider)({
+    method: 'net_version',
+    params: []
+  }).pipe(map(x => x.result));
 }
