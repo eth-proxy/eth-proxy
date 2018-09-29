@@ -18,7 +18,7 @@ describe('Get block by number', () => {
     } as any;
   });
 
-  it('Calls eth_getBlockByNumber method with formatted input', async () => {
+  it('Calls eth_getBlockByNumber method with number', async () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult({})));
 
@@ -27,6 +27,18 @@ describe('Get block by number', () => {
     expect(sendAsync.firstCall.args[0]).to.deep.eq({
       method: 'eth_getBlockByNumber',
       params: [block100Hex, false]
+    });
+  });
+
+  it('Calls eth_getBlockByNumber method with tag', async () => {
+    const sendAsync = sinon.stub(provider, 'sendAsync');
+    sendAsync.callsFake((args, cb) => cb(null, rpcResult({})));
+
+    await getBlockByNumber(provider, { number: 'latest' }).toPromise();
+
+    expect(sendAsync.firstCall.args[0]).to.deep.eq({
+      method: 'eth_getBlockByNumber',
+      params: ['latest', false]
     });
   });
 

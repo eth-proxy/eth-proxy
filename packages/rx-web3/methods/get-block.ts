@@ -10,7 +10,9 @@ interface GetBlockByNumberArgs {
   number: Tag | number;
   fullTransactions?: boolean;
 }
-
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber
+ */
 export const getBlockByNumber = curry(
   (
     provider: Provider,
@@ -28,6 +30,9 @@ interface GetBlockByHashArgs {
   fullTransactions?: boolean;
 }
 
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbyhash
+ */
 export const getBlockByHash = curry(
   (
     provider: Provider,
