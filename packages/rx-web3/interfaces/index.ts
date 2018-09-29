@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { CurriedFunction2 } from 'ramda';
-import { RpcRequest } from './json-rpc';
+import { RpcMethod, RpcRequest } from './json-rpc';
 
 export type ProviderBound<T> = T extends (
   provider: Provider
@@ -10,12 +10,24 @@ export type ProviderBound<T> = T extends (
     ? (arg: A1) => Observable<R>
     : never;
 
+export type SendAsync = <
+  Request extends RpcRequest,
+  Type extends Request['method']
+>(
+  payload: Request | Request[],
+  cb: (err: any, next: Extract<RpcMethod, { type: Type }>['response']) => void
+) => void;
+
 export type Provider = {
-  sendAsync: (
-    payload: RpcRequest | RpcRequest[],
-    cb: (err: any, next: any) => void
-  ) => void;
+  sendAsync: SendAsync;
 };
+
+export type SendRequest = <
+  Request extends RpcRequest,
+  Type extends Request['method']
+>(
+  payload: Request | Request[]
+) => Observable<Extract<RpcMethod, { type: Type }>['response']>;
 
 export interface FilterObject {
   fromBlock?: number | string;
@@ -38,3 +50,4 @@ export interface RequestInputParams {
 export * from './abi';
 export * from './entities';
 export * from './json-rpc';
+export * from './raw-entities';

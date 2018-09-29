@@ -10,7 +10,7 @@ import {
 } from '../../interfaces';
 import { map } from 'rxjs/operators';
 import { formatRequestInput, encodeArgs, decodeArgs } from './formatters';
-import { formatDefaultBlock } from '../../formatters';
+import { formatBlockNr } from '../../formatters';
 
 export interface CallInput<T = any> {
   abi: FunctionDescription;
@@ -20,31 +20,26 @@ export interface CallInput<T = any> {
 }
 
 export const sendCall = curry(
-  (provider: Provider, input: CallInput): Observable<string> => {
-    return sendCallWithPayload(
-      provider,
-      {
-        ...input.txParams,
-        data: toData(input)
-      },
-      input.atBlock
-    ).pipe(map(fromResult(input)));
+  (provider: Provider, input: CallInput): Observable<any> => {
+    const { atBlock = 'latest' } = input;
+    const request = {
+      ...input.txParams,
+      data: toData(input)
+    };
+    const resultParser = fromResult(input);
+
+    return send(provider)({
+      method: 'eth_call',
+      params: [formatRequestInput(request), formatBlockNr(atBlock)]
+    }).pipe(
+      map(x => x.result),
+      map(resultParser)
+    );
   }
 );
 
 function toData({ abi, args }: CallInput) {
   return getMethodID(abi) + encodeArgs(abi, args);
-}
-
-export function sendCallWithPayload<T>(
-  provider: Provider,
-  payload: RequestInputParams,
-  defaultBlock: Tag | NumberLike = 'latest'
-) {
-  return send(provider)({
-    method: 'eth_call',
-    params: [formatRequestInput(payload), formatDefaultBlock(defaultBlock)]
-  }).pipe(map(x => x.result)) as Observable<T>;
 }
 
 const fromResult = curry(({ abi }: CallInput, result: string) => {

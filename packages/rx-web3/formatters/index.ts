@@ -11,6 +11,8 @@ function isTag(value: string | NumberLike): value is Tag {
   return contains(value, tags);
 }
 
-export function formatDefaultBlock(input: string | NumberLike) {
+export function formatBlockNr(input: string | NumberLike) {
   return isTag(input) ? input : formatQuantity(input);
 }
+
+export * from './block';

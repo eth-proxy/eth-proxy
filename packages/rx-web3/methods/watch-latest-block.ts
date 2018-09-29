@@ -1,6 +1,6 @@
 import { createWeb3 } from '../utils';
 import { Observable, EMPTY } from 'rxjs';
-import { getBlock } from './get-block';
+import { getBlockByHash } from './get-block';
 import { switchMap, distinctUntilKeyChanged, catchError } from 'rxjs/operators';
 import { Provider, Block } from '../interfaces';
 
@@ -21,10 +21,10 @@ const watchLatestBlockHash = (provider: Provider): Observable<string> => {
 };
 
 export function watchLatestBlock(provider: Provider): Observable<Block> {
-  const blockLoader = getBlock(provider);
+  const blockLoader = getBlockByHash(provider);
 
   return watchLatestBlockHash(provider).pipe(
-    switchMap(hash => blockLoader(hash).pipe(catchError(() => EMPTY))),
+    switchMap(hash => blockLoader({ hash }).pipe(catchError(() => EMPTY))),
     distinctUntilKeyChanged('hash')
   );
 }
