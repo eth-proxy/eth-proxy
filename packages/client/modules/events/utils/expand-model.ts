@@ -1,6 +1,5 @@
 import { zipObj, chain } from 'ramda';
 import { Topics } from '../model';
-import { arrify } from '../../../utils';
 import {
   toSignatureHash,
   AbiDefinition,
@@ -8,6 +7,7 @@ import {
   EventDescription,
   EventParameter
 } from '@eth-proxy/rx-web3';
+import { arrify } from '@eth-proxy/rx-web3';
 
 const formatInput = (type: string) => (value: any) => {
   if (type === 'address') {

@@ -1,7 +1,9 @@
 import {
   RawBlock,
   RawTransaction,
-  RawTransactionReceipt
+  RawTransactionReceipt,
+  RawLog,
+  RawFilter
 } from './raw-entities';
 
 export type Data = string;
@@ -9,9 +11,8 @@ export type Quantity = string;
 export type Tag = 'latest' | 'earliest' | 'pending';
 
 export interface BaseRpcRequest {
-  // Should be included but usually are added by provider
-  // jsonrpc: '2.0';
-  // id: number;
+  jsonrpc?: '2.0';
+  id?: number;
   method: string;
   params: any;
 }
@@ -139,6 +140,15 @@ export type EthGetTransactionByHash = Rpc<
   RawTransaction
 >;
 
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs
+ */
+export interface EthGetLogsRequest extends BaseRpcRequest {
+  method: 'eth_getLogs';
+  params: [RawFilter];
+}
+export type EthGetLogs = Rpc<EthGetLogsRequest, RawLog[]>;
+
 export type RpcMethod =
   | EthCall
   | EthSendTransaction
@@ -148,6 +158,7 @@ export type RpcMethod =
   | EthGetBalance
   | EthGetTransactionReceipt
   | EthGetTransactionByHash
+  | EthGetLogs
   | PersonalSign
   | NetVersion;
 

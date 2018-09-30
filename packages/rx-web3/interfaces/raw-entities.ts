@@ -1,4 +1,4 @@
-import { Quantity, Data } from './json-rpc';
+import { Quantity, Data, Tag } from './json-rpc';
 
 export interface RawBlock {
   number: Quantity;
@@ -65,4 +65,11 @@ export interface RawLog {
   topics: Data[];
   transactionHash: Data;
   transactionIndex: Quantity;
+}
+
+export interface RawFilter {
+  fromBlock?: Quantity | Tag;
+  toBlock?: Quantity | Tag;
+  address?: Data | Data[];
+  topics?: (Data | Data[])[];
 }

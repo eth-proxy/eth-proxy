@@ -1,4 +1,4 @@
-import * as Web3 from 'web3';
+import * as web3Utils from 'web3/lib/utils/utils';
 import {
   Provider,
   AbiDefinition,
@@ -8,18 +8,15 @@ import {
   SendRequest
 } from '../interfaces';
 import { bindNodeCallback } from 'rxjs';
-import { curry, pipe, isNil } from 'ramda';
+import { pipe, isNil } from 'ramda';
 import { BigNumber } from 'bignumber.js';
-
-export const createWeb3 = (provider: Web3.Provider) => new Web3(provider);
 
 export function bind<T extends (...args: any[]) => any>(fn: T, obj: any): T {
   return fn.bind(obj);
 }
-export const web3 = new Web3();
 
 const toNumber = (bn: BigNumber) => bn.toNumber();
-export const toHex = (input: any) => web3.toHex(input);
+export const toHex = (input: any) => web3Utils.toHex(input);
 const hexToBN = (hex: string) => new BigNumber(hex, 16);
 export const ethHexToBN = pipe(
   strip0x,
@@ -30,15 +27,11 @@ export const ethHexToNumber = pipe(
   toNumber
 );
 
-export const toAscii = (hex: string) => web3.toAscii(hex);
-export const fromAscii = (ascii: string) => web3.fromAscii(ascii);
+export const toAscii = (hex: string) => web3Utils.toAscii(hex);
+export const fromAscii = (ascii: string) => web3Utils.fromAscii(ascii);
 
 export const caseInsensitiveCompare = (a: string, b: string) =>
   a && b && a.toLowerCase() === b.toLowerCase();
-
-export function getMethodAbi(abi: Web3.AbiDefinition[], method: string) {
-  return abi.find(({ name }) => caseInsensitiveCompare(name, method));
-}
 
 export function send(provider: Provider): SendRequest {
   return bindNodeCallback(bind(provider.sendAsync, provider));
@@ -83,3 +76,5 @@ export const isNotString = (value: any) => !isString(value);
 export function isNotNil<T>(val: T | null | undefined): val is T {
   return !isNil(val);
 }
+export const arrify = <T>(value: T | T[]) =>
+  Array.isArray(value) ? value : [value];

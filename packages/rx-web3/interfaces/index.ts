@@ -33,7 +33,7 @@ export interface FilterObject {
   fromBlock?: number | string;
   toBlock?: number | string;
   address?: string | string[];
-  topics?: string[] | string[][];
+  topics?: (string | string[])[];
 }
 
 export type NumberLike = string | number | BigNumber;

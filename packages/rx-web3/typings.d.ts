@@ -114,7 +114,7 @@ declare module 'web3' {
       fromBlock?: number | string;
       toBlock?: number | string;
       address?: string | string[];
-      topics?: string[] | string[][];
+      topics?: (string | string[])[];
     }
 
     interface SolidityEvent<A> {
