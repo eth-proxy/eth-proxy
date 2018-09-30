@@ -58,11 +58,6 @@ export type ObservableTransactionResult<T> = Observable<
   TransationResultEvent<T>
 >;
 
-export enum TransactionResultCode {
-  Failure = 0,
-  Success = 1
-}
-
 export type TransactionResult<T> = Observable<Transaction>;
 
 export type TransactionHandler<T> = <

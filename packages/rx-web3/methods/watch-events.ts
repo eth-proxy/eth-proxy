@@ -1,39 +1,34 @@
-import { createWeb3 } from '../utils';
+import * as Web3 from 'web3';
 import { CurriedFunction2, curry } from 'ramda';
 import { Observable, merge } from 'rxjs';
-import { Provider, FilterObject, BlockchainEvent } from '../interfaces';
+import { Provider, FilterObject, BlockchainEvent, Log } from '../interfaces';
+import { arrify } from '../utils';
 
 // TESTRPC WATCH DOES NOT WORK WITH ADDRESS LIST
 export const watchEvents = curry(
   (provider: Provider, options: FilterObject) => {
-    const addressList = Array.isArray(options.address)
-      ? options.address
-      : [options.address];
-
-    const nativeWatch = watchAddressEvents(provider);
-
-    const watches$ = addressList.map(address =>
-      nativeWatch(
+    const watches$ = arrify(options.address).map(address => {
+      return watchAddressEvents(provider)(
         Object.assign({}, options, {
           address
         })
-      )
-    );
+      );
+    });
 
     return merge(...watches$);
   }
 );
 
 const watchAddressEvents = curry(
-  (provider: Provider, options: FilterObject): Observable<BlockchainEvent> => {
+  (provider: Provider, options: FilterObject): Observable<Log> => {
     return new Observable(observer => {
-      const allEvents = createWeb3(provider).eth.filter(options);
-      allEvents.watch((err, event: BlockchainEvent) => {
+      const allEvents = new Web3(provider).eth.filter(options);
+      allEvents.watch((err, event) => {
         if (err) {
           observer.error(err);
           return;
         }
-        observer.next(event);
+        observer.next((event as any) as Log);
       });
       return () => allEvents.stopWatching(_ => {});
     });

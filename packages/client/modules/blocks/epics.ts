@@ -8,9 +8,9 @@ import * as actions from './actions';
 export const loadLatestBlock = (
   _: ActionsObservable<any>,
   __,
-  { getBlock }: EpicContext
+  { getBlockByNumber }: EpicContext
 ): Observable<actions.Types> => {
-  return getBlock('latest').pipe(
+  return getBlockByNumber({ number: 'latest' }).pipe(
     retry(10),
     map(actions.createLoadBlockSuccess),
     catchError(err => of(actions.createUpdateLatestBlockFailed(err)))
@@ -20,12 +20,12 @@ export const loadLatestBlock = (
 export const loadBlock = (
   actions$: ActionsObservable<any>,
   __,
-  { getBlock }: EpicContext
+  { getBlockByNumber }: EpicContext
 ): Observable<actions.Types> => {
   return actions$.pipe(
     ofType<actions.LoadBlock>(actions.LOAD_BLOCK),
     mergeMap(({ payload: number }) => {
-      return getBlock(number).pipe(
+      return getBlockByNumber({ number }).pipe(
         map(actions.createLoadBlockSuccess),
         catchError(err => of(actions.createLoadBlockFailed(number, err)))
       );

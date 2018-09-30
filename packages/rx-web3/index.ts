@@ -30,7 +30,8 @@ export {
   fromAscii,
   getFunction,
   isEventAbi,
-  isConstructorAbi
+  isConstructorAbi,
+  arrify
 } from './utils';
 export { TransactionInput } from './methods/request/send-transaction';
 export { CallInput } from './methods/request/send-call';

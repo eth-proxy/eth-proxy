@@ -80,7 +80,7 @@ export function createProxy<T extends {}>(
   const {
     getBalance,
     getReceipt,
-    getTransaction,
+    getTransactionByHash,
     watchLatestBlock,
     sign
   } = rxWeb3;
@@ -89,7 +89,7 @@ export function createProxy<T extends {}>(
     getBalance,
     getBlock: blockLoader,
     getReceipt,
-    getTransaction,
+    getTransactionByHash,
     watchLatestBlock,
     sign,
 
