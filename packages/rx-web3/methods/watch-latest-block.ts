@@ -1,12 +1,11 @@
-import { createWeb3 } from '../utils';
+import * as Web3 from 'web3';
 import { Observable, EMPTY } from 'rxjs';
 import { getBlockByHash } from './get-block';
 import { switchMap, distinctUntilKeyChanged, catchError } from 'rxjs/operators';
 import { Provider, Block } from '../interfaces';
 
 const watchLatestBlockHash = (provider: Provider): Observable<string> => {
-  const web3 = createWeb3(provider);
-  const filter = web3.eth.filter('latest');
+  const filter = new Web3(provider).eth.filter('latest');
 
   return Observable.create(observer => {
     filter.watch((err, blockHash) => {
