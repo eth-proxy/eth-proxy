@@ -15,7 +15,8 @@ import { BlockRange } from '../model';
 import { depsToTopics } from '../utils/expand-model';
 import { splitQueryByTopics, toTopicList } from '../utils';
 import { State } from '../../../store';
-import { arrify, getLoadedValue } from '../../../utils';
+import { getLoadedValue } from '../../../utils';
+import { arrify } from '@eth-proxy/rx-web3';
 
 export const composeQueries = (
   actions$: ActionsObservable<ActionTypes>,

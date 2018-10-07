@@ -8,9 +8,9 @@ import * as actions from './actions';
 export const loadLatestBlock = (
   _: ActionsObservable<any>,
   __,
-  { getBlock }: EpicContext
+  { getBlockByNumber }: EpicContext
 ): Observable<actions.Types> => {
-  return getBlock('latest').pipe(
+  return getBlockByNumber({ number: 'latest' }).pipe(
     retry(10),
     map(actions.createLoadBlockSuccess),
     catchError(err => of(actions.createUpdateLatestBlockFailed(err)))
@@ -20,12 +20,12 @@ export const loadLatestBlock = (
 export const loadBlock = (
   actions$: ActionsObservable<any>,
   __,
-  { getBlock }: EpicContext
+  { getBlockByNumber }: EpicContext
 ): Observable<actions.Types> => {
   return actions$.pipe(
     ofType<actions.LoadBlock>(actions.LOAD_BLOCK),
     mergeMap(({ payload: number }) => {
-      return getBlock(number).pipe(
+      return getBlockByNumber({ number }).pipe(
         map(actions.createLoadBlockSuccess),
         catchError(err => of(actions.createLoadBlockFailed(number, err)))
       );
@@ -36,11 +36,15 @@ export const loadBlock = (
 export const watchNewBlocks = (
   _: ActionsObservable<any>,
   __,
-  { watchLatestBlock, options }: EpicContext
+  { watchBlocks, getBlockByHash, options }: EpicContext
 ): Observable<actions.Types> => {
-  return of(options.watchBlocks).pipe(
+  return of(options.watchBlocksTimer$).pipe(
     filter(x => !!x),
-    mergeMap(watchLatestBlock),
+    mergeMap(timer$ => {
+      return watchBlocks({ timer$ }).pipe(
+        mergeMap(hash => getBlockByHash({ hash }))
+      );
+    }),
     map(actions.createLoadBlockSuccess)
   );
 };

@@ -7,7 +7,6 @@ export type BlockchainEvent = {
 };
 
 export interface Block {
-  author: string;
   difficulty: BigNumber;
   extraData: string;
   gasLimit: number;
@@ -18,17 +17,16 @@ export interface Block {
   number: number;
   parentHash: string;
   receiptsRoot: string;
-  sealFields: string[];
   sha3Uncles: string;
-  signature: string;
   size: number;
   stateRoot: string;
-  step: string;
   timestamp: number;
   totalDifficulty: BigNumber;
-  transactions: string[];
+  transactions: string[] | Transaction[];
   transactionsRoot: string;
   uncles: string[];
+  mixHash: string;
+  nonce: string;
 }
 
 export interface Transaction {
@@ -43,6 +41,9 @@ export interface Transaction {
   gasPrice: BigNumber;
   gas: number;
   input: string;
+  r: string;
+  s: string;
+  v: string;
 }
 
 export interface TransactionReceipt {
@@ -53,7 +54,26 @@ export interface TransactionReceipt {
   cumulativeGasUsed: number;
   gasUsed: number;
   contractAddress: string | null;
-  logs: BlockchainEvent[];
+  logs: Log[];
   logsBloom: string;
-  status: 0 | 1 | null;
+  status: TransactionStatus;
+  from: string;
+  to: string;
+}
+
+export interface Log {
+  address: string;
+  blockHash: string;
+  blockNumber: number;
+  data: string;
+  logIndex: number;
+  removed: boolean;
+  topics: string[];
+  transactionHash: string;
+  transactionIndex: number;
+}
+
+export enum TransactionStatus {
+  Failure = 0,
+  Success = 1
 }

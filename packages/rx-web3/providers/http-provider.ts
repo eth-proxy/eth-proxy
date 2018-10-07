@@ -1,6 +1,6 @@
-import * as Web3 from 'web3';
+import * as HttpProvider from 'web3/lib/web3/httpprovider';
 import { Provider } from '../interfaces';
 
 export const httpProvider = (url?: string): Provider => {
-  return new Web3.providers.HttpProvider(url);
+  return new HttpProvider(url);
 };

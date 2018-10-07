@@ -44,7 +44,7 @@ export function sendTransactionWithData<T>(
   return send(provider)({
     method: 'eth_sendTransaction',
     params: [formatTxPayload(payload)]
-  }).pipe(map(x => x.result as string));
+  });
 }
 
 function formatTxPayload(txParams: TransactionInputParams) {

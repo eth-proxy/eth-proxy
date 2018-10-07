@@ -1,44 +1,27 @@
-import { createWeb3 } from '../utils';
-import { CurriedFunction2, curry } from 'ramda';
-import { Observable, forkJoin } from 'rxjs';
+import { curry, map } from 'ramda';
+import { forkJoin } from 'rxjs';
 import { flatten } from 'ramda';
-import { Provider, FilterObject, BlockchainEvent } from '../interfaces';
+import { Provider, FilterObject, Log } from '../interfaces';
+import { send, arrify } from '../utils';
+import { formatFilter, fromLog } from '../formatters';
+import { map as rxMap } from 'rxjs/operators';
 
-// TESTRPC WATCH DOES NOT WORK WITH ADDRESS LIST
+// TESTRPC & METAMASK WATCH DOES NOT WORK WITH ADDRESS LIST
 export const getEvents = curry((provider: Provider, options: FilterObject) => {
-  const addressList = Array.isArray(options.address)
-    ? options.address
-    : [options.address];
-
-  const eventLoader = getAddressEvents(provider);
-
-  const eventLoaders$ = addressList.map(address =>
-    eventLoader(
+  const eventLoaders$ = arrify(options.address).map(address => {
+    return getLogs(provider)(
       Object.assign({}, options, {
         address
       })
-    )
-  );
+    );
+  });
 
-  return forkJoin(eventLoaders$, flatten);
+  return forkJoin(eventLoaders$).pipe(rxMap(x => flatten<Log>(x)));
 });
 
-const getAddressEvents = curry(
-  (
-    provider: Provider,
-    options: FilterObject
-  ): Observable<BlockchainEvent[]> => {
-    return new Observable(observer => {
-      const allEvents = createWeb3(provider).eth.filter(options);
-      allEvents.get((err, events: BlockchainEvent[]) => {
-        if (err) {
-          observer.error(err);
-          return;
-        }
-        observer.next(events);
-        observer.complete();
-      });
-      return () => allEvents.stopWatching(_ => {});
-    });
-  }
-);
+export const getLogs = curry((provider: Provider, options: FilterObject) => {
+  return send(provider)({
+    method: 'eth_getLogs',
+    params: [formatFilter(options)]
+  }).pipe(rxMap(map(fromLog)));
+});

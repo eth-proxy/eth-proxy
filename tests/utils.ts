@@ -1,7 +1,7 @@
-import * as Web3 from 'web3';
-import { send } from 'rx-web3/utils';
+import { send } from '@eth-proxy/rx-web3/utils';
+import { httpProvider } from '@eth-proxy/rx-web3';
 
-const rpcCall = send(new Web3.providers.HttpProvider());
+const rpcCall = send(httpProvider());
 
 export function snapshot() {
   return rpcCall({
@@ -13,5 +13,12 @@ export function revert() {
   return rpcCall({
     method: 'evm_snapshot',
     params: ['0x01']
+  } as any).toPromise();
+}
+
+export function mine() {
+  return rpcCall({
+    method: 'evm_mine',
+    params: []
   } as any).toPromise();
 }

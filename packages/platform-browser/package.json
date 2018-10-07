@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/platform-browser",
-  "version": "0.5.1-y.21",
+  "version": "0.5.1-y.24",
   "description": "@eth-proxy/client utilities for browser",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

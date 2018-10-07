@@ -1,11 +1,25 @@
-import { curry } from 'ramda';
-import { createWeb3, bind } from '../utils';
-import { CurriedFunction2 } from 'ramda';
-import { bindNodeCallback, Observable } from 'rxjs';
-import { Provider } from '../interfaces';
+import { curry, isNil } from 'ramda';
+import { send } from '../utils';
+import { Observable } from 'rxjs';
+import { Provider, Transaction, RawTransaction } from '../interfaces';
+import { map, tap } from 'rxjs/operators';
+import { fromTransaction } from '../formatters';
 
-export const getTransaction = curry((provider: Provider, hash: string) => {
-  const web3 = createWeb3(provider);
-  const callback = bind(web3.eth.getTransaction, web3);
-  return bindNodeCallback(callback)(hash);
-});
+export const getTransactionByHash = curry(
+  (provider: Provider, txHash: string): Observable<Transaction> => {
+    return send(provider)({
+      method: 'eth_getTransactionByHash',
+      params: [txHash]
+    }).pipe(
+      tap(validateTransaction),
+      map(fromTransaction)
+    );
+  }
+);
+
+function validateTransaction(tx: RawTransaction) {
+  if (isNil(tx)) {
+    throw Error('Transaction is nil');
+  }
+  return tx;
+}

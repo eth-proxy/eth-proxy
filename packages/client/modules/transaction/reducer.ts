@@ -1,13 +1,13 @@
 import { createSelector } from 'reselect';
-import { find, map, omit, filter, equals, anyPass, isNil } from 'ramda';
+import { find, map, omit, filter } from 'ramda';
 import {
   Transaction,
-  TransactionResultCode,
   InitializedTransaction,
   TransactionWithHash
 } from './model';
 import * as actions from './actions';
 import { moduleId } from './constants';
+import { TransactionStatus } from '@eth-proxy/rx-web3';
 
 export type State = Transaction[];
 
@@ -52,11 +52,8 @@ export function reducer(state: State = [], action: actions.Types): State {
         if (t.status === 'init' || t.tx !== transactionHash) {
           return t;
         }
-        // IsNill is passing to support old implementaions, should be removed at some point.
-        const isConfirmed = anyPass([
-          isNil,
-          equals(TransactionResultCode.Success)
-        ])(receipt.status);
+
+        const isConfirmed = receipt.status === TransactionStatus.Success;
 
         return Object.assign({}, t, {
           status: isConfirmed ? 'confirmed' : 'failed',

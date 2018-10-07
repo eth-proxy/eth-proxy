@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { RxWeb3, Provider, Block } from '@eth-proxy/rx-web3';
-import { QueryModel, EventMetadata } from './modules/events';
+import { QueryModel } from './modules/events';
 import { ContractInfo } from './modules/schema';
 import { TransactionHandler, DeploymentInput } from './modules/transaction';
 import { EthProxyInterceptors } from './interceptors';
@@ -24,8 +24,7 @@ export class EthProxy<T extends {} = {}> {
   // rxweb3
   getBalance: RxWeb3['getBalance'];
   getReceipt: RxWeb3['getReceipt'];
-  getTransaction: RxWeb3['getTransaction'];
-  watchLatestBlock: RxWeb3['watchLatestBlock'];
+  getTransactionByHash: RxWeb3['getTransactionByHash'];
   sign: RxWeb3['sign'];
   stop: () => void;
 }

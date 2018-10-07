@@ -1,15 +1,19 @@
 import { curry } from 'ramda';
-import { createWeb3, bind } from '../utils';
-import { bindNodeCallback } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-import { CurriedFunction2 } from 'ramda';
-import { Observable } from 'rxjs';
-import { BigNumber } from 'bignumber.js';
-import { Provider } from '../interfaces';
+import { send, ethHexToBN } from '../utils';
+import { Provider, Tag } from '../interfaces';
 
-export const getBalance = curry((provider: Provider, account: string) => {
-  const web3 = createWeb3(provider);
-  const callback = bind(web3.eth.getBalance, web3);
+interface GetBalanceRequest {
+  account: string;
+  atBlock?: Tag;
+}
 
-  return bindNodeCallback(callback)(account);
-});
+export const getBalance = curry(
+  (provider: Provider, { account, atBlock = 'latest' }: GetBalanceRequest) => {
+    return send(provider)({
+      method: 'eth_getBalance',
+      params: [account, atBlock]
+    }).pipe(map(ethHexToBN));
+  }
+);

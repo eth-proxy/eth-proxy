@@ -11,7 +11,7 @@
     },
     "resolveJsonModule": true
   },
-  "exclude": ["node_modules", "**/*/node_modules"],
+  "exclude": ["node_modules", "**/*/node_modules", "**/*/dist"],
   "compileOnSave": false,
   "buildOnSave": false
 }
