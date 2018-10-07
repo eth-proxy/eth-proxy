@@ -1,5 +1,4 @@
-import { toHex } from '../utils';
-import { Observable } from 'rxjs';
+import { toHex, send } from '../utils';
 import { curry } from 'ramda';
 import { Provider } from '../interfaces';
 
@@ -9,18 +8,8 @@ interface SignArgs {
 }
 
 export const sign = curry((provider: Provider, { address, data }: SignArgs) => {
-  return new Observable<string>(obs => {
-    provider.sendAsync(
-      {
-        method: 'personal_sign',
-        params: [toHex(data), address]
-      },
-      function(err, response: any) {
-        if (err) {
-          return obs.error(err);
-        }
-        return obs.next(response.result);
-      }
-    );
+  return send(provider)({
+    method: 'personal_sign',
+    params: [toHex(data), address]
   });
 });

@@ -1,5 +1,5 @@
 import { getAccounts, getDefaultAccount } from './get-accounts';
-import sinon = require('sinon');
+import * as sinon from 'sinon';
 import { Provider } from '../interfaces';
 import { expect } from 'chai';
 

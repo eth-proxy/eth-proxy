@@ -13,6 +13,7 @@ export interface EthProxyOptions {
     dispatch: Function;
   };
   interceptors?: Partial<EthProxyInterceptors>;
-  watchBlocks?: boolean;
   watchAccountTimer?: Observable<any>;
+  watchBlocksTimer$?: Observable<any>;
+  watchLogsTimer$?: Observable<any>;
 }

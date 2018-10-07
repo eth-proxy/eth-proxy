@@ -1,5 +1,5 @@
 import { getNetwork } from './get-network';
-import sinon = require('sinon');
+import * as sinon from 'sinon';
 import { Provider } from '../interfaces';
 import { expect } from 'chai';
 

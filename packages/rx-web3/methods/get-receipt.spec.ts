@@ -1,5 +1,5 @@
 import { getReceipt } from './get-receipt';
-import sinon = require('sinon');
+import * as sinon from 'sinon';
 import {
   Provider,
   RawTransactionReceipt,

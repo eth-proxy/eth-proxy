@@ -13,6 +13,6 @@ export const getReceipt = curry(
     return send(provider)({
       method: 'eth_getTransactionReceipt',
       params: [txHash]
-    }).pipe(map(({ result }) => fromReceipt(result)));
+    }).pipe(map(fromReceipt));
   }
 );

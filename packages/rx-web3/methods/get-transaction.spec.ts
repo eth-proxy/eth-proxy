@@ -1,5 +1,5 @@
 import { getTransactionByHash } from './get-transaction';
-import sinon = require('sinon');
+import * as sinon from 'sinon';
 import {
   Provider,
   RawTransaction,

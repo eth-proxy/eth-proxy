@@ -1,5 +1,5 @@
 import { getBlockByNumber, getBlockByHash } from './get-block';
-import sinon = require('sinon');
+import * as sinon from 'sinon';
 import { Provider, Block, RawBlock } from '../interfaces';
 import { expect } from 'chai';
 import { BigNumber } from 'bignumber.js';

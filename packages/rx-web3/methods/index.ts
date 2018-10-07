@@ -7,5 +7,4 @@ export * from './get-network';
 export * from './get-receipt';
 export * from './get-transaction';
 export * from './sign';
-export * from './watch-events';
-export * from './watch-latest-block';
+export * from './watches';

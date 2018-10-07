@@ -29,7 +29,6 @@ const defaultOptions: Partial<EthProxyOptions> = {
   eventReader: getEvents,
   interceptors: {},
   store: undefined,
-  watchBlocks: false,
   watchAccountTimer: timer(0)
 };
 
@@ -77,20 +76,13 @@ export function createProxy<T extends {}>(
     store
   };
 
-  const {
-    getBalance,
-    getReceipt,
-    getTransactionByHash,
-    watchLatestBlock,
-    sign
-  } = rxWeb3;
+  const { getBalance, getReceipt, getTransactionByHash, sign } = rxWeb3;
 
   return {
     getBalance,
     getBlock: blockLoader,
     getReceipt,
     getTransactionByHash,
-    watchLatestBlock,
     sign,
 
     provider$: replayProvider$,

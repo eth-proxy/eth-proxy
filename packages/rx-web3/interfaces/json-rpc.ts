@@ -149,6 +149,45 @@ export interface EthGetLogsRequest extends BaseRpcRequest {
 }
 export type EthGetLogs = Rpc<EthGetLogsRequest, RawLog[]>;
 
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_newblockfilter
+ */
+export interface EthNewBlockFilterRequest extends BaseRpcRequest {
+  method: 'eth_newBlockFilter';
+  params: [];
+}
+export type EthNewBlockFilter = Rpc<EthNewBlockFilterRequest, Data>;
+
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getfilterchanges
+ */
+export interface EthGetFilterChangesRequest extends BaseRpcRequest {
+  method: 'eth_getFilterChanges';
+  params: [Data];
+}
+export type EthGetFilterChanges = Rpc<
+  EthGetFilterChangesRequest,
+  Data[] | RawLog[]
+>;
+
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_uninstallfilter
+ */
+export interface EthUninstallFilterRequest extends BaseRpcRequest {
+  method: 'eth_uninstallFilter';
+  params: [Data];
+}
+export type EthUninstallFilter = Rpc<EthUninstallFilterRequest, boolean>;
+
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_newfilter
+ */
+export interface EthNewFilterRequest extends BaseRpcRequest {
+  method: 'eth_newFilter';
+  params: [RawFilter];
+}
+export type EthNewFilter = Rpc<EthNewFilterRequest, boolean>;
+
 export type RpcMethod =
   | EthCall
   | EthSendTransaction
@@ -159,6 +198,10 @@ export type RpcMethod =
   | EthGetTransactionReceipt
   | EthGetTransactionByHash
   | EthGetLogs
+  | EthNewBlockFilter
+  | EthNewFilter
+  | EthGetFilterChanges
+  | EthUninstallFilter
   | PersonalSign
   | NetVersion;
 

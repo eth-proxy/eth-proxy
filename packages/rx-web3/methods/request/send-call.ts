@@ -31,10 +31,7 @@ export const sendCall = curry(
     return send(provider)({
       method: 'eth_call',
       params: [formatRequestInput(request), formatBlockNr(atBlock)]
-    }).pipe(
-      map(x => x.result),
-      map(resultParser)
-    );
+    }).pipe(map(resultParser));
   }
 );
 

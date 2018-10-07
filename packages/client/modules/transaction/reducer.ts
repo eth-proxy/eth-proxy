@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { find, map, omit, filter, equals, anyPass, isNil } from 'ramda';
+import { find, map, omit, filter } from 'ramda';
 import {
   Transaction,
   InitializedTransaction,
@@ -53,9 +53,7 @@ export function reducer(state: State = [], action: actions.Types): State {
           return t;
         }
 
-        const isConfirmed = anyPass([equals(TransactionStatus.Success)])(
-          receipt.status
-        );
+        const isConfirmed = receipt.status === TransactionStatus.Success;
 
         return Object.assign({}, t, {
           status: isConfirmed ? 'confirmed' : 'failed',

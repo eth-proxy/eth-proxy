@@ -11,7 +11,6 @@ export const getTransactionByHash = curry(
       method: 'eth_getTransactionByHash',
       params: [txHash]
     }).pipe(
-      map(x => x.result),
       tap(validateTransaction),
       map(fromTransaction)
     );

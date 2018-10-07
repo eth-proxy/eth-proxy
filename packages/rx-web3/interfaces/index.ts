@@ -27,7 +27,7 @@ export type SendRequest = <
   Type extends Request['method']
 >(
   payload: Request | Request[]
-) => Observable<Extract<RpcMethod, { type: Type }>['response']>;
+) => Observable<Extract<RpcMethod, { type: Type }>['response']['result']>;
 
 export interface FilterObject {
   fromBlock?: number | string;

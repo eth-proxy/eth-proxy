@@ -1,5 +1,5 @@
 import { getEvents } from './get-events';
-import sinon = require('sinon');
+import * as sinon from 'sinon';
 import { Provider, FilterObject, RawLog, Log } from '../interfaces';
 import { expect } from 'chai';
 

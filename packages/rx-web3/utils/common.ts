@@ -7,7 +7,7 @@ import {
   ConstructorDescription,
   SendRequest
 } from '../interfaces';
-import { bindNodeCallback } from 'rxjs';
+import { bindNodeCallback, Observable } from 'rxjs';
 import { pipe, isNil } from 'ramda';
 import { BigNumber } from 'bignumber.js';
 
@@ -34,7 +34,17 @@ export const caseInsensitiveCompare = (a: string, b: string) =>
   a && b && a.toLowerCase() === b.toLowerCase();
 
 export function send(provider: Provider): SendRequest {
-  return bindNodeCallback(bind(provider.sendAsync, provider));
+  return payload =>
+    new Observable(observer => {
+      provider.sendAsync(payload, (err, response) => {
+        if (err) {
+          observer.error(err);
+          return;
+        }
+        observer.next(response.result);
+        observer.complete();
+      });
+    });
 }
 
 export function extractNonTuple(args: any) {

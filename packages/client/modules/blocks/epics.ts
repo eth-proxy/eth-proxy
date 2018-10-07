@@ -36,11 +36,15 @@ export const loadBlock = (
 export const watchNewBlocks = (
   _: ActionsObservable<any>,
   __,
-  { watchLatestBlock, options }: EpicContext
+  { watchBlocks, getBlockByHash, options }: EpicContext
 ): Observable<actions.Types> => {
-  return of(options.watchBlocks).pipe(
+  return of(options.watchBlocksTimer$).pipe(
     filter(x => !!x),
-    mergeMap(watchLatestBlock),
+    mergeMap(timer$ => {
+      return watchBlocks({ timer$ }).pipe(
+        mergeMap(hash => getBlockByHash({ hash }))
+      );
+    }),
     map(actions.createLoadBlockSuccess)
   );
 };

@@ -2,7 +2,7 @@ import { catchError, takeUntil, mergeMap, filter, map } from 'rxjs/operators';
 import { ActionsObservable, StateObservable, ofType } from 'redux-observable';
 import * as actions from '../actions';
 
-import { Observable, merge } from 'rxjs';
+import { merge, EMPTY } from 'rxjs';
 import { EpicContext } from '../../../context';
 import * as fromSchema from '../../schema';
 
@@ -10,8 +10,11 @@ import * as fromSchema from '../../schema';
 export const watchEvents = (
   action$: ActionsObservable<actions.Types>,
   state$: StateObservable<any>,
-  { watchEvents }: EpicContext
+  { watchLogs, options }: EpicContext
 ) => {
+  if (!options.watchLogsTimer$) {
+    return EMPTY;
+  }
   const takeUnilRemoved = (id: string) =>
     takeUntil(
       action$.pipe(
@@ -25,19 +28,20 @@ export const watchEvents = (
     mergeMap(({ payload: { id, filters } }: actions.QueryEvents) => {
       return merge(
         ...filters.map(f =>
-          watchEvents({
-            fromBlock: f.toBlock,
-            address: f.address,
-            topics: f.topics
+          watchLogs({
+            filter: {
+              fromBlock: f.toBlock,
+              address: f.address,
+              topics: f.topics
+            },
+            timer$: options.watchLogsTimer$
           })
         )
       ).pipe(
         takeUnilRemoved(id),
         map(log => fromSchema.getLogDecoder(state$.value)([log])),
         map(actions.eventsLoaded),
-        catchError((err, err$) => {
-          return err$;
-        })
+        catchError((err, err$) => err$)
       );
     })
   );

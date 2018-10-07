@@ -12,5 +12,5 @@ export function getAccounts(provider: Provider) {
   return send(provider)({
     method: 'eth_accounts',
     params: []
-  }).pipe(map(({ result }) => result));
+  });
 }

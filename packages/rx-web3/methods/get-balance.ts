@@ -14,6 +14,6 @@ export const getBalance = curry(
     return send(provider)({
       method: 'eth_getBalance',
       params: [account, atBlock]
-    }).pipe(map(({ result }) => ethHexToBN(result)));
+    }).pipe(map(ethHexToBN));
   }
 );

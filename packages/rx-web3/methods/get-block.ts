@@ -45,7 +45,7 @@ export const getBlockByHash = curry(
   }
 );
 
-const resultMapper = map<RpcResponse<RawBlock>, Block>(({ result }) => {
+const resultMapper = map<RawBlock, Block>(result => {
   if (isNil(result)) {
     throw Error('Invalid block');
   }
