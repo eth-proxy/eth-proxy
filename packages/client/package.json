@@ -19,7 +19,7 @@
     "ramda": "^0.25.0",
     "redux": "^4.0.0",
     "redux-observable": "^1.0.0",
-    "reselect": "^3.0.1"
+    "reselect": "^4.0.0"
   },
   "peerDependencies": {
     "bignumber.js": "^6.0.0",
