@@ -8,7 +8,6 @@
 		"compile": "lerna exec -- npm run clean && lerna exec -- npm run compile",
 		"bootstrap": "lerna bootstrap",
 		"testrpc": "ganache-cli -l 8000000",
-		"pretest": "lerna exec -- npm run clean",
 		"test": "./node_modules/.bin/mocha --require tsconfig-paths/register --require ts-node/register  \"./packages/**/*.spec.ts\" --watch-extensions ts",
 		"gen:integration": "ts-node ./packages/codegen --o=\"tests/contracts.ts\" --cDir=\"tests/schemas\"",
 		"test:integration": "./node_modules/.bin/mocha --require tsconfig-paths/register --require ts-node/register  \"./tests/**/*.spec.ts\"",
