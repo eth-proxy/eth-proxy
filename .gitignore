@@ -2,3 +2,4 @@ node_modules
 .DS_STORE
 packages/**/dist
 lerna-debug.log
+.rpt2_cache

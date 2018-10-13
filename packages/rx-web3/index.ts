@@ -1,4 +1,3 @@
-/// <reference path="typings.d.ts" />
 import { Observable } from 'rxjs';
 import { mergeMap, first } from 'rxjs/operators';
 import { mapObjIndexed } from 'ramda';
