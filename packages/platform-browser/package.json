@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/platform-browser",
-  "version": "0.5.1-y.25",
+  "version": "0.5.1-y.27",
   "description": "@eth-proxy/client utilities for browser",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,8 +9,8 @@
   },
   "scripts": {
     "clean": "rimraf dist",
-    "compile": "tsc -p tsconfig.build.json",
-    "prepublish": "npm run clean && npm run compile",
+    "build": "tsc -p tsconfig.build.json",
+    "prepublish": "npm run build",
     "postpublish": "npm run clean"
   },
   "dependencies": {

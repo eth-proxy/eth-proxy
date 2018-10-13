@@ -1,16 +1,20 @@
 {
   "name": "@eth-proxy/rx-web3",
-  "version": "0.5.1-y.25",
+  "version": "0.5.1-y.27",
   "description": "Web3 using rxjs",
   "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "files": [
+    "dist"
+  ],
   "types": "dist/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "clean": "rimraf dist",
-    "compile": "tsc -p tsconfig.build.json",
-    "prepublish": "npm run clean && npm run compile",
+    "build": "rollup -c",
+    "prepublish": "npm run build",
     "postpublish": "npm run clean"
   },
   "dependencies": {
@@ -23,6 +27,7 @@
   },
   "devDependencies": {
     "rimraf": "^2.6.2",
+    "rollup": "0.66.4",
     "typescript": "~3.0.0"
   }
 }
