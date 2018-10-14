@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/event-loader",
-  "version": "0.5.1-y.29",
+  "version": "0.5.1-y.30",
   "description": "Enhancers for loading events",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -18,7 +18,7 @@
     "postpublish": "npm run clean"
   },
   "dependencies": {
-    "@eth-proxy/rx-web3": "^0.5.1-y.29",
+    "@eth-proxy/rx-web3": "^0.5.1-y.30",
     "ramda": "^0.25.0"
   },
   "peerDependencies": {
