@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/platform-browser",
-  "version": "0.5.1-y.31",
+  "version": "0.5.1-y.32",
   "description": "@eth-proxy/client utilities for browser",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -19,7 +19,7 @@
     "postpublish": "npm run clean"
   },
   "dependencies": {
-    "@eth-proxy/client": "^0.5.1-y.31",
+    "@eth-proxy/client": "^0.5.1-y.32",
     "ramda": "^0.25.0"
   },
   "peerDependencies": {

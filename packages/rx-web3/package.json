@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/rx-web3",
-  "version": "0.5.1-y.31",
+  "version": "0.5.1-y.32",
   "description": "Web3 using rxjs",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
