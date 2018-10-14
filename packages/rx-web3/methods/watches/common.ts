@@ -26,7 +26,7 @@ export const pollChanges = <T extends string | RawLog>(
 
       return timer$.pipe(
         exhaustMap(() => getChanges$),
-        finalize(() => cleanup$)
+        finalize(() => cleanup$.subscribe())
       );
     })
   );
