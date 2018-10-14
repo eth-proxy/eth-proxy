@@ -1,7 +1,7 @@
 import { ascend, sortWith, path, equals, identity } from 'ramda';
 import { createSelectorCreator, defaultMemoize } from 'reselect';
 import { DecodedEvent } from '../modules/events';
-import { EthProxyInterceptors } from '../model';
+import { EthProxyInterceptors } from '../interceptors';
 import { DataError, DataLoaded, Data, DataNotAsked } from '../interfaces';
 import { Observable } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';

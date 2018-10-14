@@ -1,11 +1,11 @@
 import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
-import { mergeMap, map, catchError } from 'rxjs/operators';
+import { mergeMap, map, catchError, first } from 'rxjs/operators';
 import { Observable, defer, of, combineLatest } from 'rxjs';
 import { pathOr } from 'ramda';
 
 import { ResolvedContractSchema, ContractSchema } from './model';
 import * as actions from './actions';
-import { getDetectedNetwork$ } from '../../store/rx-selectors';
+import * as fromNetwork from '../network';
 import { EpicContext } from '../../context';
 import { State } from '../../store';
 
@@ -36,7 +36,10 @@ export const loadContractSchema = (
     mergeMap(({ payload: { name } }) => {
       return combineLatest(
         defer(() => options.contractSchemaResolver({ name })),
-        state$.pipe(getDetectedNetwork$),
+        state$.pipe(
+          map(fromNetwork.getNetworkId),
+          first(x => !!x)
+        ),
         mapResolvedContractSchema
       ).pipe(
         map(actions.createLoadContractSchemaSuccess),

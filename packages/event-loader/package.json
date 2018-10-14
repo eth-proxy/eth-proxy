@@ -1,20 +1,24 @@
 {
   "name": "@eth-proxy/event-loader",
-  "version": "0.5.1-y.28",
+  "version": "0.5.1-y.30",
   "description": "Enhancers for loading events",
   "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "files": [
+    "dist"
+  ],
   "types": "dist/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "clean": "rimraf dist",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "rollup -c",
     "prepublish": "npm run build",
     "postpublish": "npm run clean"
   },
   "dependencies": {
-    "@eth-proxy/rx-web3": "^0.5.1-y.28",
+    "@eth-proxy/rx-web3": "^0.5.1-y.30",
     "ramda": "^0.25.0"
   },
   "peerDependencies": {
@@ -22,6 +26,7 @@
   },
   "devDependencies": {
     "rimraf": "^2.6.2",
+    "rollup": "0.66.4",
     "typescript": "~3.0.0"
   }
 }

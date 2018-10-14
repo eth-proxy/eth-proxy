@@ -1,16 +1,17 @@
-import { Observable, BehaviorSubject, timer } from 'rxjs';
+import { Observable, timer } from 'rxjs';
 import { shareReplay, take, mergeMap } from 'rxjs/operators';
 import { createEpicMiddleware } from 'redux-observable';
 import {
   getEvents,
   createRxWeb3,
   FilterObject,
-  Provider
+  Provider,
+  RxWeb3,
+  Block
 } from '@eth-proxy/rx-web3';
 
 import { createAppStore, getActiveAccount$, State, rootEpic } from './store';
 import { getDetectedNetwork$ } from './store';
-import { EthProxy, EthProxyOptions } from './model';
 import {
   sendCall,
   createSchemaLoader,
@@ -24,6 +25,33 @@ import {
   createEthProxyStarted
 } from './modules/lifecycle';
 import { EpicContext } from './context';
+import { QueryModel } from './modules/events';
+import { ContractInfo } from './modules/schema';
+import { TransactionHandler, DeploymentInput } from './modules/transaction';
+import { EthProxyOptions } from './options';
+import { CallHandler } from './modules/call';
+
+export class EthProxy<T extends {} = {}> {
+  ethCall: CallHandler<T>;
+  transaction: TransactionHandler<T>;
+  provider$: Observable<Provider>;
+  network$: Observable<string>;
+  defaultAccount$: Observable<string | undefined>;
+
+  query: (queryModel: QueryModel<T>) => Observable<any>;
+  loadContractSchema: (
+    name: Extract<keyof T, string>
+  ) => Observable<ContractInfo>;
+  deploy: (request: DeploymentInput<string, any>) => Observable<string>;
+  getBlock: (block: number) => Observable<Block>;
+
+  // rxweb3
+  getBalance: RxWeb3['getBalance'];
+  getReceipt: RxWeb3['getReceipt'];
+  getTransactionByHash: RxWeb3['getTransactionByHash'];
+  sign: RxWeb3['sign'];
+  stop: () => void;
+}
 
 const defaultOptions: Partial<EthProxyOptions> = {
   eventReader: getEvents,
@@ -99,8 +127,6 @@ export function createProxy<T extends {}>(
   };
 }
 
-export * from './model';
-export * from './utils';
 export {
   ethProxyIntegrationReducer,
   State as EthProxyState,
@@ -116,7 +142,20 @@ export {
   TransactionHandler,
   getSelectors as getEntitySelectors
 } from './entity';
+export {
+  TransactionWithHash,
+  Transaction,
+  TransactionConfirmation,
+  ObservableTransactionResult,
+  ConfirmedTransaction,
+  InitializedTransaction
+} from './modules/transaction';
 
+export { RequestFactory, ContractsAggregation } from './modules/request';
+export { EventMetadata, QueryModel } from './modules/events';
+export { EthProxyOptions } from './options';
+export { EthProxyInterceptors } from './interceptors';
+export { idFromEvent } from './utils';
 export function entity(arg) {
   return arg;
 }

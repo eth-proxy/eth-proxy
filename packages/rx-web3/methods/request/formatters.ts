@@ -8,7 +8,7 @@ import {
   FunctionParameter,
   AbiDefinition
 } from '../../interfaces';
-import * as Coder from 'web3/lib/solidity/coder';
+const Coder = require('web3/lib/solidity/coder');
 
 export function encodeArgs(
   methodAbi: FunctionDescription | ConstructorDescription,

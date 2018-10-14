@@ -186,7 +186,16 @@ export interface EthNewFilterRequest extends BaseRpcRequest {
   method: 'eth_newFilter';
   params: [RawFilter];
 }
-export type EthNewFilter = Rpc<EthNewFilterRequest, boolean>;
+export type EthNewFilter = Rpc<EthNewFilterRequest, Data>;
+
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getFilterLogs
+ */
+export interface EthGetFilterLogsRequest extends BaseRpcRequest {
+  method: 'eth_getFilterLogs';
+  params: [Data];
+}
+export type EthGetFilterLogs = Rpc<EthGetFilterLogsRequest, RawLog[]>;
 
 export type RpcMethod =
   | EthCall
@@ -202,6 +211,7 @@ export type RpcMethod =
   | EthNewFilter
   | EthGetFilterChanges
   | EthUninstallFilter
+  | EthGetFilterLogs
   | PersonalSign
   | NetVersion;
 

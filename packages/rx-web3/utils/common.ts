@@ -7,7 +7,7 @@ import {
   ConstructorDescription,
   SendRequest
 } from '../interfaces';
-import { bindNodeCallback, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { pipe, isNil } from 'ramda';
 import { BigNumber } from 'bignumber.js';
 

@@ -8,5 +8,5 @@
     "sourceMap": true
   },
   "include": ["**/*"],
-  "exclude": ["example/**/*"]
+  "exclude": ["example/**/*", "dist"]
 }

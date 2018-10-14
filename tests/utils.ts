@@ -12,7 +12,7 @@ export function snapshot() {
 export function revert() {
   return rpcCall({
     method: 'evm_snapshot',
-    params: ['0x01']
+    params: []
   } as any).toPromise();
 }
 
