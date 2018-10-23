@@ -10,7 +10,7 @@ interface GetBalanceRequest {
 }
 
 export const getBalance = curry(
-  (provider: Provider, { account, atBlock = 'latest' }: GetBalanceRequest) => {
+  ({ account, atBlock = 'latest' }: GetBalanceRequest, provider: Provider) => {
     return send(provider)({
       method: 'eth_getBalance',
       params: [account, atBlock]

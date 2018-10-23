@@ -3,18 +3,17 @@ import { combineLatest } from 'rxjs';
 import { getTxParams } from '../store';
 import { Context } from '../context';
 import { mergeMap, map } from 'rxjs/operators';
-import { isConstructorAbi } from '@eth-proxy/rx-web3';
+import {
+  isConstructorAbi,
+  getReceipt,
+  deployContract
+} from '@eth-proxy/rx-web3';
 import * as fromTx from '../modules/transaction';
 
 /* 
   Only sutiable for testrpc
 */
-export function deploy({
-  store,
-  deployContract,
-  contractLoader,
-  getReceipt
-}: Context) {
+export function deploy({ store, contractLoader, rpc }: Context) {
   return (input: fromTx.DeploymentInput<string, any>) => {
     return combineLatest(
       store.pipe(getTxParams(input)),
@@ -27,13 +26,15 @@ export function deploy({
             `Cannot deploy contract ${input.interface}, missing abi or bytecode`
           );
         }
-        return deployContract({
+        const deployment = deployContract({
           abi,
           args: input.payload,
           bytecode: schema.bytecode,
           txParams
-        }).pipe(
-          mergeMap(getReceipt),
+        });
+
+        return rpc(deployment).pipe(
+          mergeMap(address => rpc(getReceipt(address))),
           map(x => x.contractAddress)
         );
       })

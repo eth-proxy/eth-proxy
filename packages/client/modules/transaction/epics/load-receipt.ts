@@ -20,17 +20,18 @@ import * as actions from '../actions';
 import { EpicContext } from '../../../context';
 import { getLogDecoder } from '../../schema';
 import { State } from '../../../store';
+import { getReceipt } from '@eth-proxy/rx-web3';
 
 export const findReceiptEpic = (
   actions$: ActionsObservable<actions.TxGenerated>,
   state$: StateObservable<State>,
-  { getReceipt }: EpicContext
+  { rpc }: EpicContext
 ) => {
   return actions$.pipe(
     ofType(TX_GENERATED),
     withLatestFrom(state$),
     mergeMap(([{ payload: { tx } }, state]) =>
-      getReceipt(tx).pipe(
+      rpc(getReceipt(tx)).pipe(
         map(receipt => {
           const logs = getLogDecoder(state)(receipt.logs);
           return createLoadReceiptSuccess({

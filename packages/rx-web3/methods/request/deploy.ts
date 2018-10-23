@@ -14,11 +14,14 @@ export interface DeploymentInput<T = any> {
 }
 
 export const deployContract = curry(
-  (provider: Provider, input: DeploymentInput) => {
-    return sendTransactionWithData<string>(provider, {
-      ...input.txParams,
-      data: toDeploymentData(input)
-    });
+  (input: DeploymentInput, provider: Provider) => {
+    return sendTransactionWithData<string>(
+      {
+        ...input.txParams,
+        data: toDeploymentData(input)
+      },
+      provider
+    );
   }
 );
 

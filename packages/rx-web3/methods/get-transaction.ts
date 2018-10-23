@@ -6,7 +6,7 @@ import { map, tap } from 'rxjs/operators';
 import { fromTransaction } from '../formatters';
 
 export const getTransactionByHash = curry(
-  (provider: Provider, txHash: string): Observable<Transaction> => {
+  (txHash: string, provider: Provider): Observable<Transaction> => {
     return send(provider)({
       method: 'eth_getTransactionByHash',
       params: [txHash]

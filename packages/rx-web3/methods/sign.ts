@@ -7,7 +7,7 @@ interface SignArgs {
   address: string;
 }
 
-export const sign = curry((provider: Provider, { address, data }: SignArgs) => {
+export const sign = curry(({ address, data }: SignArgs, provider: Provider) => {
   return send(provider)({
     method: 'personal_sign',
     params: [toHex(data), address]

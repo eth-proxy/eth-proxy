@@ -10,7 +10,7 @@ export interface BlockWatchOptions {
 }
 
 export const watchBlocks = curry(
-  (provider: Provider, { timer$ = timer(0, 1000) }: BlockWatchOptions) => {
+  ({ timer$ = timer(0, 1000) }: BlockWatchOptions, provider: Provider) => {
     const createFilter$ = send(provider)({
       method: 'eth_newBlockFilter',
       params: []

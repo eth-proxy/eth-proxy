@@ -85,9 +85,12 @@ describe('latest block watch', () => {
         }
       };
 
-      const result$ = watchBlocks(provider, {
-        timer$: poll
-      });
+      const result$ = watchBlocks(
+        {
+          timer$: poll
+        },
+        provider
+      );
 
       m.expect(server$).toBeObservable(requests);
       m.expect(result$).toBeObservable(expected);

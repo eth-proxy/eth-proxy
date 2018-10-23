@@ -122,10 +122,13 @@ describe('logs watch', () => {
         }
       } as Provider;
 
-      const result$ = watchLogs(provider, {
-        timer$: poll,
-        filter: rawFilterArgs
-      });
+      const result$ = watchLogs(
+        {
+          timer$: poll,
+          filter: rawFilterArgs
+        },
+        provider
+      );
 
       m.expect(server$).toBeObservable(requests);
       m.expect(result$).toBeObservable(expected);

@@ -22,7 +22,7 @@ describe('Personal sign', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult(signedMessage)));
 
-    await sign(provider, { address, data }).toPromise();
+    await sign({ address, data }, provider).toPromise();
 
     expect(sendAsync.firstCall.args[0]).to.deep.eq({
       method: 'personal_sign',
@@ -34,7 +34,7 @@ describe('Personal sign', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult(signedMessage)));
 
-    expect(await sign(provider, { address, data }).toPromise()).to.deep.eq(
+    expect(await sign({ address, data }, provider).toPromise()).to.deep.eq(
       signedMessage
     );
   });

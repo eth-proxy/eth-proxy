@@ -44,10 +44,13 @@ function getRxWeb3Payload() {
       sendAsync: payload => res(payload)
     };
 
-    sendCall(provider, {
-      abi: symbolEthCall,
-      args: undefined,
-      txParams
-    }).subscribe();
+    sendCall(
+      {
+        abi: symbolEthCall,
+        args: undefined,
+        txParams
+      },
+      provider
+    ).subscribe();
   });
 }

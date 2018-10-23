@@ -22,7 +22,7 @@ describe('Get block by number', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult({})));
 
-    await getBlockByNumber(provider, { number: block100 }).toPromise();
+    await getBlockByNumber({ number: block100 }, provider).toPromise();
 
     expect(sendAsync.firstCall.args[0]).to.deep.eq({
       method: 'eth_getBlockByNumber',
@@ -34,7 +34,7 @@ describe('Get block by number', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult({})));
 
-    await getBlockByNumber(provider, { number: 'latest' }).toPromise();
+    await getBlockByNumber({ number: 'latest' }, provider).toPromise();
 
     expect(sendAsync.firstCall.args[0]).to.deep.eq({
       method: 'eth_getBlockByNumber',
@@ -46,7 +46,7 @@ describe('Get block by number', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult(null)));
 
-    getBlockByNumber(provider, { number: block100 }).subscribe({
+    getBlockByNumber({ number: block100 }, provider).subscribe({
       error: err => {
         expect(err.message).to.eq('Invalid block');
         done();
@@ -58,9 +58,12 @@ describe('Get block by number', () => {
   it('Return formatted block', async () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((_, cb) => cb(null, rpcResult(unformattedBlock)));
-    const result = await getBlockByNumber(provider, {
-      number: block100
-    }).toPromise();
+    const result = await getBlockByNumber(
+      {
+        number: block100
+      },
+      provider
+    ).toPromise();
 
     expect(result).to.deep.eq(formattedBlock);
   });
@@ -78,7 +81,7 @@ describe('Get block by Hash', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult({})));
 
-    await getBlockByHash(provider, { hash: block100Hex }).toPromise();
+    await getBlockByHash({ hash: block100Hex }, provider).toPromise();
 
     expect(sendAsync.firstCall.args[0]).to.deep.eq({
       method: 'eth_getBlockByHash',
@@ -90,7 +93,7 @@ describe('Get block by Hash', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult(null)));
 
-    getBlockByHash(provider, { hash: block100Hex }).subscribe({
+    getBlockByHash({ hash: block100Hex }, provider).subscribe({
       error: err => {
         expect(err.message).to.eq('Invalid block');
         done();
@@ -102,9 +105,12 @@ describe('Get block by Hash', () => {
   it('Return formatted block', async () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((_, cb) => cb(null, rpcResult(unformattedBlock)));
-    const result = await getBlockByHash(provider, {
-      hash: block100Hash
-    }).toPromise();
+    const result = await getBlockByHash(
+      {
+        hash: block100Hash
+      },
+      provider
+    ).toPromise();
 
     expect(result).to.deep.eq(formattedBlock);
   });

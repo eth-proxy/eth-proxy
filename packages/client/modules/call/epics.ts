@@ -5,19 +5,19 @@ import { of, Observable } from 'rxjs';
 import * as actions from './actions';
 import { EpicContext } from '../../context';
 import { ContractInfo } from '../schema';
-import { CallInput, getFunction } from '@eth-proxy/rx-web3';
+import { CallInput, getFunction, sendCall } from '@eth-proxy/rx-web3';
 
 export const processCallEpic = (
   actions$: ActionsObservable<actions.ProcessCall>,
   _,
-  { sendCall, contractLoader }: EpicContext
+  { contractLoader, rpc }: EpicContext
 ): Observable<actions.Types> => {
   return actions$.pipe(
     ofType(actions.PROCESS_CALL),
     mergeMap(({ payload }) => {
       return contractLoader(payload.contractName).pipe(
         mergeMap(contract =>
-          sendCall(toCallInput(payload, contract)).pipe(
+          rpc(sendCall(toCallInput(payload, contract))).pipe(
             map(actions.createProcessCallSuccess(payload.id)),
             catchError(err => {
               return of(

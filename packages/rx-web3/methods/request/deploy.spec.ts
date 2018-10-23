@@ -57,11 +57,14 @@ function getRxWeb3Payload() {
       sendAsync: payload => res(payload)
     };
 
-    deployContract(provider, {
-      abi: abi.find(isConstructorAbi),
-      bytecode,
-      txParams,
-      args: myToken
-    }).subscribe();
+    deployContract(
+      {
+        abi: abi.find(isConstructorAbi),
+        bytecode,
+        txParams,
+        args: myToken
+      },
+      provider
+    ).subscribe();
   });
 }

@@ -49,13 +49,16 @@ function getRxWeb3Payload() {
       sendAsync: payload => res(payload)
     };
 
-    sendTransaction(provider, {
-      abi: transferAbi,
-      args: {
-        _to: transferTo,
-        _value: value
+    sendTransaction(
+      {
+        abi: transferAbi,
+        args: {
+          _to: transferTo,
+          _value: value
+        },
+        txParams
       },
-      txParams
-    }).subscribe();
+      provider
+    ).subscribe();
   });
 }

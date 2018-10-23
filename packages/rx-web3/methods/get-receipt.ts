@@ -7,8 +7,8 @@ import { fromReceipt } from '../formatters';
 
 export const getReceipt = curry(
   (
-    provider: Provider,
-    txHash: string
+    txHash: string,
+    provider: Provider
   ): Observable<TransactionReceipt | null> => {
     return send(provider)({
       method: 'eth_getTransactionReceipt',

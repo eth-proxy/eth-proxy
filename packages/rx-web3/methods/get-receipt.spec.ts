@@ -25,7 +25,7 @@ describe('Get receipt', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult({})));
 
-    await getReceipt(provider, txHash).toPromise();
+    await getReceipt(txHash, provider).toPromise();
 
     expect(sendAsync.firstCall.args[0]).to.deep.eq({
       method: 'eth_getTransactionReceipt',
@@ -37,14 +37,14 @@ describe('Get receipt', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult(null)));
 
-    const result = await getReceipt(provider, txHash).toPromise();
+    const result = await getReceipt(txHash, provider).toPromise();
     expect(result).to.be.null;
   });
 
   it('Return formatted receipt', async () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((_, cb) => cb(null, rpcResult(unformattedReceipt)));
-    const result = await getReceipt(provider, txHash).toPromise();
+    const result = await getReceipt(txHash, provider).toPromise();
 
     expect(result).to.deep.eq(formattedReceipt);
   });

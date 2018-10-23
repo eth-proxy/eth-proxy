@@ -9,7 +9,7 @@ const rangeSize = 10000;
 export function createBlockchainReader(provider: Provider): Reader {
   return (filter: EventFilter, work$: Observable<[number, number]>) => {
     const web3Reader = (f: EventFilter) =>
-      getEvents(provider, f).pipe(
+      getEvents(f, provider).pipe(
         map(events => ({
           range: [f.fromBlock, f.toBlock],
           result: events

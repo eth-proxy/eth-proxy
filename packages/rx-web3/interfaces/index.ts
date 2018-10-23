@@ -6,7 +6,7 @@ export type ProviderBound<T> = T extends (
   provider: Provider
 ) => Observable<infer R>
   ? () => Observable<R>
-  : T extends CurriedFunction2<Provider, infer A1, Observable<infer R>>
+  : T extends CurriedFunction2<infer A1, Provider, Observable<infer R>>
     ? (arg: A1) => Observable<R>
     : never;
 
@@ -46,6 +46,8 @@ export interface RequestInputParams {
   value?: NumberLike;
   data?: string;
 }
+
+export type RpcCall<T = any> = (provider: Provider) => Observable<T>;
 
 export * from './abi';
 export * from './entities';

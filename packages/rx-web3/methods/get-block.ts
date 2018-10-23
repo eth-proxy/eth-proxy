@@ -15,8 +15,8 @@ interface GetBlockByNumberArgs {
  */
 export const getBlockByNumber = curry(
   (
-    provider: Provider,
-    { number, fullTransactions = false }: GetBlockByNumberArgs
+    { number, fullTransactions = false }: GetBlockByNumberArgs,
+    provider: Provider
   ): Observable<Block> => {
     return send(provider)({
       method: 'eth_getBlockByNumber',
@@ -35,8 +35,8 @@ interface GetBlockByHashArgs {
  */
 export const getBlockByHash = curry(
   (
-    provider: Provider,
-    { hash, fullTransactions = false }: GetBlockByHashArgs
+    { hash, fullTransactions = false }: GetBlockByHashArgs,
+    provider: Provider
   ): Observable<Block> => {
     return send(provider)({
       method: 'eth_getBlockByHash',

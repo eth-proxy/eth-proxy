@@ -5,12 +5,13 @@ import * as actions from '../actions';
 import { merge, EMPTY } from 'rxjs';
 import { EpicContext } from '../../../context';
 import * as fromSchema from '../../schema';
+import { watchLogs } from '@eth-proxy/rx-web3';
 
 // DONT WATCH SAME CONTRACTS MORE THEN ONCE
 export const watchEvents = (
   action$: ActionsObservable<actions.Types>,
   state$: StateObservable<any>,
-  { watchLogs, options }: EpicContext
+  { rpc, options }: EpicContext
 ) => {
   if (!options.watchLogsTimer$) {
     return EMPTY;
@@ -28,14 +29,16 @@ export const watchEvents = (
     mergeMap(({ payload: { id, filters } }: actions.QueryEvents) => {
       return merge(
         ...filters.map(f =>
-          watchLogs({
-            filter: {
-              fromBlock: f.toBlock,
-              address: f.address,
-              topics: f.topics
-            },
-            timer$: options.watchLogsTimer$
-          })
+          rpc(
+            watchLogs({
+              filter: {
+                fromBlock: f.toBlock,
+                address: f.address,
+                topics: f.topics
+              },
+              timer$: options.watchLogsTimer$
+            })
+          )
         )
       ).pipe(
         takeUnilRemoved(id),

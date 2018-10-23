@@ -12,16 +12,19 @@ export interface WatchLogsOptions {
 }
 // TESTRPC & METAMASK WATCH DOES NOT WORK WITH ADDRESS LIST
 export const watchLogs = curry(
-  (provider: Provider, options: WatchLogsOptions) => {
+  (options: WatchLogsOptions, provider: Provider) => {
     const eventLoaders$ = arrify(options.filter.address || [null]).map(
       address => {
-        return _watchLogs(provider)({
-          ...options,
-          filter: {
-            ...options.filter,
-            address
-          }
-        });
+        return _watchLogs(
+          {
+            ...options,
+            filter: {
+              ...options.filter,
+              address
+            }
+          },
+          provider
+        );
       }
     );
 
@@ -31,8 +34,8 @@ export const watchLogs = curry(
 
 export const _watchLogs = curry(
   (
-    provider: Provider,
-    { filter, timer$ = timer(0, 1000) }: WatchLogsOptions
+    { filter, timer$ = timer(0, 1000) }: WatchLogsOptions,
+    provider: Provider
   ) => {
     const createFilter$ = send(provider)({
       method: 'eth_newFilter',

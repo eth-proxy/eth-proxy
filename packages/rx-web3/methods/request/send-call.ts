@@ -20,7 +20,7 @@ export interface CallInput<T = any> {
 }
 
 export const sendCall = curry(
-  (provider: Provider, input: CallInput): Observable<any> => {
+  (input: CallInput, provider: Provider): Observable<any> => {
     const { atBlock = 'latest' } = input;
     const request = {
       ...input.txParams,

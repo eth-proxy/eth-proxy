@@ -23,13 +23,16 @@ export interface TransactionInput<T = any> {
 }
 
 export const sendTransaction = curry(
-  (provider: Provider, input: TransactionInput): Observable<string> => {
+  (input: TransactionInput, provider: Provider): Observable<string> => {
     validateInput(input);
 
-    return sendTransactionWithData(provider, {
-      ...input.txParams,
-      data: toTxData(input)
-    });
+    return sendTransactionWithData(
+      {
+        ...input.txParams,
+        data: toTxData(input)
+      },
+      provider
+    );
   }
 );
 
@@ -38,8 +41,8 @@ function toTxData({ abi, args }: TransactionInput) {
 }
 
 export function sendTransactionWithData<T>(
-  provider: Provider,
-  payload: TransactionInputParams
+  payload: TransactionInputParams,
+  provider: Provider
 ) {
   return send(provider)({
     method: 'eth_sendTransaction',

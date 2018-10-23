@@ -7,19 +7,20 @@ import { formatFilter, fromLog } from '../formatters';
 import { map as rxMap } from 'rxjs/operators';
 
 // TESTRPC & METAMASK WATCH DOES NOT WORK WITH ADDRESS LIST
-export const getEvents = curry((provider: Provider, options: FilterObject) => {
+export const getEvents = curry((options: FilterObject, provider: Provider) => {
   const eventLoaders$ = arrify(options.address).map(address => {
-    return getLogs(provider)(
+    return getLogs(
       Object.assign({}, options, {
         address
-      })
+      }),
+      provider
     );
   });
 
   return forkJoin(eventLoaders$).pipe(rxMap(x => flatten<Log>(x)));
 });
 
-export const getLogs = curry((provider: Provider, options: FilterObject) => {
+export const getLogs = curry((options: FilterObject, provider: Provider) => {
   return send(provider)({
     method: 'eth_getLogs',
     params: [formatFilter(options)]

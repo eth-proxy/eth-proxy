@@ -26,7 +26,7 @@ describe('Get transaction', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult(txHash)));
 
-    await getTransactionByHash(provider, txHash).toPromise();
+    await getTransactionByHash(txHash, provider).toPromise();
 
     expect(sendAsync.firstCall.args[0]).to.deep.eq({
       method: 'eth_getTransactionByHash',
@@ -38,7 +38,7 @@ describe('Get transaction', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult(null)));
 
-    getTransactionByHash(provider, txHash).subscribe({
+    getTransactionByHash(txHash, provider).subscribe({
       error: err => {
         expect(err.message).to.eq('Transaction is nil');
         done();
@@ -50,7 +50,7 @@ describe('Get transaction', () => {
   it('Return formatted transaction', async () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((_, cb) => cb(null, rpcResult(unformattedTx)));
-    const result = await getTransactionByHash(provider, txHash).toPromise();
+    const result = await getTransactionByHash(txHash, provider).toPromise();
 
     expect(result).to.deep.eq(formattedTx);
   });
