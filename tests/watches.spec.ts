@@ -23,7 +23,7 @@ describe('ERC20', () => {
   beforeEach(() => snapshot());
   afterEach(() => revert());
 
-  it.only('Watches latest block', done => {
+  it('Watches latest block', done => {
     const watch$ = watchBlocks(httpProvider(), {
       timer$: timer(0, 50)
     }).pipe(
