@@ -2,12 +2,11 @@ import { timer, of } from 'rxjs';
 import {
   mergeMap,
   first,
-  distinctUntilKeyChanged,
   takeUntil,
   bufferCount,
-  tap,
   mergeMapTo,
-  delay
+  delay,
+  distinctUntilChanged
 } from 'rxjs/operators';
 import { snapshot, revert, mine } from './utils';
 import {
@@ -24,14 +23,15 @@ describe('ERC20', () => {
   beforeEach(() => snapshot());
   afterEach(() => revert());
 
-  it('Watches latest block', done => {
+  it.only('Watches latest block', done => {
     const watch$ = watchBlocks(httpProvider(), {
       timer$: timer(0, 50)
     }).pipe(
-      distinctUntilKeyChanged('number'),
       bufferCount(5),
+      distinctUntilChanged(),
       first()
     );
+
     const miner$ = timer(0, 100).pipe(
       mergeMap(mine),
       takeUntil(watch$)

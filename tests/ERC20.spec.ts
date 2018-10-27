@@ -6,7 +6,7 @@ import { snapshot, revert } from './utils';
 import { Contracts } from './contracts';
 import { httpProvider } from '@eth-proxy/rx-web3';
 
-const proxy = createProxy<Contracts>(of(httpProvider()), {
+const proxy = createProxy<Contracts>(httpProvider(), {
   contractSchemaResolver: ({ name }) => import(`./schemas/${name}.json`)
 });
 
