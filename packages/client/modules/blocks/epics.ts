@@ -4,13 +4,18 @@ import { Observable, of, EMPTY } from 'rxjs';
 
 import { EpicContext } from '../../context';
 import * as actions from './actions';
+import {
+  watchBlocks,
+  getBlockByHash,
+  getBlockByNumber
+} from '@eth-proxy/rx-web3';
 
 export const loadLatestBlock = (
   _: ActionsObservable<any>,
   __,
-  { getBlockByNumber }: EpicContext
+  { provider }: EpicContext
 ): Observable<actions.Types> => {
-  return getBlockByNumber({ number: 'latest' }).pipe(
+  return getBlockByNumber(provider, { number: 'latest' }).pipe(
     retry(10),
     map(actions.createLoadBlockSuccess),
     catchError(err => of(actions.createUpdateLatestBlockFailed(err)))
@@ -20,12 +25,12 @@ export const loadLatestBlock = (
 export const loadBlock = (
   actions$: ActionsObservable<any>,
   __,
-  { getBlockByNumber }: EpicContext
+  { provider }: EpicContext
 ): Observable<actions.Types> => {
   return actions$.pipe(
     ofType<actions.LoadBlock>(actions.LOAD_BLOCK),
     mergeMap(({ payload: number }) => {
-      return getBlockByNumber({ number }).pipe(
+      return getBlockByNumber(provider, { number }).pipe(
         retry(10),
         map(actions.createLoadBlockSuccess),
         catchError(err => of(actions.createLoadBlockFailed(number, err)))
@@ -37,14 +42,14 @@ export const loadBlock = (
 export const watchNewBlocks = (
   _: ActionsObservable<any>,
   __,
-  { watchBlocks, getBlockByHash, options }: EpicContext
+  { provider, options }: EpicContext
 ): Observable<actions.Types> => {
   return of(options.watchBlocksTimer$).pipe(
     filter(x => !!x),
     mergeMap(timer$ => {
-      return watchBlocks({ timer$ }).pipe(
+      return watchBlocks(provider, { timer$ }).pipe(
         mergeMap(hash => {
-          return getBlockByHash({ hash }).pipe(
+          return getBlockByHash(provider, { hash }).pipe(
             retry(10),
             catchError(() => EMPTY)
           );

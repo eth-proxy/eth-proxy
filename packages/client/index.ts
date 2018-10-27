@@ -1,13 +1,13 @@
 import { Observable, timer } from 'rxjs';
-import { shareReplay, take, mergeMap } from 'rxjs/operators';
 import { createEpicMiddleware } from 'redux-observable';
 import {
   getEvents,
-  createRxWeb3,
   FilterObject,
   Provider,
-  RxWeb3,
-  Block
+  Block,
+  SendAsync,
+  send,
+  SendRequest
 } from '@eth-proxy/rx-web3';
 
 import { createAppStore, getActiveAccount$, State, rootEpic } from './store';
@@ -31,10 +31,9 @@ import { TransactionHandler, DeploymentInput } from './modules/transaction';
 import { EthProxyOptions } from './options';
 import { CallHandler } from './modules/call';
 
-export class EthProxy<T extends {} = {}> {
+export class EthProxy<T extends {} = {}> implements Provider {
   ethCall: CallHandler<T>;
   transaction: TransactionHandler<T>;
-  provider$: Observable<Provider>;
   network$: Observable<string>;
   defaultAccount$: Observable<string | undefined>;
 
@@ -45,11 +44,8 @@ export class EthProxy<T extends {} = {}> {
   deploy: (request: DeploymentInput<string, any>) => Observable<string>;
   getBlock: (block: number) => Observable<Block>;
 
-  // rxweb3
-  getBalance: RxWeb3['getBalance'];
-  getReceipt: RxWeb3['getReceipt'];
-  getTransactionByHash: RxWeb3['getTransactionByHash'];
-  sign: RxWeb3['sign'];
+  rpc: SendRequest;
+  sendAsync: SendAsync;
   stop: () => void;
 }
 
@@ -64,32 +60,24 @@ let globalId = 0;
 const genId = () => (globalId++).toString();
 
 export function createProxy<T extends {}>(
-  provider$: Observable<Provider>,
+  provider: Provider,
   userOptions: EthProxyOptions
 ): EthProxy<T> {
   const options = { ...defaultOptions, ...userOptions };
-  const replayProvider$ = provider$.pipe(
-    shareReplay(1),
-    take(1)
-  );
-
-  const rxWeb3 = createRxWeb3(provider$);
 
   const getEvents = (filter: FilterObject) =>
-    replayProvider$.pipe(
-      mergeMap(provider => options.eventReader(provider, filter))
-    );
+    options.eventReader(provider, filter);
 
   const contractLoader = (name: string) => createSchemaLoader(store)(name);
   const blockLoader = (number: number) => createBlockLoader(store)(number);
 
   const context = {
-    ...rxWeb3,
     getEvents,
     options,
     contractLoader,
     blockLoader,
-    genId
+    genId,
+    provider
   };
 
   const epicMiddleware = createEpicMiddleware<any, any, State, EpicContext>({
@@ -104,16 +92,13 @@ export function createProxy<T extends {}>(
     store
   };
 
-  const { getBalance, getReceipt, getTransactionByHash, sign } = rxWeb3;
+  const sendAsync = (payload, cb) => provider.sendAsync(payload, cb);
+  const rpc = send(provider);
 
   return {
-    getBalance,
+    ...provider,
     getBlock: blockLoader,
-    getReceipt,
-    getTransactionByHash,
-    sign,
 
-    provider$: replayProvider$,
     query: query(deps),
 
     network$: store.pipe(getDetectedNetwork$),
@@ -123,6 +108,10 @@ export function createProxy<T extends {}>(
     transaction: sendTransaction(deps) as any,
     ethCall: sendCall(deps) as any,
     deploy: deploy(deps),
+
+    rpc,
+    sendAsync,
+
     stop: () => store.dispatch(createEthProxyStopped())
   };
 }

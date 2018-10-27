@@ -26,11 +26,12 @@ import {
 } from '../cache';
 import * as fromSchema from '../../schema';
 import { State } from '../../../store';
+import { getEvents } from '@eth-proxy/rx-web3';
 
 export const queryEventsEpic = (
   action$: ActionsObservable<QueryEvents>,
   state$: StateObservable<State>,
-  { getEvents }: EpicContext
+  { provider }: EpicContext
 ) => {
   const cache = createEventCache();
 
@@ -41,7 +42,7 @@ export const queryEventsEpic = (
         mergeMap(f => getFiltersToLoad(cache.getState(), f)),
         tap(cache.request),
         mergeMap(f =>
-          getEvents(f).pipe(
+          getEvents(provider, f).pipe(
             tap({
               next: cache.result(f),
               error: cache.error(f)

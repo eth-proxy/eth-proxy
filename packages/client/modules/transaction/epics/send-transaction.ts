@@ -4,19 +4,23 @@ import { of, Observable } from 'rxjs';
 import * as actions from '../actions';
 import { ContractInfo } from '../../schema';
 import { EpicContext } from '../../../context';
-import { TransactionInput, getFunction } from '@eth-proxy/rx-web3';
+import {
+  TransactionInput,
+  getFunction,
+  sendTransaction
+} from '@eth-proxy/rx-web3';
 
 export const processTransactionEpic = (
   actions$: ActionsObservable<actions.ProcessTransaction>,
   _,
-  { sendTransaction, contractLoader }: EpicContext
+  { provider, contractLoader }: EpicContext
 ) => {
   return actions$.pipe(
     ofType(actions.PROCESS_TRANSACTION),
     mergeMap(({ payload }) => {
       return contractLoader(payload.contractName).pipe(
         mergeMap(contract =>
-          sendTransaction(toTxInput(payload, contract)).pipe(
+          sendTransaction(provider, toTxInput(payload, contract)).pipe(
             map(actions.createTxGenerated(payload.initId)),
             catchError(err => {
               return of(

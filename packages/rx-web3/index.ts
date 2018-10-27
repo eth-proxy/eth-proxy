@@ -4,11 +4,22 @@ import { mapObjIndexed } from 'ramda';
 import * as allMethods from './methods';
 import { ProviderBound, Provider } from './interfaces';
 
-export type RxWeb3 = {
-  [P in keyof typeof allMethods]: ProviderBound<typeof allMethods[P]>
+type Methods = {
+  [name: string]: (provider: Provider, ...args: any[]) => Observable<any>;
 };
 
-export function createRxWeb3(provider: Observable<Provider>): RxWeb3 {
+export type RpcBundle<T extends Methods> = {
+  [P in keyof T]: ProviderBound<T[P]>
+};
+
+export function rpc(provider: Observable<Provider>) {
+  return createRpc(provider, allMethods);
+}
+
+export function createRpc<T extends Methods>(
+  provider: Observable<Provider>,
+  methods: T
+): RpcBundle<T> {
   return mapObjIndexed((method: any) => {
     return (...args: any[]) => {
       return provider.pipe(
@@ -16,7 +27,7 @@ export function createRxWeb3(provider: Observable<Provider>): RxWeb3 {
         mergeMap(provider => method(provider, ...args))
       );
     };
-  }, allMethods) as any;
+  }, methods) as any;
 }
 
 export * from './methods';
@@ -30,7 +41,8 @@ export {
   getFunction,
   isEventAbi,
   isConstructorAbi,
-  arrify
+  arrify,
+  send
 } from './utils';
 export { TransactionInput } from './methods/request/send-transaction';
 export { CallInput } from './methods/request/send-call';

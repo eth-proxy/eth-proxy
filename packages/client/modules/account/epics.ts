@@ -1,17 +1,18 @@
-import { Observable, timer } from 'rxjs';
-import { mergeMap, distinctUntilChanged, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { distinctUntilChanged, map, mergeMapTo } from 'rxjs/operators';
 import { ActionsObservable } from 'redux-observable';
 
 import * as actions from './actions';
 import { EpicContext } from '../../context';
+import { getDefaultAccount } from '@eth-proxy/rx-web3';
 
 export const watchAccount = (
   _: ActionsObservable<actions.Types>,
   __,
-  { getDefaultAccount, options }: EpicContext
+  { provider, options }: EpicContext
 ): Observable<any> => {
   return options.watchAccountTimer.pipe(
-    mergeMap(getDefaultAccount),
+    mergeMapTo(getDefaultAccount(provider)),
     distinctUntilChanged(),
     map(actions.createSetActiveAccount)
   );

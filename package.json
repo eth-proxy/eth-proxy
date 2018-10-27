@@ -1,5 +1,5 @@
 {
-	"name": "@eth-proxy/platform",
+	"name": "@eth-proxy/eth-proxy",
 	"version": "0.0.0",
 	"description": "monorepo for eth-proxy development",
 	"private": true,
