@@ -1,6 +1,6 @@
 import { ActionsObservable, ofType } from 'redux-observable';
 import { mergeMap, map, catchError } from 'rxjs/operators';
-import { of, Observable } from 'rxjs';
+import { of } from 'rxjs';
 import * as actions from '../actions';
 import { ContractInfo } from '../../schema';
 import { EpicContext } from '../../../context';
@@ -16,18 +16,17 @@ export const processTransactionEpic = (
     mergeMap(({ payload }) => {
       return contractLoader(payload.contractName).pipe(
         mergeMap(contract =>
-          sendTransaction(provider, toTxInput(payload, contract)).pipe(
-            map(actions.createTxGenerated(payload.initId)),
-            catchError(err => {
-              return of(
-                actions.createProcessTransactionFailed({
-                  initId: payload.initId,
-                  err
-                })
-              );
+          sendTransaction(provider, toTxInput(payload, contract))
+        ),
+        map(actions.createTxGenerated(payload.initId)),
+        catchError(err => {
+          return of(
+            actions.createProcessTransactionFailed({
+              initId: payload.initId,
+              err
             })
-          )
-        )
+          );
+        })
       );
     })
   );

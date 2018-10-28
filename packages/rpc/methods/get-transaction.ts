@@ -1,19 +1,19 @@
 import { curry, isNil } from 'ramda';
 import { send } from '../utils';
-import { Observable } from 'rxjs';
-import { Provider, Transaction, RawTransaction } from '../interfaces';
-import { map, tap } from 'rxjs/operators';
+import { Provider, RawTransaction } from '../interfaces';
 import { fromTransaction } from '../formatters';
 
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash
+ */
 export const getTransactionByHash = curry(
-  (provider: Provider, txHash: string): Observable<Transaction> => {
+  (provider: Provider, txHash: string) => {
     return send(provider)({
       method: 'eth_getTransactionByHash',
       params: [txHash]
-    }).pipe(
-      tap(validateTransaction),
-      map(fromTransaction)
-    );
+    })
+      .then(validateTransaction)
+      .then(fromTransaction);
   }
 );
 

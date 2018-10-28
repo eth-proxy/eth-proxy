@@ -1,10 +1,8 @@
 import { curry, map } from 'ramda';
-import { forkJoin } from 'rxjs';
 import { flatten } from 'ramda';
 import { Provider, FilterObject, Log } from '../interfaces';
 import { send, arrify } from '../utils';
 import { formatFilter, fromLog } from '../formatters';
-import { map as rxMap } from 'rxjs/operators';
 
 // TESTRPC & METAMASK WATCH DOES NOT WORK WITH ADDRESS LIST
 export const getEvents = curry((provider: Provider, options: FilterObject) => {
@@ -16,12 +14,15 @@ export const getEvents = curry((provider: Provider, options: FilterObject) => {
     );
   });
 
-  return forkJoin(eventLoaders$).pipe(rxMap(x => flatten<Log>(x)));
+  return Promise.all(eventLoaders$).then(x => flatten<Log>(x));
 });
 
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs
+ */
 export const getLogs = curry((provider: Provider, options: FilterObject) => {
   return send(provider)({
     method: 'eth_getLogs',
     params: [formatFilter(options)]
-  }).pipe(rxMap(map(fromLog)));
+  }).then(map(fromLog));
 });

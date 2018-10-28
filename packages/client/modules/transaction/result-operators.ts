@@ -27,7 +27,7 @@ export function once(type: PendingStatus, fn: (arg: any) => any) {
 }
 
 export function on(
-  type: 'confirmation',
+  _: 'confirmation',
   fn: (confirmation: TransactionConfirmation<any>) => any
 ) {
   return (obs: Observable<any>) =>

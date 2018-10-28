@@ -5,8 +5,7 @@ import {
   RequestInputParams,
   FunctionDescription,
   ConstructorDescription,
-  FunctionParameter,
-  AbiDefinition
+  FunctionParameter
 } from '../../interfaces';
 const Coder = require('web3/lib/solidity/coder');
 

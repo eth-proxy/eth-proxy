@@ -7,4 +7,3 @@ export * from './get-network';
 export * from './get-receipt';
 export * from './get-transaction';
 export * from './sign';
-export * from './watches';

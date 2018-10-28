@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware, Middleware, AnyAction } from 'redux';
+import { createStore, applyMiddleware, Middleware } from 'redux';
 
 import { State } from './model';
 import { reducer } from './root-reducer';

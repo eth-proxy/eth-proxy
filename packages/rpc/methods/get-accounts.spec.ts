@@ -17,7 +17,7 @@ describe('Accounts', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult([])));
 
-    await getAccounts(provider).toPromise();
+    await getAccounts(provider);
 
     expect(sendAsync.firstCall.args[0]).to.deep.eq({
       method: 'eth_accounts',
@@ -33,7 +33,7 @@ describe('Accounts', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult(accounts)));
 
-    expect(await getAccounts(provider).toPromise()).to.deep.eq(accounts);
+    expect(await getAccounts(provider)).to.deep.eq(accounts);
   });
 });
 
@@ -54,9 +54,7 @@ describe('Default account', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult(accounts)));
 
-    expect(await getDefaultAccount(provider).toPromise()).to.deep.eq(
-      firstAccount
-    );
+    expect(await getDefaultAccount(provider)).to.deep.eq(firstAccount);
   });
 
   it('When no accounts, returns null', async () => {
@@ -64,8 +62,8 @@ describe('Default account', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult(accounts)));
 
-    await getAccounts(provider).toPromise();
+    await getAccounts(provider);
 
-    expect(await getDefaultAccount(provider).toPromise()).to.be.null;
+    expect(await getDefaultAccount(provider)).to.be.null;
   });
 });

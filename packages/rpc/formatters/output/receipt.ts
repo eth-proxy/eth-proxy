@@ -1,8 +1,6 @@
 import {
   TransactionReceipt,
   RawTransactionReceipt,
-  RawLog,
-  Log,
   TransactionStatus
 } from '../../interfaces';
 import { evolve, when, pipe, map } from 'ramda';

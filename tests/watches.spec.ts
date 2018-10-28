@@ -63,7 +63,7 @@ describe('ERC20', () => {
           value: '100',
           data: '0',
           gas: '101000'
-        }).pipe(mergeMap(x => getReceipt(httpProvider(), x)))
+        }).then(getReceipt(httpProvider()))
       )
     );
 

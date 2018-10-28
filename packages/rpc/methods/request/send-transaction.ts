@@ -1,6 +1,5 @@
 import { curry } from 'ramda';
 import { getMethodID, send } from '../../utils';
-import { Observable } from 'rxjs';
 import { formatQuantity } from '../../formatters';
 import {
   Provider,
@@ -8,7 +7,6 @@ import {
   NumberLike,
   FunctionDescription
 } from '../../interfaces';
-import { map } from 'rxjs/operators';
 import { formatRequestInput, encodeArgs } from './formatters';
 import { BigNumber } from 'bignumber.js';
 
@@ -22,8 +20,11 @@ export interface TransactionInput<T = any> {
   txParams: TransactionInputParams;
 }
 
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendtransaction
+ */
 export const sendTransaction = curry(
-  (provider: Provider, input: TransactionInput): Observable<string> => {
+  (provider: Provider, input: TransactionInput) => {
     validateInput(input);
 
     return sendTransactionWithData(provider, {
@@ -37,7 +38,7 @@ function toTxData({ abi, args }: TransactionInput) {
   return getMethodID(abi) + encodeArgs(abi, args);
 }
 
-export function sendTransactionWithData<T>(
+export function sendTransactionWithData(
   provider: Provider,
   payload: TransactionInputParams
 ) {

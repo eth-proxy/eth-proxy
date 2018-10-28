@@ -1,11 +1,6 @@
 import { getTransactionByHash } from './get-transaction';
 import * as sinon from 'sinon';
-import {
-  Provider,
-  RawTransaction,
-  Transaction,
-  TransactionStatus
-} from '../interfaces';
+import { Provider, RawTransaction, Transaction } from '../interfaces';
 import { expect } from 'chai';
 import { BigNumber } from 'bignumber.js';
 
@@ -26,7 +21,7 @@ describe('Get transaction', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult(txHash)));
 
-    await getTransactionByHash(provider, txHash).toPromise();
+    await getTransactionByHash(provider, txHash);
 
     expect(sendAsync.firstCall.args[0]).to.deep.eq({
       method: 'eth_getTransactionByHash',
@@ -34,23 +29,21 @@ describe('Get transaction', () => {
     });
   });
 
-  it('Throws when transaction is nil', async done => {
+  it('Throws when transaction is nil', async () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult(null)));
 
-    getTransactionByHash(provider, txHash).subscribe({
-      error: err => {
-        expect(err.message).to.eq('Transaction is nil');
-        done();
-      },
-      next: () => done('Should fail')
-    });
+    try {
+      await getTransactionByHash(provider, txHash);
+    } catch (err) {
+      expect(err.message).to.eq('Transaction is nil');
+    }
   });
 
   it('Return formatted transaction', async () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((_, cb) => cb(null, rpcResult(unformattedTx)));
-    const result = await getTransactionByHash(provider, txHash).toPromise();
+    const result = await getTransactionByHash(provider, txHash);
 
     expect(result).to.deep.eq(formattedTx);
   });

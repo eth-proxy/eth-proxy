@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, defer } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ActionsObservable } from 'redux-observable';
 
@@ -12,5 +12,5 @@ export const loadNetwork = (
   __,
   { provider }: EpicContext
 ): Observable<actions.Types> => {
-  return getNetwork(provider).pipe(map(createSetNetwork));
+  return defer(() => getNetwork(provider)).pipe(map(createSetNetwork));
 };

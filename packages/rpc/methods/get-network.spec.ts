@@ -18,7 +18,7 @@ describe('Network', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult(network)));
 
-    await getNetwork(provider).toPromise();
+    await getNetwork(provider);
 
     expect(sendAsync.firstCall.args[0]).to.deep.eq({
       method: 'net_version',
@@ -30,6 +30,6 @@ describe('Network', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult(network)));
 
-    expect(await getNetwork(provider).toPromise()).to.deep.eq(network);
+    expect(await getNetwork(provider)).to.deep.eq(network);
   });
 });

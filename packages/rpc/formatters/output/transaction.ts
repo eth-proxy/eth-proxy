@@ -1,5 +1,5 @@
 import { RawTransaction, Transaction } from '../../interfaces';
-import { evolve, when, isNil } from 'ramda';
+import { evolve, when } from 'ramda';
 import { ethHexToBN, ethHexToNumber, isNotNil } from '../../utils';
 
 export function fromTransaction(tx: RawTransaction): Transaction {

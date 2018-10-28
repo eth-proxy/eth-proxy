@@ -2,7 +2,6 @@ import { watchLogs } from './logs';
 import { marbles } from 'rxjs-marbles/mocha';
 import {
   EthGetFilterChanges,
-  EthGetFilterLogs,
   EthNewFilter,
   EthUninstallFilter,
   EthUninstallFilterRequest,
@@ -10,9 +9,9 @@ import {
   Log,
   Provider,
   RpcResponse
-} from '../../interfaces';
+} from '../interfaces';
 import { Subject } from 'rxjs';
-import { omit, map } from 'ramda';
+import { omit } from 'ramda';
 
 const rawFilterArgs = {
   address: '123'

@@ -1,5 +1,5 @@
 import { first, tap, mergeMap, map } from 'rxjs/operators';
-import { Observable, defer } from 'rxjs';
+import { defer } from 'rxjs';
 
 import { pickTxParamsProps, Request } from '../modules/request';
 import { createProcessCall, getRequestById } from '../modules/call';

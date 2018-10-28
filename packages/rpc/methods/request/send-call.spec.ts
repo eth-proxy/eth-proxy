@@ -48,6 +48,6 @@ function getRxWeb3Payload() {
       abi: symbolEthCall,
       args: undefined,
       txParams
-    }).subscribe();
+    });
   });
 }

@@ -42,7 +42,7 @@ export const watchEvents = (
         takeUnilRemoved(id),
         map(log => fromSchema.getLogDecoder(state$.value)([log])),
         map(actions.eventsLoaded),
-        catchError((err, err$) => err$)
+        catchError((_, err$) => err$)
       );
     })
   );

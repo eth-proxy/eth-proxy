@@ -15,7 +15,7 @@ export interface DeploymentInput<T = any> {
 
 export const deployContract = curry(
   (provider: Provider, input: DeploymentInput) => {
-    return sendTransactionWithData<string>(provider, {
+    return sendTransactionWithData(provider, {
       ...input.txParams,
       data: toDeploymentData(input)
     });

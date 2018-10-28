@@ -56,6 +56,6 @@ function getRxWeb3Payload() {
         _value: value
       },
       txParams
-    }).subscribe();
+    });
   });
 }

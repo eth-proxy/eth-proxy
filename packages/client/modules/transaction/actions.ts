@@ -1,4 +1,4 @@
-import { curry, CurriedFunction2 } from 'ramda';
+import { curry } from 'ramda';
 import { TransactionReceipt } from '@eth-proxy/rpc';
 import { DecodedEvent } from '../events';
 

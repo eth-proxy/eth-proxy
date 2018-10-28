@@ -1,8 +1,6 @@
 import { send } from '../utils';
 import { curry, isNil } from 'ramda';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { Provider, Tag, RpcResponse, RawBlock, Block } from '../interfaces';
+import { Provider, Tag, RawBlock } from '../interfaces';
 import { formatBlockNr } from '../formatters';
 import { fromBlock } from '../formatters';
 
@@ -17,11 +15,11 @@ export const getBlockByNumber = curry(
   (
     provider: Provider,
     { number, fullTransactions = false }: GetBlockByNumberArgs
-  ): Observable<Block> => {
+  ) => {
     return send(provider)({
       method: 'eth_getBlockByNumber',
       params: [formatBlockNr(number), fullTransactions]
-    }).pipe(resultMapper);
+    }).then(resultMapper);
   }
 );
 
@@ -37,17 +35,17 @@ export const getBlockByHash = curry(
   (
     provider: Provider,
     { hash, fullTransactions = false }: GetBlockByHashArgs
-  ): Observable<Block> => {
+  ) => {
     return send(provider)({
       method: 'eth_getBlockByHash',
       params: [hash, fullTransactions]
-    }).pipe(resultMapper);
+    }).then(resultMapper);
   }
 );
 
-const resultMapper = map<RawBlock, Block>(result => {
+const resultMapper = (result: RawBlock) => {
   if (isNil(result)) {
     throw Error('Invalid block');
   }
   return fromBlock(result);
-});
+};
