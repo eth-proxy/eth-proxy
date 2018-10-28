@@ -1,4 +1,4 @@
-import { Provider } from '@eth-proxy/rx-web3';
+import { Provider } from '@eth-proxy/rpc';
 import { State, ObservableStore } from './store';
 import { EthProxyOptions } from './options';
 import { ContractLoader } from './modules/schema';

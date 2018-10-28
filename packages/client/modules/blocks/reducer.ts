@@ -1,4 +1,4 @@
-import { Block } from '@eth-proxy/rx-web3';
+import { Block } from '@eth-proxy/rpc';
 import * as actions from './actions';
 import { createSelector } from 'reselect';
 import { moduleId } from './constants';

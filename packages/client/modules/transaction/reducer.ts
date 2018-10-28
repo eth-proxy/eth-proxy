@@ -7,7 +7,7 @@ import {
 } from './model';
 import * as actions from './actions';
 import { moduleId } from './constants';
-import { TransactionStatus } from '@eth-proxy/rx-web3';
+import { TransactionStatus } from '@eth-proxy/rpc';
 
 export type State = Transaction[];
 

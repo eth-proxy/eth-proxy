@@ -26,7 +26,7 @@ import {
 } from '../cache';
 import * as fromSchema from '../../schema';
 import { State } from '../../../store';
-import { getEvents } from '@eth-proxy/rx-web3';
+import { getEvents } from '@eth-proxy/rpc';
 
 export const queryEventsEpic = (
   action$: ActionsObservable<QueryEvents>,

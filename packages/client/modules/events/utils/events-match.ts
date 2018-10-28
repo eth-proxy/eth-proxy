@@ -1,4 +1,4 @@
-import { BlockchainEvent } from '@eth-proxy/rx-web3';
+import { BlockchainEvent } from '@eth-proxy/rpc';
 import { isNil, isEmpty } from 'ramda';
 
 import { NormalizedFilter } from '../model';

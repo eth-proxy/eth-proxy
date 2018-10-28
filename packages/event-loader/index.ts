@@ -3,7 +3,7 @@ import { EventFilter } from './model';
 import { bufferResult } from './results-buffer';
 import { pipe } from 'ramda';
 import { Observable, of } from 'rxjs';
-import { Provider } from '@eth-proxy/rx-web3';
+import { Provider } from '@eth-proxy/rpc';
 
 export function defaultReader(provider: Provider, filter: EventFilter) {
   const bcReader = createBlockchainReader(provider);

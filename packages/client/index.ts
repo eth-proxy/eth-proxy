@@ -8,7 +8,7 @@ import {
   SendAsync,
   send,
   SendRequest
-} from '@eth-proxy/rx-web3';
+} from '@eth-proxy/rpc';
 
 import { createAppStore, getActiveAccount$, State, rootEpic } from './store';
 import { getDetectedNetwork$ } from './store';

@@ -3,11 +3,7 @@ import { combineLatest } from 'rxjs';
 import { getTxParams } from '../store';
 import { Context } from '../context';
 import { mergeMap, map } from 'rxjs/operators';
-import {
-  isConstructorAbi,
-  deployContract,
-  getReceipt
-} from '@eth-proxy/rx-web3';
+import { isConstructorAbi, deployContract, getReceipt } from '@eth-proxy/rpc';
 import * as fromTx from '../modules/transaction';
 
 /* 

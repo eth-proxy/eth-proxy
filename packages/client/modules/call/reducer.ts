@@ -1,6 +1,6 @@
 import * as actions from './actions';
 import { createSelector } from 'reselect';
-import { sha3 } from '@eth-proxy/rx-web3';
+import { sha3 } from '@eth-proxy/rpc';
 import { moduleId } from './constants';
 import { omit } from 'ramda';
 

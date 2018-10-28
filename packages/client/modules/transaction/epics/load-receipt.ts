@@ -20,7 +20,7 @@ import * as actions from '../actions';
 import { EpicContext } from '../../../context';
 import { getLogDecoder } from '../../schema';
 import { State } from '../../../store';
-import { getReceipt } from '@eth-proxy/rx-web3';
+import { getReceipt } from '@eth-proxy/rpc';
 
 export const findReceiptEpic = (
   actions$: ActionsObservable<actions.TxGenerated>,

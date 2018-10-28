@@ -6,8 +6,8 @@ import {
   isEventAbi,
   EventDescription,
   EventParameter
-} from '@eth-proxy/rx-web3';
-import { arrify } from '@eth-proxy/rx-web3';
+} from '@eth-proxy/rpc';
+import { arrify } from '@eth-proxy/rpc';
 
 const formatInput = (type: string) => (value: any) => {
   if (type === 'address') {

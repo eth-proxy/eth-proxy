@@ -5,7 +5,7 @@ import * as actions from '../actions';
 import { merge, EMPTY } from 'rxjs';
 import { EpicContext } from '../../../context';
 import * as fromSchema from '../../schema';
-import { watchLogs } from '@eth-proxy/rx-web3';
+import { watchLogs } from '@eth-proxy/rpc';
 
 // DONT WATCH SAME CONTRACTS MORE THEN ONCE
 export const watchEvents = (

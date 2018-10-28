@@ -2,7 +2,7 @@ import * as Web3 from 'web3';
 import { SampleToken } from '../../mocks';
 import { deployContract } from './deploy';
 import { expect } from 'chai';
-import { isConstructorAbi } from '@eth-proxy/rx-web3';
+import { isConstructorAbi } from '@eth-proxy/rpc';
 
 const { abi, bytecode } = SampleToken;
 

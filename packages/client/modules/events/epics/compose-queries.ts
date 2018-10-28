@@ -16,7 +16,7 @@ import { depsToTopics } from '../utils/expand-model';
 import { splitQueryByTopics, toTopicList } from '../utils';
 import { State } from '../../../store';
 import { getLoadedValue } from '../../../utils';
-import { arrify } from '@eth-proxy/rx-web3';
+import { arrify } from '@eth-proxy/rpc';
 
 export const composeQueries = (
   actions$: ActionsObservable<ActionTypes>,

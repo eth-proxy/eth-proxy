@@ -16,8 +16,8 @@ import {
   getReceipt,
   getLogs,
   watchLogs
-} from '@eth-proxy/rx-web3';
-import { sendTransactionWithData } from '@eth-proxy/rx-web3/methods/request/send-transaction';
+} from '@eth-proxy/rpc';
+import { sendTransactionWithData } from '@eth-proxy/rpc/methods/request/send-transaction';
 
 describe('ERC20', () => {
   beforeEach(() => snapshot());
