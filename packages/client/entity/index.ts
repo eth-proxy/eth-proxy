@@ -7,8 +7,7 @@ import {
   mapObjIndexed,
   values,
   flatten,
-  omit,
-  map
+  omit
 } from 'ramda';
 
 import { State, getSelectors as getInternalSelectors } from '../store';

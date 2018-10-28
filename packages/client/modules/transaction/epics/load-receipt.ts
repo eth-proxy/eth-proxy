@@ -14,13 +14,13 @@ import {
   catchError,
   withLatestFrom
 } from 'rxjs/operators';
-import { of, throwError as _throw, Observable } from 'rxjs';
+import { of, throwError as _throw, from } from 'rxjs';
+import { getReceipt } from '@eth-proxy/rpc';
 
 import * as actions from '../actions';
 import { EpicContext } from '../../../context';
 import { getLogDecoder } from '../../schema';
 import { State } from '../../../store';
-import { getReceipt } from '@eth-proxy/rpc';
 
 export const findReceiptEpic = (
   actions$: ActionsObservable<actions.TxGenerated>,
@@ -31,7 +31,7 @@ export const findReceiptEpic = (
     ofType(TX_GENERATED),
     withLatestFrom(state$),
     mergeMap(([{ payload: { tx } }, state]) =>
-      getReceipt(provider, tx).pipe(
+      from(getReceipt(provider, tx)).pipe(
         map(receipt => {
           const logs = getLogDecoder(state)(receipt.logs);
           return createLoadReceiptSuccess({

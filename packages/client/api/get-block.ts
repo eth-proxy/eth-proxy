@@ -1,9 +1,5 @@
 import { Observable } from 'rxjs';
 import { ObservableStore, State } from '../store';
-import {
-  getContractFromRef,
-  createLoadContractSchema
-} from '../modules/schema';
 import * as fromBlocks from '../modules/blocks';
 import { tap, first } from 'rxjs/operators';
 import { getLoadedValue, isNotAsked } from '../utils';

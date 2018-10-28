@@ -1,6 +1,6 @@
 import { ActionsObservable, ofType } from 'redux-observable';
 import { map, retry, catchError, mergeMap, filter } from 'rxjs/operators';
-import { Observable, of, EMPTY } from 'rxjs';
+import { Observable, of, EMPTY, from } from 'rxjs';
 
 import { EpicContext } from '../../context';
 import * as actions from './actions';
@@ -11,7 +11,7 @@ export const loadLatestBlock = (
   __,
   { provider }: EpicContext
 ): Observable<actions.Types> => {
-  return getBlockByNumber(provider, { number: 'latest' }).pipe(
+  return from(getBlockByNumber(provider, { number: 'latest' })).pipe(
     retry(10),
     map(actions.createLoadBlockSuccess),
     catchError(err => of(actions.createUpdateLatestBlockFailed(err)))
@@ -26,7 +26,7 @@ export const loadBlock = (
   return actions$.pipe(
     ofType<actions.LoadBlock>(actions.LOAD_BLOCK),
     mergeMap(({ payload: number }) => {
-      return getBlockByNumber(provider, { number }).pipe(
+      return from(getBlockByNumber(provider, { number })).pipe(
         retry(10),
         map(actions.createLoadBlockSuccess),
         catchError(err => of(actions.createLoadBlockFailed(number, err)))
@@ -45,7 +45,7 @@ export const watchNewBlocks = (
     mergeMap(timer$ => {
       return watchBlocks(provider, { timer$ }).pipe(
         mergeMap(hash => {
-          return getBlockByHash(provider, { hash }).pipe(
+          return from(getBlockByHash(provider, { hash })).pipe(
             retry(10),
             catchError(() => EMPTY)
           );

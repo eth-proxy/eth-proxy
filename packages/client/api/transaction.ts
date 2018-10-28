@@ -1,4 +1,4 @@
-import { Observable, combineLatest, defer } from 'rxjs';
+import { combineLatest, defer } from 'rxjs';
 import { tap, mergeMap } from 'rxjs/operators';
 
 import { getTransactionResultFromInitId$, getTxParams } from '../store';

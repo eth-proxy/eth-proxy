@@ -28,7 +28,7 @@ describe('Get logs', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult([])));
 
-    await getEvents(provider, filter).toPromise();
+    await getEvents(provider, filter);
 
     expect(sendAsync.firstCall.args[0]).to.deep.eq({
       method: 'eth_getLogs',
@@ -46,7 +46,7 @@ describe('Get logs', () => {
   it('Return formatted logs', async () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((_, cb) => cb(null, rpcResult([unformattedLog])));
-    const result = await getEvents(provider, {}).toPromise();
+    const result = await getEvents(provider, {});
 
     expect(result).to.deep.eq([formattedLog]);
   });

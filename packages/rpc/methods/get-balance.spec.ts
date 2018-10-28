@@ -23,7 +23,7 @@ describe('Accounts', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult(balance100InHex)));
 
-    await getBalance(provider, { account }).toPromise();
+    await getBalance(provider, { account });
 
     expect(sendAsync.firstCall.args[0]).to.deep.eq({
       method: 'eth_getBalance',
@@ -35,8 +35,6 @@ describe('Accounts', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult(balance100InHex)));
 
-    expect(await getBalance(provider, { account }).toPromise()).to.deep.eq(
-      balance100
-    );
+    expect(await getBalance(provider, { account })).to.deep.eq(balance100);
   });
 });

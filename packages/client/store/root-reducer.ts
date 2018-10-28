@@ -5,7 +5,7 @@ import * as fromEvents from '../modules/events';
 import * as fromSchema from '../modules/schema';
 import * as fromTransactions from '../modules/transaction';
 import * as fromCalls from '../modules/call';
-import { combineReducers, AnyAction } from 'redux';
+import { combineReducers } from 'redux';
 
 import { State } from './model';
 

@@ -5,7 +5,7 @@ import {
   EthNewBlockFilter,
   EthUninstallFilter,
   EthUninstallFilterRequest
-} from '../../interfaces';
+} from '../interfaces';
 import { Subject } from 'rxjs';
 import { omit } from 'ramda';
 

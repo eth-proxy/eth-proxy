@@ -1,6 +1,4 @@
 import { curry } from 'ramda';
-
-import { CurriedFunction2 } from 'ramda';
 import { pickTxParamsProps } from '../request';
 
 export function txParamsValid(params) {

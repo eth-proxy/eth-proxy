@@ -5,7 +5,8 @@ import {
   FunctionDescription,
   EventDescription,
   ConstructorDescription,
-  SendRequest
+  SendRequest,
+  LazySendRequest
 } from '../interfaces';
 import { Observable } from 'rxjs';
 import { pipe, isNil } from 'ramda';
@@ -34,6 +35,20 @@ export const caseInsensitiveCompare = (a: string, b: string) =>
   a && b && a.toLowerCase() === b.toLowerCase();
 
 export function send(provider: Provider): SendRequest {
+  return payload => {
+    return new Promise((res, rej) => {
+      provider.sendAsync(payload, (err, response) => {
+        if (err) {
+          rej(err);
+          return;
+        }
+        res(response.result);
+      });
+    });
+  };
+}
+
+export function send$(provider: Provider): LazySendRequest {
   return payload =>
     new Observable(observer => {
       provider.sendAsync(payload, (err, response) => {

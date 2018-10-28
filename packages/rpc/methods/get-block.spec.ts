@@ -22,7 +22,7 @@ describe('Get block by number', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult({})));
 
-    await getBlockByNumber(provider, { number: block100 }).toPromise();
+    await getBlockByNumber(provider, { number: block100 });
 
     expect(sendAsync.firstCall.args[0]).to.deep.eq({
       method: 'eth_getBlockByNumber',
@@ -34,7 +34,7 @@ describe('Get block by number', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult({})));
 
-    await getBlockByNumber(provider, { number: 'latest' }).toPromise();
+    await getBlockByNumber(provider, { number: 'latest' });
 
     expect(sendAsync.firstCall.args[0]).to.deep.eq({
       method: 'eth_getBlockByNumber',
@@ -42,17 +42,15 @@ describe('Get block by number', () => {
     });
   });
 
-  it('Throws when block is nil', async done => {
+  it('Throws when block is nil', async () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult(null)));
 
-    getBlockByNumber(provider, { number: block100 }).subscribe({
-      error: err => {
-        expect(err.message).to.eq('Invalid block');
-        done();
-      },
-      next: () => done('Should fail')
-    });
+    try {
+      await getBlockByNumber(provider, { number: block100 });
+    } catch (err) {
+      expect(err.message).to.eq('Invalid block');
+    }
   });
 
   it('Return formatted block', async () => {
@@ -60,7 +58,7 @@ describe('Get block by number', () => {
     sendAsync.callsFake((_, cb) => cb(null, rpcResult(unformattedBlock)));
     const result = await getBlockByNumber(provider, {
       number: block100
-    }).toPromise();
+    });
 
     expect(result).to.deep.eq(formattedBlock);
   });
@@ -78,7 +76,7 @@ describe('Get block by Hash', () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult({})));
 
-    await getBlockByHash(provider, { hash: block100Hex }).toPromise();
+    await getBlockByHash(provider, { hash: block100Hex });
 
     expect(sendAsync.firstCall.args[0]).to.deep.eq({
       method: 'eth_getBlockByHash',
@@ -86,17 +84,15 @@ describe('Get block by Hash', () => {
     });
   });
 
-  it('Throws when block is nil', async done => {
+  it('Throws when block is nil', async () => {
     const sendAsync = sinon.stub(provider, 'sendAsync');
     sendAsync.callsFake((args, cb) => cb(null, rpcResult(null)));
 
-    getBlockByHash(provider, { hash: block100Hex }).subscribe({
-      error: err => {
-        expect(err.message).to.eq('Invalid block');
-        done();
-      },
-      next: () => done('Should fail')
-    });
+    try {
+      await getBlockByHash(provider, { hash: block100Hex });
+    } catch (err) {
+      expect(err.message).to.eq('Invalid block');
+    }
   });
 
   it('Return formatted block', async () => {
@@ -104,7 +100,7 @@ describe('Get block by Hash', () => {
     sendAsync.callsFake((_, cb) => cb(null, rpcResult(unformattedBlock)));
     const result = await getBlockByHash(provider, {
       hash: block100Hash
-    }).toPromise();
+    });
 
     expect(result).to.deep.eq(formattedBlock);
   });

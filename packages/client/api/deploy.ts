@@ -1,4 +1,4 @@
-import { combineLatest } from 'rxjs';
+import { combineLatest, from } from 'rxjs';
 
 import { getTxParams } from '../store';
 import { Context } from '../context';
@@ -22,12 +22,14 @@ export function deploy({ store, contractLoader, provider }: Context) {
             `Cannot deploy contract ${input.interface}, missing abi or bytecode`
           );
         }
-        return deployContract(provider, {
-          abi,
-          args: input.payload,
-          bytecode: schema.bytecode,
-          txParams
-        }).pipe(
+        return from(
+          deployContract(provider, {
+            abi,
+            args: input.payload,
+            bytecode: schema.bytecode,
+            txParams
+          })
+        ).pipe(
           mergeMap(getReceipt(provider)),
           map(x => x.contractAddress)
         );

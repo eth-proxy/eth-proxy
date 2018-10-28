@@ -1,4 +1,4 @@
-import { curry, CurriedFunction2 } from 'ramda';
+import { curry } from 'ramda';
 import { ContractSchema } from './model';
 
 export const LOAD_CONTRACT_SCHEMA = 'LOAD_CONTRACT_SCHEMA';

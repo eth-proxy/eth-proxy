@@ -1,10 +1,10 @@
 import { Observable, timer, merge, of, concat } from 'rxjs';
-import { map, mergeMap, expand, tap } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 import { curry } from 'ramda';
-import { Provider, FilterObject, RawLog, Log } from '../../interfaces';
-import { send, arrify } from '../../utils';
+import { Provider, FilterObject, RawLog, Log } from '../interfaces';
+import { arrify, send$ } from '../utils';
 import { pollChanges } from './common';
-import { formatFilter, fromLog } from '../../formatters';
+import { formatFilter, fromLog } from '../formatters';
 
 export interface WatchLogsOptions {
   timer$?: Observable<any>;
@@ -34,14 +34,14 @@ export const _watchLogs = curry(
     provider: Provider,
     { filter, timer$ = timer(0, 1000) }: WatchLogsOptions
   ) => {
-    const createFilter$ = send(provider)({
+    const createFilter$ = send$(provider)({
       method: 'eth_newFilter',
       params: [formatFilter(filter)]
     });
 
     return createFilter$.pipe(
       mergeMap(id => {
-        const pastLogs$ = send(provider)({
+        const pastLogs$ = send$(provider)({
           method: 'eth_getFilterLogs',
           params: [id]
         }).pipe(mergeMap(x => x));

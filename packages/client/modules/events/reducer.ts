@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import { indexBy, values } from 'ramda';
-import { combineReducers, AnyAction } from 'redux';
+import { combineReducers } from 'redux';
 
 import * as actions from './actions';
 import {

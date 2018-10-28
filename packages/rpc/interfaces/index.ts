@@ -1,13 +1,11 @@
-import { Observable } from 'rxjs';
 import { CurriedFunction2 } from 'ramda';
 import { RpcMethod, RpcRequest } from './json-rpc';
+import { Observable } from 'rxjs';
 
-export type ProviderBound<T> = T extends (
-  provider: Provider
-) => Observable<infer R>
-  ? () => Observable<R>
-  : T extends CurriedFunction2<Provider, infer A1, Observable<infer R>>
-    ? (arg: A1) => Observable<R>
+export type ProviderBound<T> = T extends (provider: Provider) => infer Result
+  ? () => Result
+  : T extends CurriedFunction2<Provider, infer A1, infer Result>
+    ? (arg: A1) => Result
     : never;
 
 export type SendAsync = <
@@ -23,6 +21,13 @@ export type Provider = {
 };
 
 export type SendRequest = <
+  Request extends RpcRequest,
+  Type extends Request['method']
+>(
+  payload: Request | Request[]
+) => Promise<Extract<RpcMethod, { type: Type }>['response']['result']>;
+
+export type LazySendRequest = <
   Request extends RpcRequest,
   Type extends Request['method']
 >(

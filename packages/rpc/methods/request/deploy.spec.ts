@@ -62,6 +62,6 @@ function getRxWeb3Payload() {
       bytecode,
       txParams,
       args: myToken
-    }).subscribe();
+    });
   });
 }

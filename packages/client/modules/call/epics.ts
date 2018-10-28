@@ -17,18 +17,17 @@ export const processCallEpic = (
     mergeMap(({ payload }) => {
       return contractLoader(payload.contractName).pipe(
         mergeMap(contract =>
-          sendCall(provider, toCallInput(payload, contract)).pipe(
-            map(actions.createProcessCallSuccess(payload.id)),
-            catchError(err => {
-              return of(
-                actions.createProcessCallFailed({
-                  id: payload.id,
-                  err
-                })
-              );
+          sendCall(provider, toCallInput(payload, contract))
+        ),
+        map(actions.createProcessCallSuccess(payload.id)),
+        catchError(err => {
+          return of(
+            actions.createProcessCallFailed({
+              id: payload.id,
+              err
             })
-          )
-        )
+          );
+        })
       );
     })
   );

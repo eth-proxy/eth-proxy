@@ -1,4 +1,4 @@
-import { curry, CurriedFunction2 } from 'ramda';
+import { curry } from 'ramda';
 
 export interface CallPayload {
   contractName: string;

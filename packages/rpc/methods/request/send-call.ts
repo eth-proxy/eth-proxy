@@ -1,6 +1,5 @@
 import { curry, pipe } from 'ramda';
 import { getMethodID, send, strip0x, extractNonTuple } from '../../utils';
-import { Observable } from 'rxjs';
 import {
   Provider,
   RequestInputParams,
@@ -8,7 +7,6 @@ import {
   NumberLike,
   FunctionDescription
 } from '../../interfaces';
-import { map } from 'rxjs/operators';
 import { formatRequestInput, encodeArgs, decodeArgs } from './formatters';
 import { formatBlockNr } from '../../formatters';
 
@@ -19,8 +17,11 @@ export interface CallInput<T = any> {
   atBlock?: Tag | NumberLike;
 }
 
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call
+ */
 export const sendCall = curry(
-  (provider: Provider, input: CallInput): Observable<any> => {
+  (provider: Provider, input: CallInput): Promise<any> => {
     const { atBlock = 'latest' } = input;
     const request = {
       ...input.txParams,
@@ -31,7 +32,7 @@ export const sendCall = curry(
     return send(provider)({
       method: 'eth_call',
       params: [formatRequestInput(request), formatBlockNr(atBlock)]
-    }).pipe(map(resultParser));
+    }).then(resultParser);
   }
 );
 

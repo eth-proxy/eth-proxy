@@ -1,4 +1,4 @@
-import { forkJoin, of, Observable } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import {
   map as rxMap,
   catchError,
@@ -14,9 +14,7 @@ import {
   queryEventsSuccess,
   queryEventsFailed,
   QUERY_EVENTS,
-  QueryEvents,
-  QueryEventsFailed,
-  QueryEventsSuccess
+  QueryEvents
 } from '../actions';
 import { EpicContext } from '../../../context';
 import {
@@ -42,12 +40,9 @@ export const queryEventsEpic = (
         mergeMap(f => getFiltersToLoad(cache.getState(), f)),
         tap(cache.request),
         mergeMap(f =>
-          getEvents(provider, f).pipe(
-            tap({
-              next: cache.result(f),
-              error: cache.error(f)
-            })
-          )
+          getEvents(provider, f)
+            .then(cache.result(f))
+            .catch(cache.error(f))
         ),
         defaultIfEmpty([])
       );
@@ -70,9 +65,7 @@ export const queryEventsEpic = (
         )
         .pipe(
           rxMap(events => queryEventsSuccess({ id, events })),
-          catchError(err => {
-            return of(queryEventsFailed(id));
-          })
+          catchError(() => of(queryEventsFailed(id)))
         );
     })
   );

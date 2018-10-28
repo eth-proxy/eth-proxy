@@ -1,18 +1,16 @@
 import { curry } from 'ramda';
 import { send } from '../utils';
-import { Observable } from 'rxjs';
 import { TransactionReceipt, Provider } from '../interfaces';
-import { map } from 'rxjs/operators';
 import { fromReceipt } from '../formatters';
 
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionreceipt
+ */
 export const getReceipt = curry(
-  (
-    provider: Provider,
-    txHash: string
-  ): Observable<TransactionReceipt | null> => {
+  (provider: Provider, txHash: string): Promise<TransactionReceipt | null> => {
     return send(provider)({
       method: 'eth_getTransactionReceipt',
       params: [txHash]
-    }).pipe(map(fromReceipt));
+    }).then(fromReceipt);
   }
 );

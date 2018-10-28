@@ -1,8 +1,6 @@
-import { Observable } from 'rxjs';
 import {
   combineEpics,
   ActionsObservable,
-  Epic,
   ofType,
   StateObservable
 } from 'redux-observable';
