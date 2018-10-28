@@ -27,7 +27,7 @@ export type SendRequest = <
   payload: Request | Request[]
 ) => Promise<Extract<RpcMethod, { type: Type }>['response']['result']>;
 
-export type LazySendRequest = <
+export type SendObservableRequest = <
   Request extends RpcRequest,
   Type extends Request['method']
 >(

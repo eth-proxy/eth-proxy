@@ -6,7 +6,7 @@ import {
   EventDescription,
   ConstructorDescription,
   SendRequest,
-  LazySendRequest
+  SendObservableRequest
 } from '../interfaces';
 import { Observable } from 'rxjs';
 import { pipe, isNil } from 'ramda';
@@ -48,7 +48,7 @@ export function send(provider: Provider): SendRequest {
   };
 }
 
-export function send$(provider: Provider): LazySendRequest {
+export function send$(provider: Provider): SendObservableRequest {
   return payload =>
     new Observable(observer => {
       provider.sendAsync(payload, (err, response) => {
