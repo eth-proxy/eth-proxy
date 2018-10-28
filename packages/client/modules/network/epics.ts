@@ -5,7 +5,7 @@ import { ActionsObservable } from 'redux-observable';
 import * as actions from './actions';
 import { EpicContext } from '../../context';
 import { createSetNetwork } from './actions';
-import { getNetwork } from '@eth-proxy/rx-web3';
+import { getNetwork } from '@eth-proxy/rpc';
 
 export const loadNetwork = (
   _: ActionsObservable<any>,

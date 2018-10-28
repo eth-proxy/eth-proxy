@@ -4,11 +4,7 @@ import { Observable, of, EMPTY } from 'rxjs';
 
 import { EpicContext } from '../../context';
 import * as actions from './actions';
-import {
-  watchBlocks,
-  getBlockByHash,
-  getBlockByNumber
-} from '@eth-proxy/rx-web3';
+import { watchBlocks, getBlockByHash, getBlockByNumber } from '@eth-proxy/rpc';
 
 export const loadLatestBlock = (
   _: ActionsObservable<any>,

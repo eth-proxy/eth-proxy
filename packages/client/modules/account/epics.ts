@@ -4,7 +4,7 @@ import { ActionsObservable } from 'redux-observable';
 
 import * as actions from './actions';
 import { EpicContext } from '../../context';
-import { getDefaultAccount } from '@eth-proxy/rx-web3';
+import { getDefaultAccount } from '@eth-proxy/rpc';
 
 export const watchAccount = (
   _: ActionsObservable<actions.Types>,

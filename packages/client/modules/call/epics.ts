@@ -5,7 +5,7 @@ import { of, Observable } from 'rxjs';
 import * as actions from './actions';
 import { EpicContext } from '../../context';
 import { ContractInfo } from '../schema';
-import { CallInput, getFunction, sendCall } from '@eth-proxy/rx-web3';
+import { CallInput, getFunction, sendCall } from '@eth-proxy/rpc';
 
 export const processCallEpic = (
   actions$: ActionsObservable<actions.ProcessCall>,

@@ -2,7 +2,7 @@ import { Observable, Subject, merge } from 'rxjs';
 import { max, reverse, times } from 'ramda';
 import { catchError, mergeMap, finalize, map } from 'rxjs/operators';
 import { Reader, EventFilter } from './model';
-import { getEvents, Provider } from '@eth-proxy/rx-web3';
+import { getEvents, Provider } from '@eth-proxy/rpc';
 
 const rangeSize = 10000;
 

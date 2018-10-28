@@ -1,5 +1,5 @@
-import { send } from '@eth-proxy/rx-web3/utils';
-import { httpProvider } from '@eth-proxy/rx-web3';
+import { send } from '@eth-proxy/rpc/utils';
+import { httpProvider } from '@eth-proxy/rpc';
 
 const rpcCall = send(httpProvider());
 

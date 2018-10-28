@@ -1,7 +1,7 @@
 {
-  "name": "@eth-proxy/rx-web3",
+  "name": "@eth-proxy/rpc",
   "version": "0.5.1-y.34",
-  "description": "Web3 using rxjs",
+  "description": "Ethereum rpc specification as simple functions",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "files": [

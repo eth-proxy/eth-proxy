@@ -1,4 +1,4 @@
-import { Block } from '@eth-proxy/rx-web3';
+import { Block } from '@eth-proxy/rpc';
 import { curry } from 'ramda';
 
 export const LOAD_BLOCK = 'LOAD_BLOCK';

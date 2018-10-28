@@ -11,7 +11,7 @@ import {
 } from 'ramda';
 import { toObservableStore } from '../../utils';
 import { fillFilterWithMany, isEventMatching } from './utils';
-import { BlockchainEvent } from '@eth-proxy/rx-web3';
+import { BlockchainEvent } from '@eth-proxy/rpc';
 
 export enum Action {
   Load = 'Load',

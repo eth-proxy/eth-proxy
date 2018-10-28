@@ -4,7 +4,7 @@ import { mergeMap, tap, first, mapTo } from 'rxjs/operators';
 import { expect } from 'chai';
 import { snapshot, revert } from './utils';
 import { Contracts } from './contracts';
-import { httpProvider } from '@eth-proxy/rx-web3';
+import { httpProvider } from '@eth-proxy/rpc';
 
 const proxy = createProxy<Contracts>(httpProvider(), {
   contractSchemaResolver: ({ name }) => import(`./schemas/${name}.json`)

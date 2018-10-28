@@ -4,11 +4,7 @@ import { of, Observable } from 'rxjs';
 import * as actions from '../actions';
 import { ContractInfo } from '../../schema';
 import { EpicContext } from '../../../context';
-import {
-  TransactionInput,
-  getFunction,
-  sendTransaction
-} from '@eth-proxy/rx-web3';
+import { TransactionInput, getFunction, sendTransaction } from '@eth-proxy/rpc';
 
 export const processTransactionEpic = (
   actions$: ActionsObservable<actions.ProcessTransaction>,

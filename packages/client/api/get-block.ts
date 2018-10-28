@@ -7,7 +7,7 @@ import {
 import * as fromBlocks from '../modules/blocks';
 import { tap, first } from 'rxjs/operators';
 import { getLoadedValue, isNotAsked } from '../utils';
-import { Block } from '@eth-proxy/rx-web3';
+import { Block } from '@eth-proxy/rpc';
 
 export const createBlockLoader = (store: ObservableStore<State>) => (
   number: number

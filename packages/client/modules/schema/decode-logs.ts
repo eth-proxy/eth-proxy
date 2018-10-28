@@ -1,6 +1,6 @@
 import * as ethJSABI from 'ethjs-abi';
 import { BigNumber } from 'bignumber.js';
-import { toSignatureHash } from '@eth-proxy/rx-web3';
+import { toSignatureHash } from '@eth-proxy/rpc';
 
 export const decodeLogs = abi => (logs: any[]) => {
   const events = eventsFromAbi(abi);

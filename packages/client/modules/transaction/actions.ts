@@ -1,5 +1,5 @@
 import { curry, CurriedFunction2 } from 'ramda';
-import { TransactionReceipt } from '@eth-proxy/rx-web3';
+import { TransactionReceipt } from '@eth-proxy/rpc';
 import { DecodedEvent } from '../events';
 
 export interface ProcessTransactionPayload {

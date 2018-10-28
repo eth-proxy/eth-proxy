@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { TransactionReceipt, NumberLike } from '@eth-proxy/rx-web3';
+import { TransactionReceipt, NumberLike } from '@eth-proxy/rpc';
 import { Request } from '../request';
 import { DecodedEvent } from '../events';
 
