@@ -134,6 +134,11 @@ export const getFiltersToLoad = (state: State, next: NormalizedFilter) => {
   );
 };
 
+export const getFiltersLoaded = (state: State, next: NormalizedFilter) => {
+  const { completed, failed } = state.requests;
+  return fillFilterWithMany([...completed, ...failed], next);
+};
+
 export const getEventsForFilter = curry(
   (filter: NormalizedFilter, { events, requests: { failed } }: State) => {
     if (!equals([filter], fillFilterWithMany(failed, filter))) {
