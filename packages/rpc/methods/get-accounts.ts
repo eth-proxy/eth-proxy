@@ -8,7 +8,7 @@ export function getDefaultAccount(provider: Provider) {
 }
 
 /**
- * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getaccounts
  */
 export function getAccounts(provider: Provider) {
   return send(provider)({

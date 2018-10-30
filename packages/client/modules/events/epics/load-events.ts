@@ -20,6 +20,7 @@ import { EpicContext } from '../../../context';
 import {
   createEventCache,
   getFiltersToLoad,
+  getFiltersLoaded,
   getEventsForFilter
 } from '../cache';
 import * as fromSchema from '../../schema';
@@ -49,9 +50,9 @@ export const queryEventsEpic = (
 
       const pendingLoaded$ = cache
         .select(state =>
-          filters.every(f => isEmpty(getFiltersToLoad(state, f)))
+          filters.every(f => isEmpty(getFiltersLoaded(state, f)))
         )
-        .pipe(first());
+        .pipe(first(x => !!x));
 
       return forkJoin(loadAll$, pendingLoaded$, of(null))
         .pipe(
