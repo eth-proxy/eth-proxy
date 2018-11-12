@@ -67,8 +67,7 @@ describe('ERC20', () => {
       )
     );
 
-    watch$.subscribe(logs => {
-      console.log('logs', logs);
+    watch$.subscribe(() => {
       done();
     });
     transfer$.subscribe();
@@ -84,6 +83,6 @@ describe('ERC20', () => {
           });
         })
       )
-      .subscribe(console.log);
+      .subscribe();
   }).timeout(10000);
 });
