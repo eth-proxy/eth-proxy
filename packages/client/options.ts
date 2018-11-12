@@ -5,7 +5,6 @@ import { Provider, FilterObject, Log } from '@eth-proxy/rpc';
 
 export interface EthProxyOptions {
   contractSchemaResolver: ContractSchemaResolver;
-  eventReader?: (provider: Provider, options: FilterObject) => Promise<Log[]>;
   store?: {
     dispatch: Function;
   };

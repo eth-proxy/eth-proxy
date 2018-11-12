@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/rpc",
-  "version": "0.5.1-y.38",
+  "version": "0.6.0",
   "description": "Ethereum rpc specification as simple functions",
   "main": "dist/index.js",
   "module": "dist/index.es.js",

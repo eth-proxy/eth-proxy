@@ -103,3 +103,8 @@ export function isNotNil<T>(val: T | null | undefined): val is T {
 }
 export const arrify = <T>(value: T | T[]) =>
   Array.isArray(value) ? value : [value];
+
+export function createIdGenerator() {
+  let id = 0;
+  return () => id++;
+}

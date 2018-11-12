@@ -3,7 +3,7 @@ export type ContractAbi = Array<AbiDefinition>;
 export type AbiDefinition = FunctionDescription | EventDescription;
 
 export interface FunctionDescription {
-  type: 'function' | 'constructor' | 'fallback';
+  type: 'constructor' | 'function' | 'fallback';
   name?: string;
   inputs: Array<FunctionParameter>;
   outputs: Array<FunctionParameter>;

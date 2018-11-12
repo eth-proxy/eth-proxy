@@ -1,4 +1,17 @@
-import { Quantity, Data, Tag } from './json-rpc';
+import { Quantity, Data, Tag } from './primitives';
+
+export interface ContractRequestParams {
+  from: Data;
+  to: Data;
+  gas: Quantity;
+  gasPrice: Quantity;
+  value: Quantity;
+  data: Data;
+}
+
+export interface TransactionParams extends ContractRequestParams {
+  nonce: Quantity;
+}
 
 export interface RawBlock {
   number: Quantity;
