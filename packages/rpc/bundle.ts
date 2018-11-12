@@ -1,8 +1,8 @@
 import { Observable, from } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 import { map } from 'ramda';
-import * as allMethods from './methods';
 import * as allWatches from './watches';
+import * as allMethods from './methods';
 import { ProviderBound, Provider } from './interfaces';
 
 type Methods = {
