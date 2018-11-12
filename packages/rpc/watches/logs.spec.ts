@@ -8,7 +8,7 @@ import {
   RawLog,
   Log,
   Provider,
-  RpcResponse
+  BaseRpcResponse
 } from '../interfaces';
 import { Subject } from 'rxjs';
 import { omit } from 'ramda';
@@ -30,7 +30,7 @@ const formattedLogs = {
   d: { blockNumber: 3, data: 'log3' } as Log
 };
 function resultOf<T>(result: T) {
-  return { result } as RpcResponse<T>;
+  return { result } as BaseRpcResponse<T>;
 }
 
 describe('logs watch', () => {
@@ -100,7 +100,7 @@ describe('logs watch', () => {
               return;
             }
             case 'eth_getFilterLogs': {
-              return cb(null, resultOf(allLogs) as RpcResponse<RawLog[]>);
+              return cb(null, resultOf(allLogs) as BaseRpcResponse<RawLog[]>);
             }
             case 'eth_getFilterChanges': {
               const id = (payload as EthGetFilterChanges['request']).params[0];

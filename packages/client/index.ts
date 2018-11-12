@@ -1,14 +1,6 @@
 import { Observable, timer } from 'rxjs';
 import { createEpicMiddleware } from 'redux-observable';
-import {
-  getEvents,
-  FilterObject,
-  Provider,
-  Block,
-  SendAsync,
-  send,
-  SendRequest
-} from '@eth-proxy/rpc';
+import { Provider, Block, SendAsync, send, SendRequest } from '@eth-proxy/rpc';
 
 import { createAppStore, getActiveAccount$, State, rootEpic } from './store';
 import { getDetectedNetwork$ } from './store';
@@ -50,7 +42,6 @@ export class EthProxy<T extends {} = {}> implements Provider {
 }
 
 const defaultOptions: Partial<EthProxyOptions> = {
-  eventReader: getEvents,
   interceptors: {},
   store: undefined,
   watchAccountTimer: timer(0)
@@ -65,14 +56,10 @@ export function createProxy<T extends {}>(
 ): EthProxy<T> {
   const options = { ...defaultOptions, ...userOptions };
 
-  const getEvents = (filter: FilterObject) =>
-    options.eventReader(provider, filter);
-
   const contractLoader = (name: string) => createSchemaLoader(store)(name);
   const blockLoader = (number: number) => createBlockLoader(store)(number);
 
   const context = {
-    getEvents,
     options,
     contractLoader,
     blockLoader,

@@ -8,7 +8,7 @@ export function formatQuantity(number: NumberLike) {
 }
 
 const tags: Tag[] = ['earliest', 'latest', 'pending'];
-function isTag(value: string | NumberLike): value is Tag {
+export function isTag(value: string | NumberLike): value is Tag {
   return contains(value, tags);
 }
 

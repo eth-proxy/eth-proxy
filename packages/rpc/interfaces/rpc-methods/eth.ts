@@ -3,46 +3,12 @@ import {
   RawTransaction,
   RawTransactionReceipt,
   RawLog,
-  RawFilter
-} from './raw-entities';
-
-export type Data = string;
-export type Quantity = string;
-export type Tag = 'latest' | 'earliest' | 'pending';
-
-export interface BaseRpcRequest {
-  jsonrpc?: '2.0';
-  id?: number;
-  method: string;
-  params: any;
-}
-
-export interface RpcResponse<T> {
-  id: string;
-  jsonrpc: '2.0';
-  result: T;
-}
-
-export interface ContractRequestParams {
-  from: Data;
-  to: Data;
-  gas: Quantity;
-  gasPrice: Quantity;
-  value: Quantity;
-  data: Data;
-}
-
-export interface TransactionParams extends ContractRequestParams {
-  nonce: Quantity;
-}
-
-export interface Rpc<Request extends BaseRpcRequest, Result> {
-  type: Request['method'];
-  request: Request;
-  response: RpcResponse<Result>;
-}
-
-// JSON RPC METHODS
+  RawFilter,
+  ContractRequestParams,
+  TransactionParams
+} from '../raw-entities';
+import { BaseRpcRequest, Rpc } from '../rpc';
+import { Tag, Quantity, Data } from '../primitives';
 
 /**
  * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call
@@ -197,7 +163,7 @@ export interface EthGetFilterLogsRequest extends BaseRpcRequest {
 }
 export type EthGetFilterLogs = Rpc<EthGetFilterLogsRequest, RawLog[]>;
 
-export type RpcMethod =
+export type EthMethod =
   | EthCall
   | EthSendTransaction
   | EthGetBlockByNumber
@@ -214,5 +180,3 @@ export type RpcMethod =
   | EthGetFilterLogs
   | PersonalSign
   | NetVersion;
-
-export type RpcRequest = RpcMethod['request'];

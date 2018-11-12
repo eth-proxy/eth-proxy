@@ -40,11 +40,11 @@ export const queryEventsEpic = (
       const loadAll$ = of(...filters).pipe(
         mergeMap(f => getFiltersToLoad(cache.getState(), f)),
         tap(cache.request),
-        mergeMap(f =>
-          getEvents(provider, f)
+        mergeMap(f => {
+          return getEvents(provider, f)
             .then(cache.result(f))
-            .catch(cache.error(f))
-        ),
+            .catch(cache.error(f));
+        }),
         defaultIfEmpty([])
       );
 

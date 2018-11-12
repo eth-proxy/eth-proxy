@@ -18,3 +18,4 @@ export { TransactionInput } from './methods/request/send-transaction';
 export { CallInput } from './methods/request/send-call';
 export { DeploymentInput } from './methods/request/deploy';
 export * from './providers';
+export * from './middleware';
