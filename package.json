@@ -4,7 +4,7 @@
   "description": "monorepo for eth-proxy development",
   "private": true,
   "engines": {
-    "node": ">10"
+    "node": ">=10"
   },
   "scripts": {
     "lerna": "lerna",
