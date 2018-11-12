@@ -1,7 +1,7 @@
 export * from './methods';
 export * from './watches';
-export * from './bundle';
 export * from './interfaces';
+export * from './bundle';
 export {
   sha3,
   toSignatureHash,
