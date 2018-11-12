@@ -39,4 +39,8 @@ describe('engine', () => {
       done();
     });
   });
+
+  it('should fail build', () => {
+    expect(false).to.eq(true);
+  });
 });
