@@ -5,7 +5,7 @@ import * as actions from './actions';
 import { ContractInfo, ContractRef, LoadingRecord, ErrorRecord } from './model';
 import { isString } from '../../utils';
 import { moduleId } from './constants';
-import { decodeLogs } from './decode-logs';
+import { decodeLogs, AbiDefinition } from '@eth-proxy/rpc';
 
 export interface State {
   [contractName: string]:
@@ -63,18 +63,29 @@ const contractForRef = (state: State) => (ref: ContractRef) => {
 };
 
 export const getSelectors = <T>(getModule: (state: T) => State) => {
-  const getContractsByName = createSelector(getModule, m => m);
-  const getContractForRef = createSelector(getModule, contractForRef);
+  const getContractsByName = createSelector(
+    getModule,
+    m => m
+  );
+  const getContractForRef = createSelector(
+    getModule,
+    contractForRef
+  );
 
   const getContractsFromRefs = (refs: ContractRef[]) =>
-    createSelector(getContractForRef, getContract => map(getContract, refs));
+    createSelector(
+      getContractForRef,
+      getContract => map(getContract, refs)
+    );
 
   const getHasContracts = (res: ContractRef[]) =>
-    createSelector(getContractForRef, getContract =>
-      pipe(
-        map(getContract),
-        all((x: any) => !!x && !x.loading)
-      )(res)
+    createSelector(
+      getContractForRef,
+      getContract =>
+        pipe(
+          map(getContract),
+          all((x: any) => !!x && !x.loading)
+        )(res)
     );
   const getAllAbis = createSelector(
     getModule,
@@ -84,7 +95,10 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
       flatten
     )
   );
-  const getLogDecoder = createSelector(getAllAbis, abis => decodeLogs(abis));
+  const getLogDecoder = createSelector(
+    getAllAbis,
+    (abis: AbiDefinition[]) => decodeLogs(abis)
+  );
 
   return {
     getContractForRef,

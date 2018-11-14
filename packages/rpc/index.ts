@@ -19,3 +19,4 @@ export { CallInput } from './methods/request/send-call';
 export { DeploymentInput } from './methods/request/deploy';
 export * from './providers';
 export * from './middleware';
+export * from './decoders';
