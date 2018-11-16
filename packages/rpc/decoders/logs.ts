@@ -1,8 +1,9 @@
-import * as ethJSABI from 'ethjs-abi';
 import { toSignatureHash, isEventAbi } from '../utils';
 import { AbiDefinition } from '../interfaces';
 import { Dictionary } from 'ramda';
 import { EventDescription } from '../interfaces';
+
+const ethJSABI = require('ethjs-abi');
 
 export const decodeLogs = (abi: AbiDefinition[]) => {
   const events = eventsFromAbi(abi);
