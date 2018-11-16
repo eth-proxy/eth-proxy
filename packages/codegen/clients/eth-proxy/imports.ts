@@ -2,9 +2,6 @@ export const imports = [
   {
     namedImports: [
       {
-        name: 'EventMetadata'
-      },
-      {
         name: 'RequestFactory'
       },
       {
@@ -12,5 +9,13 @@ export const imports = [
       }
     ],
     moduleSpecifier: '@eth-proxy/client'
+  },
+  {
+    namedImports: [
+      {
+        name: 'EventMetadata'
+      }
+    ],
+    moduleSpecifier: '@eth-proxy/rpc'
   }
 ];

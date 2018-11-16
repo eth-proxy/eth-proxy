@@ -1,6 +1,7 @@
 /* tslint:disable */
 import { BigNumber } from 'bignumber.js';
-import { EventMetadata, RequestFactory, EntityModel } from '@eth-proxy/client';
+import { RequestFactory, EntityModel } from '@eth-proxy/client';
+import { EventMetadata } from '@eth-proxy/rpc';
 
 export type ERC20Events = ERC20ApprovalEvent | ERC20TransferEvent;
 export type ContractsEvents = ERC20Events;

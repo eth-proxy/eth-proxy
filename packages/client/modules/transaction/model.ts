@@ -1,7 +1,6 @@
 import { Observable } from 'rxjs';
-import { TransactionReceipt, NumberLike } from '@eth-proxy/rpc';
+import { TransactionReceipt, NumberLike, DecodedEvent } from '@eth-proxy/rpc';
 import { Request } from '../request';
-import { DecodedEvent } from '../events';
 
 export interface TransactionInfo {
   contractName: string;

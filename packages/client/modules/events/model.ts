@@ -1,22 +1,5 @@
 import { Dictionary } from 'ramda';
 
-export interface DecodedEvent {
-  type: string;
-  payload?: any;
-  meta: EventMetadata;
-}
-
-export interface EventMetadata {
-  address: string;
-  logIndex: number;
-  transactionHash: string;
-  transactionIndex: number;
-  type: string;
-  blockHash: string;
-  blockNumber: number;
-  topics: string[];
-}
-
 export interface QueryModel<T extends {} = {}> {
   name: string;
   deps: {

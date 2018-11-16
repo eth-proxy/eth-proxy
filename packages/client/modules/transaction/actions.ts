@@ -1,6 +1,5 @@
 import { curry } from 'ramda';
-import { TransactionReceipt } from '@eth-proxy/rpc';
-import { DecodedEvent } from '../events';
+import { TransactionReceipt, DecodedEvent } from '@eth-proxy/rpc';
 
 export interface ProcessTransactionPayload {
   initId: string;

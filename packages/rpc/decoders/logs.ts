@@ -1,8 +1,9 @@
-import * as ethJSABI from 'ethjs-abi';
 import { toSignatureHash, isEventAbi } from '../utils';
 import { AbiDefinition } from '../interfaces';
-import { EventDefintion } from '@eth-proxy/client/modules/schema';
 import { Dictionary } from 'ramda';
+import { EventDescription } from '../interfaces';
+
+const ethJSABI = require('ethjs-abi');
 
 export const decodeLogs = (abi: AbiDefinition[]) => {
   const events = eventsFromAbi(abi);
@@ -56,7 +57,7 @@ export const decodeLogs = (abi: AbiDefinition[]) => {
 
 export function eventsFromAbi(
   abi: AbiDefinition[]
-): Dictionary<EventDefintion> {
+): Dictionary<EventDescription> {
   return abi.filter(isEventAbi).reduce((current, item) => {
     return {
       ...current,
@@ -65,7 +66,7 @@ export function eventsFromAbi(
   }, {});
 }
 
-function partialABI(fullABI: EventDefintion, indexed) {
+function partialABI(fullABI: EventDescription, indexed) {
   var inputs = fullABI.inputs.filter(i => i.indexed === indexed);
 
   return {

@@ -16,6 +16,7 @@ import * as fromTransactions from '../modules/transaction';
 
 import { EntityModel } from './model';
 import { ContractInfo } from '../modules/schema';
+import { DecodedEvent } from '@eth-proxy/rpc';
 
 const EMPTY_SNAPSHOT = {
   entities: {},
@@ -34,24 +35,32 @@ export interface EntitySnapshot<T> {
 
 export const getSelectors = <App>(getModule: (state: App) => State) => {
   const { getAllEvents } = fromEvents.getSelectors(
-    createSelector(getModule, m => m.events)
+    createSelector(
+      getModule,
+      m => m.events
+    )
   );
 
   const { getPendingTransactions } = fromTransactions.getSelectors(
-    createSelector(getModule, m => m.transactions)
+    createSelector(
+      getModule,
+      m => m.transactions
+    )
   );
 
   const getPendingTransactionsOfType = (
     types: { interfaceName: string; method: string }[]
   ) =>
-    createSelector(getPendingTransactions, ts =>
-      filter(
-        t =>
-          !!types.find(
-            x => x.method === t.method && t.contractName === x.interfaceName
-          ),
-        ts
-      )
+    createSelector(
+      getPendingTransactions,
+      ts =>
+        filter(
+          t =>
+            !!types.find(
+              x => x.method === t.method && t.contractName === x.interfaceName
+            ),
+          ts
+        )
     );
 
   const { getContractsFromRefs } = getInternalSelectors<App>(getModule);
@@ -94,7 +103,7 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
           flatten
         )(model);
         const hasRoot = handlers.some((x: any) => x.root);
-        const isEventInvolved = (x: fromEvents.DecodedEvent) =>
+        const isEventInvolved = (x: DecodedEvent) =>
           eventTypes.find(
             ({ type, address }) =>
               type === x.type &&

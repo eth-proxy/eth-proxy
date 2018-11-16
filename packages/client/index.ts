@@ -128,7 +128,7 @@ export {
 } from './modules/transaction';
 
 export { RequestFactory, ContractsAggregation } from './modules/request';
-export { EventMetadata, QueryModel } from './modules/events';
+export { QueryModel } from './modules/events';
 export { EthProxyOptions } from './options';
 export { EthProxyInterceptors } from './interceptors';
 export { idFromEvent } from './utils';

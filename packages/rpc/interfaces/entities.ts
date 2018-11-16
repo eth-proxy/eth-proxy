@@ -62,18 +62,28 @@ export interface TransactionReceipt {
 }
 
 export interface Log {
-  address: string;
-  blockHash: string;
-  blockNumber: number;
   data: string;
-  logIndex: number;
   removed: boolean;
-  topics: string[];
+  address: string;
+  logIndex: number;
+  blockNumber: number;
   transactionHash: string;
   transactionIndex: number;
+  blockHash: string;
+  topics: string[];
 }
 
 export enum TransactionStatus {
   Failure = 0,
   Success = 1
 }
+
+export interface DecodedEvent<T = any> {
+  type: string;
+  payload: T;
+  meta: EventMetadata;
+}
+
+export type EventMetadata = Log & {
+  type: string;
+};

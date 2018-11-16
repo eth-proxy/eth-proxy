@@ -3,17 +3,13 @@ import { indexBy, values } from 'ramda';
 import { combineReducers } from 'redux';
 
 import * as actions from './actions';
-import {
-  DecodedEvent,
-  QueryModel,
-  ContractQuery,
-  NormalizedFilter
-} from './model';
+import { QueryModel, ContractQuery, NormalizedFilter } from './model';
 import { idFromEvent, sortEvents } from '../../utils';
 import { addressMatches, topicsMatches } from './utils';
 import { moduleId } from './constants';
 
 import * as fromTransactions from '../transaction';
+import { DecodedEvent } from '@eth-proxy/rpc';
 
 export interface EventsQueryState {
   [id: string]: {
@@ -128,13 +124,28 @@ export const reducer = combineReducers<State>({
 });
 const loading = { status: 'loading', filters: [] as NormalizedFilter[] };
 export const getSelectors = <T>(getModule: (state: T) => State) => {
-  const getEventEntities = createSelector(getModule, m => m.entities);
-  const getAllEvents = createSelector(getEventEntities, values);
-  const getAllEventsSorted = createSelector(getAllEvents, sortEvents);
+  const getEventEntities = createSelector(
+    getModule,
+    m => m.entities
+  );
+  const getAllEvents = createSelector(
+    getEventEntities,
+    values
+  );
+  const getAllEventsSorted = createSelector(
+    getAllEvents,
+    sortEvents
+  );
 
-  const getEventQueries = createSelector(getModule, m => m.queries);
+  const getEventQueries = createSelector(
+    getModule,
+    m => m.queries
+  );
   const getEventQuery = (id: string) =>
-    createSelector(getEventQueries, q => q[id] || loading);
+    createSelector(
+      getEventQueries,
+      q => q[id] || loading
+    );
 
   const getQueryResultFromQueryId = (id: string) =>
     createSelector(

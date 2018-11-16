@@ -2,7 +2,7 @@ import {
   InitializedTransaction,
   TransactionWithHash
 } from '../modules/transaction';
-import { EventMetadata } from '../modules/events';
+import { EventMetadata } from '@eth-proxy/rpc';
 
 export interface TransactionHandler<E, MD> {
   handle: (
