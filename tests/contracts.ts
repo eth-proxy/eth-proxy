@@ -1,6 +1,6 @@
 /* tslint:disable */
 import { BigNumber } from 'bignumber.js';
-import { EventMetadata, RequestFactory, EntityModel } from '@eth-proxy/client';
+import { EventMetadata } from '@eth-proxy/rpc';
 
 export type SampleTokenEvents =
   | SampleTokenApprovalEvent

@@ -1,5 +1,5 @@
 import { SubscribableOrPromise, Observable } from 'rxjs';
-import { ContractAbi, AbiDefinition } from '@eth-proxy/rpc';
+import { ContractAbi, AbiDefinition, EventDescription } from '@eth-proxy/rpc';
 
 export interface ContractSchemaExtras {
   address: string;
@@ -26,22 +26,9 @@ export type ContractSchemaResolver = (
 
 export type ContractLoader = (name: string) => Observable<ContractInfo>;
 
-export interface InputDefinition {
-  indexed: boolean;
-  name: string;
-  type: string;
-}
-
-export interface EventDefintion {
-  anonymous: boolean;
-  inputs: InputDefinition[];
-  name: string;
-  type: 'event';
-}
-
 export interface NetworkDefinition {
   address: string;
-  events: { [topic: string]: EventDefintion };
+  events: { [topic: string]: EventDescription };
   links: {};
   updated_at: number;
 }
