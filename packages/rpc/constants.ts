@@ -11,3 +11,5 @@ export const enum EthUnits {
   Gether = 27,
   Tether = 30
 }
+
+export const x = 12;
