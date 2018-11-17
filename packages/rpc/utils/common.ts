@@ -38,8 +38,10 @@ export function send(provider: Provider): SendRequest {
   return payload => {
     return new Promise((res, rej) => {
       provider.sendAsync(payload, (err, response) => {
-        if (err) {
-          rej(err);
+        const error =
+          err || (response.error && new Error(response.error.message));
+        if (error) {
+          rej(error);
           return;
         }
         res(response.result);
@@ -52,8 +54,10 @@ export function send$(provider: Provider): SendObservableRequest {
   return payload =>
     new Observable(observer => {
       provider.sendAsync(payload, (err, response) => {
-        if (err) {
-          observer.error(err);
+        const error =
+          err || (response.error && new Error(response.error.message));
+        if (error) {
+          observer.error(error);
           return;
         }
         observer.next(response.result);

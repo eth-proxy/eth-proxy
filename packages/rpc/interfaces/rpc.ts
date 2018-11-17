@@ -9,6 +9,10 @@ export interface BaseRpcResponse<T = any> {
   id?: number;
   jsonrpc?: '2.0';
   result: T;
+  error?: {
+    code: number;
+    message: string;
+  };
 }
 
 export interface Rpc<Request extends BaseRpcRequest, Result> {

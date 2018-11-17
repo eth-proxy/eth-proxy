@@ -1,10 +1,13 @@
 import { first, tap, mergeMap, map } from 'rxjs/operators';
 import { defer } from 'rxjs';
 
-import { pickTxParamsProps, Request } from '../modules/request';
+import { Request } from '../modules/request';
 import { createProcessCall, getRequestById } from '../modules/call';
 import { Context } from '../context';
 import { getInterceptor } from '../utils';
+import { omit } from 'ramda';
+
+const omitCustomProps = omit(['interface', 'method', 'payload']);
 
 export function sendCall({ genId, options, store }: Context) {
   return (request: Request<string, string, any>) => {
@@ -18,7 +21,7 @@ export function sendCall({ genId, options, store }: Context) {
             args: payload,
             contractName: request.interface,
             method,
-            txParams: pickTxParamsProps(request)
+            txParams: omitCustomProps(request)
           })
         );
       }),

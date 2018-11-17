@@ -1,4 +1,4 @@
-import { isNil, evolve, pick, curry } from 'ramda';
+import { isNil, evolve, curry } from 'ramda';
 import { formatQuantity } from '../../formatters';
 import {
   ContractRequestParams,
@@ -72,14 +72,6 @@ export function formatArg(type: string, value: any) {
   return value.toString();
 }
 
-export const requestParamsKeys = [
-  'from',
-  'to',
-  'gas',
-  'gasPrice',
-  'value',
-  'data'
-];
 export function formatRequestInput(params: RequestInputParams) {
   return evolve(
     {
@@ -87,6 +79,6 @@ export function formatRequestInput(params: RequestInputParams) {
       gas: formatQuantity,
       value: formatQuantity
     },
-    pick(requestParamsKeys, params)
+    params
   ) as ContractRequestParams;
 }
