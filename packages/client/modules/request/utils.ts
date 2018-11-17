@@ -1,9 +1,6 @@
-import { pick } from 'ramda';
 import { methodProxy } from './contract-proxy';
 import { RequestOptions } from './model';
-
-const paramsKeys = ['from', 'to', 'gas', 'gasPrice', 'value'];
-export const pickTxParamsProps = pick(paramsKeys);
+import { omit } from 'ramda';
 
 export function at<T extends {}>(contractProxy: T, address: string): T {
   const current = Object.assign({ address }, (contractProxy as any).fake());
@@ -16,3 +13,5 @@ export const withOptions = <T extends {}>(
 ): T => {
   return Object.assign({}, request, options);
 };
+
+export const omitCustomProps = omit(['interface', 'method', 'payload']);
