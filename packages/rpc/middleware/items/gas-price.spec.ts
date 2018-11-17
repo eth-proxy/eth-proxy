@@ -1,22 +1,17 @@
-import { gasPriceMiddleware, GasPreset } from './gas-price';
+import { gasPriceMiddleware } from './gas-price';
 import sinon = require('sinon');
-import { EthSendTransactionRequest, TransactionParams } from '../../interfaces';
+import { EthSendTransactionRequest } from '../../interfaces';
 import { of } from 'rxjs';
 import { expect } from 'chai';
-import { EthUnits } from '../../constants';
 
-const _10Gwei: GasPreset = {
-  amount: 10,
-  unit: EthUnits.Gwei
-};
-
-const _10GweiInWeiInHex = '0x2540be400';
+const _10wei = 10;
+const _10WeiInHex = '0xa';
 
 const mockNext = x => of(x);
 
 describe('gasPriceMiddleware', () => {
   it('sets gas price for transaction', async () => {
-    var always10GweiLoader = sinon.stub().returns(of(_10Gwei));
+    var always10GweiLoader = sinon.stub().returns(of(_10wei));
 
     const middleware = gasPriceMiddleware(always10GweiLoader);
 
@@ -29,7 +24,7 @@ describe('gasPriceMiddleware', () => {
       method: 'eth_sendTransaction',
       params: [
         {
-          gasPrice: _10GweiInWeiInHex
+          gasPrice: _10WeiInHex
         }
       ]
     } as EthSendTransactionRequest;

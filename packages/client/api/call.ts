@@ -1,13 +1,10 @@
 import { first, tap, mergeMap, map } from 'rxjs/operators';
 import { defer } from 'rxjs';
 
-import { Request } from '../modules/request';
+import { Request, omitCustomProps } from '../modules/request';
 import { createProcessCall, getRequestById } from '../modules/call';
 import { Context } from '../context';
 import { getInterceptor } from '../utils';
-import { omit } from 'ramda';
-
-const omitCustomProps = omit(['interface', 'method', 'payload']);
 
 export function sendCall({ genId, options, store }: Context) {
   return (request: Request<string, string, any>) => {

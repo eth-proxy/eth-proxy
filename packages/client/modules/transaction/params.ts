@@ -1,4 +1,5 @@
 import { curry } from 'ramda';
+import { omitCustomProps } from '../request';
 
 export function txParamsValid(params) {
   return !!params.from;
@@ -7,6 +8,6 @@ export function txParamsValid(params) {
 export const mergeParams = curry((tx_params: any, defaultTxParams: any) => {
   return {
     ...defaultTxParams,
-    ...tx_params
+    ...omitCustomProps(tx_params)
   };
 });
