@@ -2,6 +2,7 @@ import { toSignatureHash, isEventAbi } from '../utils';
 import { AbiDefinition } from '../interfaces';
 import { Dictionary } from 'ramda';
 import { EventDescription } from '../interfaces';
+import { BigNumber } from 'bignumber.js';
 
 const ethJSABI = require('ethjs-abi');
 
