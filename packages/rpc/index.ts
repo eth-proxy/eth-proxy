@@ -12,7 +12,8 @@ export {
   isEventAbi,
   isConstructorAbi,
   arrify,
-  send
+  send,
+  convert
 } from './utils';
 export { TransactionInput } from './methods/request/send-transaction';
 export { CallInput } from './methods/request/send-call';
