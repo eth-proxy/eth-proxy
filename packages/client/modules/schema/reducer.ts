@@ -89,11 +89,12 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
     );
   const getAllAbis = createSelector(
     getModule,
-    pipe(
-      values,
-      map(propOr([], 'abi')),
-      flatten
-    )
+    x =>
+      pipe(
+        values,
+        map(propOr([], 'abi')),
+        flatten
+      )(x)
   );
   const getLogDecoder = createSelector(
     getAllAbis,
