@@ -140,13 +140,16 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
     model: EntityModel<T, {}, {}>,
     snapshotSelector: (state: App) => Snapshot<T> = () => EMPTY_SNAPSHOT
   ) => {
-    const transactionTypes = pipe(
-      mapObjIndexed((handlers, interfaceName) =>
-        keys(handlers).map(method => ({ method, interfaceName }))
-      ),
+    const transactionTypes = (pipe(
+      mapObjIndexed((handlers, interfaceName) => {
+        return keys(handlers).map((method: string) => ({
+          method,
+          interfaceName
+        }));
+      }),
       values,
       flatten
-    )(model) as {
+    )(model) as any) as {
       method: string;
       interfaceName: string;
     }[];

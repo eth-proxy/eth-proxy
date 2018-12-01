@@ -19,7 +19,8 @@
     "postpublish": "npm run clean"
   },
   "dependencies": {
-    "ramda": "0.25.0"
+    "ramda": "0.25.0",
+    "ws": "^6.1.2"
   },
   "peerDependencies": {
     "bignumber.js": "^6.0.0",
