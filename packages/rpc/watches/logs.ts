@@ -15,7 +15,7 @@ export const watchLogs = curry(
   (provider: Provider, options: WatchLogsOptions) => {
     const eventLoaders$ = arrify(options.filter.address || [null]).map(
       address => {
-        return _watchLogs(provider)({
+        return watchEvents(provider)({
           ...options,
           filter: {
             ...options.filter,
@@ -29,7 +29,7 @@ export const watchLogs = curry(
   }
 );
 
-export const _watchLogs = curry(
+export const watchEvents = curry(
   (
     provider: Provider,
     { filter, timer$ = timer(0, 1000) }: WatchLogsOptions

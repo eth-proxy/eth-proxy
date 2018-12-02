@@ -1,2 +1,2 @@
 export { watchBlocks } from './latest-block';
-export { watchLogs } from './logs';
+export { watchLogs, watchEvents } from './logs';
