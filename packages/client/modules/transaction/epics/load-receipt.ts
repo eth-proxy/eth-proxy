@@ -15,7 +15,7 @@ import {
   withLatestFrom,
   tap
 } from 'rxjs/operators';
-import { of, throwError as _throw, from, defer } from 'rxjs';
+import { of, throwError as _throw, defer } from 'rxjs';
 import { getReceipt, TransactionReceipt } from '@eth-proxy/rpc';
 
 import * as actions from '../actions';
