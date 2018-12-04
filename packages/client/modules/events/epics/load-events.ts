@@ -45,7 +45,7 @@ export const queryEventsEpic = (
             .then(cache.result(f))
             .catch(cache.error(f));
         }),
-        defaultIfEmpty([])
+        defaultIfEmpty()
       );
 
       const pendingLoaded$ = cache

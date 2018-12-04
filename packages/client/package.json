@@ -27,11 +27,11 @@
   },
   "peerDependencies": {
     "bignumber.js": "^6.0.0",
-    "rxjs": "^6.0.0"
+    "rxjs": "^6.3.3"
   },
   "devDependencies": {
     "rimraf": "^2.6.2",
-    "rollup": "0.66.4",
-    "typescript": "~3.0.0"
+    "rollup": "^0.67.3",
+    "typescript": "^3.1.6"
   }
 }
