@@ -12,15 +12,17 @@ import {
   concat,
   map,
   catchError,
-  withLatestFrom
+  withLatestFrom,
+  tap
 } from 'rxjs/operators';
-import { of, throwError as _throw, from } from 'rxjs';
-import { getReceipt } from '@eth-proxy/rpc';
+import { of, throwError as _throw, from, defer } from 'rxjs';
+import { getReceipt, TransactionReceipt } from '@eth-proxy/rpc';
 
 import * as actions from '../actions';
 import { EpicContext } from '../../../context';
 import { getLogDecoder } from '../../schema';
 import { State } from '../../../store';
+import { isNil } from 'ramda';
 
 export const findReceiptEpic = (
   actions$: ActionsObservable<actions.TxGenerated>,
@@ -31,7 +33,8 @@ export const findReceiptEpic = (
     ofType(TX_GENERATED),
     withLatestFrom(state$),
     mergeMap(([{ payload: { tx } }, state]) =>
-      from(getReceipt(provider, tx)).pipe(
+      defer(() => getReceipt(provider, tx)).pipe(
+        tap(throwIfEmpty),
         map(receipt => {
           const logs = getLogDecoder(state)(receipt.logs);
           return createLoadReceiptSuccess({
@@ -51,3 +54,9 @@ export const findReceiptEpic = (
     )
   );
 };
+
+function throwIfEmpty(receipt: TransactionReceipt | null) {
+  if (isNil(receipt)) {
+    throw Error('Receipt not found');
+  }
+}
