@@ -1,11 +1,11 @@
 import { Provider, BaseRpcResponse } from '../interfaces';
 import { EMPTY } from 'rxjs';
-import * as fetch from 'isomorphic-fetch';
 import { asHandler } from './utils';
 
-declare const fetch: any;
+const fetch = require('isomorphic-fetch');
+const defaultUrl = 'http://localhost:8545';
 
-export function httpProvider(url: string): Provider {
+export function httpProvider(url = defaultUrl): Provider {
   return {
     send: (payload: any) => {
       return fetch(url, {
@@ -33,4 +33,4 @@ export function httpProvider(url: string): Provider {
   };
 }
 
-export const httpHandler = (url: string) => asHandler(httpProvider(url));
+export const httpHandler = (url = defaultUrl) => asHandler(httpProvider(url));
