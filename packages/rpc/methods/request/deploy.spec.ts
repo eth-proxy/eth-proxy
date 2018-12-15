@@ -2,7 +2,8 @@ import * as Web3 from 'web3';
 import { SampleToken } from '../../mocks';
 import { deployContract } from './deploy';
 import { expect } from 'chai';
-import { isConstructorAbi } from '@eth-proxy/rpc';
+import { isConstructorAbi } from '../../utils';
+import { testProvider } from '../../mocks';
 
 const { abi, bytecode } = SampleToken;
 
@@ -53,11 +54,9 @@ function getWeb3Payload() {
 
 function getRxWeb3Payload() {
   return new Promise<Payload>((res, rej) => {
-    const provider = {
-      sendAsync: payload => res(payload)
-    };
+    const provider = testProvider(payload => res(payload as any));
 
-    deployContract(provider, {
+    deployContract(provider as any, {
       abi: abi.find(isConstructorAbi),
       bytecode,
       txParams,

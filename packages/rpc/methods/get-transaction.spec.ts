@@ -1,37 +1,26 @@
 import { getTransactionByHash } from './get-transaction';
-import * as sinon from 'sinon';
-import { Provider, RawTransaction, Transaction } from '../interfaces';
+import { RawTransaction, Transaction } from '../interfaces';
 import { expect } from 'chai';
 import { BigNumber } from 'bignumber.js';
-
-const rpcResult = <T>(result) => ({ result });
+import { testProvider } from '../mocks';
 
 const txHash =
   '0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238';
 
 describe('Get transaction', () => {
-  let provider: Provider;
-  beforeEach(() => {
-    provider = {
-      sendAsync: () => {}
-    } as any;
-  });
-
   it('Calls eth_getTransactionByHash method wit hash', async () => {
-    const sendAsync = sinon.stub(provider, 'sendAsync');
-    sendAsync.callsFake((args, cb) => cb(null, rpcResult(txHash)));
+    const provider = testProvider(() => txHash);
 
     await getTransactionByHash(provider, txHash);
 
-    expect(sendAsync.firstCall.args[0]).to.deep.eq({
+    expect(provider.getOnlyRequest()).to.deep.eq({
       method: 'eth_getTransactionByHash',
       params: [txHash]
     });
   });
 
   it('Throws when transaction is nil', async () => {
-    const sendAsync = sinon.stub(provider, 'sendAsync');
-    sendAsync.callsFake((args, cb) => cb(null, rpcResult(null)));
+    const provider = testProvider(() => null);
 
     try {
       await getTransactionByHash(provider, txHash);
@@ -41,8 +30,7 @@ describe('Get transaction', () => {
   });
 
   it('Return formatted transaction', async () => {
-    const sendAsync = sinon.stub(provider, 'sendAsync');
-    sendAsync.callsFake((_, cb) => cb(null, rpcResult(unformattedTx)));
+    const provider = testProvider(() => unformattedTx);
     const result = await getTransactionByHash(provider, txHash);
 
     expect(result).to.deep.eq(formattedTx);

@@ -1,9 +1,7 @@
 import { getEvents } from './get-events';
-import * as sinon from 'sinon';
 import { Provider, FilterObject, RawLog, Log } from '../interfaces';
 import { expect } from 'chai';
-
-const rpcResult = <T>(result) => ({ result });
+import { testProvider } from '../mocks';
 
 const address = '0x123';
 const block100 = 100;
@@ -25,12 +23,11 @@ describe('Get logs', () => {
       toBlock: block100,
       topics
     };
-    const sendAsync = sinon.stub(provider, 'sendAsync');
-    sendAsync.callsFake((args, cb) => cb(null, rpcResult([])));
+    const provider = testProvider(() => []);
 
     await getEvents(provider, filter);
 
-    expect(sendAsync.firstCall.args[0]).to.deep.eq({
+    expect(provider.getOnlyRequest()).to.deep.eq({
       method: 'eth_getLogs',
       params: [
         {
@@ -44,8 +41,8 @@ describe('Get logs', () => {
   });
 
   it('Return formatted logs', async () => {
-    const sendAsync = sinon.stub(provider, 'sendAsync');
-    sendAsync.callsFake((_, cb) => cb(null, rpcResult([unformattedLog])));
+    const provider = testProvider(() => [unformattedLog]);
+
     const result = await getEvents(provider, {});
 
     expect(result).to.deep.eq([formattedLog]);

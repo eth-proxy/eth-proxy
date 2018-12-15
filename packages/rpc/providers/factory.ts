@@ -1,19 +1,25 @@
-import { Handler, SubHandler, Payload } from './model';
+import { SubHandler } from './model';
 import { mergeAll } from 'ramda';
-import { throwError } from 'rxjs';
+import { Provider } from '../interfaces';
 
-export function combineHandlers(
+export function enhanceProvider(
   subHandlers: SubHandler[],
-  rest: Handler = throwErrorHandler
-): Handler {
+  provider: Provider
+): Provider {
   const all = mergeAll<SubHandler>(subHandlers);
 
-  return payload => {
-    const handler = all[payload.method] || rest;
-    return handler(payload);
-  };
-}
+  return {
+    ...provider,
+    send: payload => {
+      if (Array.isArray(payload)) {
+        throw Error('Batch not suppoted');
+      }
+      const maybeHandler = all[payload.method];
+      if (maybeHandler) {
+        return maybeHandler(payload).toPromise();
+      }
 
-function throwErrorHandler(payload: Payload) {
-  return throwError(Error(`${payload.method} handler not found`));
+      return provider.send(payload);
+    }
+  };
 }

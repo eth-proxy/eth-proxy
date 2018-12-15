@@ -12,10 +12,7 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rimraf dist",
-    "build": "rollup -c",
-    "prepublish": "npm run build",
-    "postpublish": "npm run clean"
+    "build": "rollup -c"
   },
   "dependencies": {
     "@eth-proxy/rpc": "^0.6.10-pubsub.1",

@@ -9,24 +9,22 @@ export type ProviderBound<T> = T extends (provider: Provider) => infer Result
   ? (arg: A1) => Result
   : never;
 
-export type SendAsync = <
-  Request extends RpcRequest,
-  Type extends Request['method']
->(
-  payload: Request | Request[],
-  cb: (err: any, next: Extract<RpcMethod, { type: Type }>['response']) => void
-) => void;
-
-export type Provider = {
-  sendAsync: SendAsync;
-};
-
-export type SendRequest = <
+export type RpcSend = <
   Request extends RpcRequest,
   Type extends Request['method']
 >(
   payload: Request | Request[]
-) => Promise<Extract<RpcMethod, { type: Type }>['response']['result']>;
+) => Promise<Extract<RpcMethod, { type: Type }>['response']>;
+
+export type LegacyProvider = {
+  sendAsync: (payload, cb) => void;
+};
+
+export type Provider = {
+  send: RpcSend;
+  observe: (subscriptionId: string) => Observable<any>;
+  disconnect: () => void;
+};
 
 export type SendObservableRequest = <
   Request extends RpcRequest,
@@ -34,6 +32,13 @@ export type SendObservableRequest = <
 >(
   payload: Request | Request[]
 ) => Observable<Extract<RpcMethod, { type: Type }>['response']['result']>;
+
+export type SendRequest = <
+  Request extends RpcRequest,
+  Type extends Request['method']
+>(
+  payload: Request | Request[]
+) => Promise<Extract<RpcMethod, { type: Type }>['response']['result']>;
 
 export interface FilterObject {
   fromBlock?: number | string;
@@ -52,3 +57,34 @@ export interface RequestInputParams {
   value?: NumberLike;
   data?: string;
 }
+
+export interface LogFilter {
+  address?: string | string[];
+  topics?: (string | string[])[];
+}
+
+export type NewHeadsOptions = { includeTransactions?: boolean };
+
+export interface NewHeadsArgs {
+  type: 'newHeads';
+  args: NewHeadsOptions;
+}
+
+export interface LogsArgs {
+  type: 'logs';
+  args: LogFilter;
+}
+
+export interface NewPendingTransactionsArgs {
+  type: 'newPendingTransactions';
+}
+
+export interface SyncingArgs {
+  type: 'syncing';
+}
+
+export type SubscribeArgs =
+  | NewHeadsArgs
+  | LogsArgs
+  | NewPendingTransactionsArgs
+  | SyncingArgs;

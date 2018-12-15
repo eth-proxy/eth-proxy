@@ -1,13 +1,12 @@
 import { curry } from 'ramda';
-import { PubSubProvider, RawFilter } from '../interfaces';
+import { Provider, LogFilter } from '../interfaces';
 import { fromLog } from '../formatters';
 import { map } from 'rxjs/operators';
 import { createSubscription } from './create';
 
-type NewHeadsOptions = Pick<RawFilter, 'address' | 'topics'>;
-
-export const subscribeLogs = curry(
-  (provider: PubSubProvider, opts: NewHeadsOptions) => {
-    return createSubscription(provider, ['logs', opts]).pipe(map(fromLog));
-  }
-);
+export const subscribeLogs = curry((provider: Provider, opts: LogFilter) => {
+  return createSubscription(provider, {
+    type: 'logs',
+    args: opts
+  }).pipe(map(fromLog));
+});

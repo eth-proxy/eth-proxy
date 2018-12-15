@@ -2,19 +2,16 @@ import { Provider } from '../interfaces';
 import { reduceRight, curry } from 'ramda';
 import { MiddlewareItem } from './model';
 import { Payload, Handler } from '../providers';
+import { asHandler } from '../providers';
 
 export const applyMiddleware = curry(
-  (interceptors: MiddlewareItem[], handler: Handler) => {
-    const engine = createEngine(interceptors, handler);
+  (interceptors: MiddlewareItem[], provider: Provider) => {
+    const engine = createEngine(interceptors, asHandler(provider));
 
     return {
-      sendAsync: (payload: any, cb: any) => {
-        engine(payload).subscribe({
-          next: results => cb(null, results),
-          error: cb
-        });
-      }
-    } as Provider;
+      ...provider,
+      send: (payload: any) => engine(payload).toPromise()
+    };
   }
 );
 

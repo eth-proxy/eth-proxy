@@ -3,6 +3,7 @@ import { SampleToken } from '../../mocks';
 import { sendCall } from './send-call';
 import { expect } from 'chai';
 import { FunctionDescription } from '../../interfaces';
+import { testProvider } from '../../mocks';
 
 interface Payload {
   params: any;
@@ -40,11 +41,9 @@ function getWeb3Payload() {
 
 function getRxWeb3Payload() {
   return new Promise<Payload>((res, rej) => {
-    const provider = {
-      sendAsync: payload => res(payload)
-    };
+    const provider = testProvider(payload => res(payload as any));
 
-    sendCall(provider, {
+    sendCall(provider as any, {
       abi: symbolEthCall,
       args: undefined,
       txParams

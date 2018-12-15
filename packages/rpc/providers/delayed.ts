@@ -1,13 +1,21 @@
-import { Provider, SendAsync } from '../interfaces';
+import { Provider } from '../interfaces';
 import { SubscribableOrPromise, from } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
 
-export function delayedProvider(provider$: SubscribableOrPromise<Provider>) {
+export function delayedProvider(
+  provider: SubscribableOrPromise<Provider>
+): Provider {
+  const provider$ = from(provider);
+
   return {
-    provider$: from(provider$),
-    sendAsync: ((payload, cb) => {
-      return from(provider$).subscribe(provider =>
-        provider.sendAsync(payload, cb)
-      );
-    }) as SendAsync
+    send: payload => {
+      return provider$.toPromise().then(provider => provider.send(payload));
+    },
+    observe: subId => {
+      return provider$.pipe(mergeMap(provider => provider.observe(subId)));
+    },
+    disconnect: () => {
+      return provider$.toPromise().then(provider => provider.disconnect());
+    }
   };
 }
