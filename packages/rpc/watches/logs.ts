@@ -1,8 +1,8 @@
-import { Observable, timer, merge, of, concat } from 'rxjs';
+import { Observable, timer, of, concat } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { curry } from 'ramda';
 import { Provider, FilterObject, RawLog, Log } from '../interfaces';
-import { arrify, send$ } from '../utils';
+import { send$ } from '../utils';
 import { pollChanges } from './common';
 import { formatFilter, fromLog } from '../formatters';
 
@@ -10,26 +10,8 @@ export interface WatchLogsOptions {
   timer$?: Observable<any>;
   filter: FilterObject;
 }
-// TESTRPC & METAMASK WATCH DOES NOT WORK WITH ADDRESS LIST
+
 export const watchLogs = curry(
-  (provider: Provider, options: WatchLogsOptions) => {
-    const eventLoaders$ = arrify(options.filter.address || [null]).map(
-      address => {
-        return watchEvents(provider)({
-          ...options,
-          filter: {
-            ...options.filter,
-            address
-          }
-        });
-      }
-    );
-
-    return merge(...eventLoaders$);
-  }
-);
-
-export const watchEvents = curry(
   (
     provider: Provider,
     { filter, timer$ = timer(0, 1000) }: WatchLogsOptions
