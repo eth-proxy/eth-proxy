@@ -1,6 +1,6 @@
 import { webSocket, WebSocketSubjectConfig } from 'rxjs/webSocket';
-import { Provider, RpcRequest } from '../interfaces';
-import { first, filter } from 'rxjs/operators';
+import { Provider, RpcRequest, SubscriptionData } from '../interfaces';
+import { first, filter, map } from 'rxjs/operators';
 import { curry } from 'ramda';
 
 export function websocketProvider(
@@ -17,8 +17,10 @@ export function websocketProvider(
         any
       >;
     },
-    observe: (subId: string) => {
-      return ws.pipe(filter(isMatchingSubscription(subId)));
+    observe: <T>(subId: string) => {
+      return ws
+        .pipe(filter(isMatchingSubscription(subId)))
+        .pipe(map((x: SubscriptionData<T>) => x.params.result));
     },
     disconnect: ws.unsubscribe.bind(ws)
   };

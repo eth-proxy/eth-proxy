@@ -9,14 +9,14 @@ export function stampMiddleware(gen = createIdGenerator()): MiddlewareItem {
     const jsonrpc = '2.0' as '2.0';
 
     return handle({
-      ...payload,
       id,
-      jsonrpc
+      jsonrpc,
+      ...payload
     }).pipe(
       map(result => ({
-        ...result,
         id,
-        jsonrpc
+        jsonrpc,
+        ...result
       }))
     );
   };

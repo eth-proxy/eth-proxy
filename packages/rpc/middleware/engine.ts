@@ -5,7 +5,7 @@ import { Payload, Handler } from '../providers';
 import { asHandler } from '../providers';
 
 export const applyMiddleware = curry(
-  (interceptors: MiddlewareItem[], provider: Provider) => {
+  (interceptors: MiddlewareItem[], provider: Provider): Provider => {
     const engine = createEngine(interceptors, asHandler(provider));
 
     return {

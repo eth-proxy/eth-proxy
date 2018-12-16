@@ -2,12 +2,8 @@ import * as Web3 from 'web3';
 import { SampleToken } from '../../mocks';
 import { sendTransaction } from './send-transaction';
 import { expect } from 'chai';
-import { FunctionDescription } from '../../interfaces';
+import { FunctionDescription, RpcRequest } from '../../interfaces';
 import { testProvider } from '../../mocks';
-
-interface Payload {
-  params: any;
-}
 
 const { abi } = SampleToken;
 const transferAbi = abi.find(
@@ -33,7 +29,7 @@ describe('Send transaction', () => {
 
 // Each time returns different data
 function getWeb3Payload() {
-  return new Promise<Payload>((res, rej) => {
+  return new Promise<RpcRequest>((res, rej) => {
     const web3 = new Web3({
       sendAsync: payload => res(payload)
     });
@@ -45,8 +41,8 @@ function getWeb3Payload() {
 }
 
 function getRxWeb3Payload() {
-  return new Promise<Payload>((res, rej) => {
-    const provider = testProvider(payload => res(payload as any));
+  return new Promise<RpcRequest>((res, rej) => {
+    const provider = testProvider(payload => res(payload as RpcRequest));
 
     sendTransaction(provider, {
       abi: transferAbi,

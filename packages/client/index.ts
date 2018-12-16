@@ -38,9 +38,7 @@ export class EthProxy<T extends {} = {}> implements Provider {
 
   rpc: SendRequest;
   send: RpcSend;
-  stop: () => void;
 
-  // not implemented
   observe: (subscriptionId: string) => Observable<any>;
   disconnect: () => void;
 }
@@ -101,7 +99,10 @@ export function createProxy<T extends {}>(
 
     rpc,
 
-    stop: () => store.dispatch(createEthProxyStopped())
+    disconnect: () => {
+      store.dispatch(createEthProxyStopped());
+      provider.disconnect();
+    }
   };
 }
 

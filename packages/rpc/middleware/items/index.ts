@@ -1,4 +1,3 @@
-export * from './delay';
 export * from './gas-price';
 export * from './logging';
 export * from './range-split';

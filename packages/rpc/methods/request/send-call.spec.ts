@@ -2,12 +2,9 @@ import * as Web3 from 'web3';
 import { SampleToken } from '../../mocks';
 import { sendCall } from './send-call';
 import { expect } from 'chai';
-import { FunctionDescription } from '../../interfaces';
+import { FunctionDescription, RpcRequest } from '../../interfaces';
 import { testProvider } from '../../mocks';
 
-interface Payload {
-  params: any;
-}
 const { abi } = SampleToken;
 const symbolEthCall = abi.find(
   x => x.type === 'function' && x.name === 'symbol'
@@ -28,7 +25,7 @@ describe('Send call', () => {
 
 // Each time returns different data
 function getWeb3Payload() {
-  return new Promise<Payload>((res, rej) => {
+  return new Promise<RpcRequest>((res, rej) => {
     const web3 = new Web3({
       sendAsync: payload => res(payload)
     });
@@ -40,10 +37,10 @@ function getWeb3Payload() {
 }
 
 function getRxWeb3Payload() {
-  return new Promise<Payload>((res, rej) => {
-    const provider = testProvider(payload => res(payload as any));
+  return new Promise<RpcRequest>((res, rej) => {
+    const provider = testProvider(payload => res(payload as RpcRequest));
 
-    sendCall(provider as any, {
+    sendCall(provider, {
       abi: symbolEthCall,
       args: undefined,
       txParams
