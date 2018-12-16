@@ -1,4 +1,5 @@
 export * from './request';
+export * from './testrpc';
 export * from './get-accounts';
 export * from './get-balance';
 export * from './get-block';

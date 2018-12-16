@@ -2,11 +2,10 @@ import { createProxy, C, RequestFactory, at } from '@eth-proxy/client';
 import { of } from 'rxjs';
 import { mergeMap, tap, first, mapTo } from 'rxjs/operators';
 import { expect } from 'chai';
-import { snapshot, revert } from './utils';
 import { Contracts } from './contracts';
-import { httpProvider } from '@eth-proxy/rpc';
+import { httpSubprovider, revert, snapshot } from '@eth-proxy/rpc';
 
-const proxy = createProxy<Contracts>(httpProvider(), {
+const proxy = createProxy<Contracts>(httpSubprovider(), {
   contractSchemaResolver: ({ name }) => import(`./schemas/${name}.json`)
 });
 
@@ -24,11 +23,11 @@ const myToken = {
 
 describe('ERC20', () => {
   beforeEach(() => {
-    snapshot();
+    snapshot(proxy);
   });
   afterEach(() => {
-    proxy.stop();
-    revert();
+    revert(proxy);
+    proxy.disconnect();
   });
 
   it('Can use Sample Token', done => {

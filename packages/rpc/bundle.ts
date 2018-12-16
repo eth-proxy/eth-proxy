@@ -18,7 +18,7 @@ export type RpcBundle<M extends Methods, W extends Watches> = {
   { [P in keyof W]: ProviderBound<W[P]> };
 
 export function createRpc<M extends Methods, W extends Watches>(
-  provider: Promise<Provider>,
+  provider: Provider,
   {
     methods,
     watches
@@ -28,24 +28,12 @@ export function createRpc<M extends Methods, W extends Watches>(
   }
 ): RpcBundle<M, W> {
   return {
-    ...map(
-      method => (...args) => {
-        return provider.then(provider => method(provider, ...args));
-      },
-      methods
-    ),
-    ...map(
-      watch => (...args) => {
-        return from(provider).pipe(
-          mergeMap(provider => watch(provider, ...args))
-        );
-      },
-      watches
-    )
+    ...map(method => (...args) => method(provider, ...args), methods),
+    ...map(watch => (...args) => watch(provider, ...args), watches)
   } as any;
 }
 
-export function rpc(provider: Promise<Provider>) {
+export function rpc(provider: Provider) {
   return createRpc(provider, {
     methods: allMethods,
     watches: allWatches
