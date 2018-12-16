@@ -1,3 +1,2 @@
-export * from './create';
-export * from './logs';
-export * from './new-heads';
+export { subscribeLogs } from './logs';
+export { subscribeNewHeads } from './new-heads';

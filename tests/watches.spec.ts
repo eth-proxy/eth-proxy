@@ -8,7 +8,7 @@ import {
   delay,
   distinctUntilChanged
 } from 'rxjs/operators';
-import { httpSubprovider, rpc, Provider } from '@eth-proxy/rpc';
+import { httpSubprovider, createRpc } from '@eth-proxy/rpc';
 
 describe('ERC20', () => {
   const {
@@ -21,7 +21,7 @@ describe('ERC20', () => {
     sendTransactionWithData,
     getReceipt,
     getLogs
-  } = rpc(httpSubprovider());
+  } = createRpc(httpSubprovider());
 
   beforeEach(snapshot);
   afterEach(revert);
