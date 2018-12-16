@@ -17,7 +17,7 @@ const blacklistedMethods: RpcRequest['method'][] = [
 export function httpSubprovider({
   url = defaultUrl,
   accept = req => !blacklistedMethods.includes(req.method)
-}: HttpProviderConfig): Subprovider {
+}: HttpProviderConfig = {}): Subprovider {
   return {
     accept,
     send: (payload: any) => {

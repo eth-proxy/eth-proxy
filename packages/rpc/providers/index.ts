@@ -1,5 +1,6 @@
 export * from './delayed';
-export * from './factory';
+export * from './fallback-merge';
 export * from './http-provider';
 export * from './legacy-adapter';
+export * from './merge';
 export * from './websocket';
