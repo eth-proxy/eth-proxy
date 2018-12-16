@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/rpc",
-  "version": "0.6.10-pubsub.1",
+  "version": "0.7.0",
   "description": "Ethereum JSON rpc as functions",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -25,10 +25,10 @@
     "web3": "^0.20.3"
   },
   "devDependencies": {
+    "isomorphic-fetch": "2.2.1",
     "rimraf": "^2.6.2",
     "rollup": "^0.67.3",
-    "typescript": "^3.1.6",
     "synchronous-promise": "2.0.6",
-    "isomorphic-fetch": "2.2.1"
+    "typescript": "^3.1.6"
   }
 }
