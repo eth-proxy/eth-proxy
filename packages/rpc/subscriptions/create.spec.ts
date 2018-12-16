@@ -55,7 +55,7 @@ describe('Subscription creation', () => {
             }
 
             case 'eth_unsubscribe': {
-              return false;
+              return true;
             }
             default:
               throw Error('Unknown method');

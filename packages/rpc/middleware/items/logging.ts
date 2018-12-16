@@ -1,5 +1,4 @@
 import { tap } from 'rxjs/operators';
-import { Payload, Handler } from '../../providers';
 import { MiddlewareItem } from '../model';
 
 interface Logger {
@@ -8,7 +7,7 @@ interface Logger {
 }
 
 export function loggingMiddleware(logger: Logger = console): MiddlewareItem {
-  return (payload: Payload, handle: Handler) => {
+  return (payload, handle) => {
     logger.log(`[${payload.id}] ${payload.method} request`, payload);
 
     return handle(payload).pipe(

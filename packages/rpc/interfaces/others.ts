@@ -26,6 +26,10 @@ export type Provider = {
   disconnect: () => void;
 };
 
+export interface Subprovider extends Provider {
+  accept: (req: RpcRequest) => boolean;
+}
+
 export type SendObservableRequest = <
   Request extends RpcRequest,
   Type extends Request['method']

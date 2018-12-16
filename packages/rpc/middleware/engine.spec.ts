@@ -1,15 +1,16 @@
 import { applyMiddleware } from './engine';
 import { throwError } from 'rxjs';
 import { expect } from 'chai';
-import { Payload, Handler, asHandler } from '../providers';
 import { testProvider } from '../mocks';
+import { RpcRequest } from 'rpc/interfaces';
+import { RpcRequestHandler } from './model';
 
 describe('engine', () => {
   it('Applies middleware', () => {
     const provider = testProvider();
 
     const updatedResult = { a: 12 };
-    const alwaysConstMiddleware = (_: Payload, next: Handler) =>
+    const alwaysConstMiddleware = (_: RpcRequest, next: RpcRequestHandler) =>
       next(updatedResult as any);
 
     const p = applyMiddleware([alwaysConstMiddleware], provider);
@@ -23,7 +24,7 @@ describe('engine', () => {
     const provider = testProvider();
 
     const errorText = 'Mock Error';
-    const alwaysErrorMiddleware = (_: Payload) => throwError(errorText);
+    const alwaysErrorMiddleware = (_: RpcRequest) => throwError(errorText);
 
     const p = applyMiddleware([alwaysErrorMiddleware], provider);
 

@@ -1,25 +1,51 @@
-import { SubHandler } from './model';
-import { mergeAll } from 'ramda';
-import { Provider } from '../interfaces';
+import { Provider, Subprovider, RpcRequest, RpcResponse } from '../interfaces';
+import { merge } from 'rxjs';
 
-export function enhanceProvider(
-  subHandlers: SubHandler[],
-  provider: Provider
+type OnError = (
+  err: Error,
+  providers: Provider[],
+  payload: RpcRequest
+) => Promise<RpcResponse>;
+
+interface MergeConfig {
+  onError: OnError;
+}
+
+export function mergeProviders(
+  providers: (Subprovider | Provider)[],
+  { onError = Promise.reject }: MergeConfig
 ): Provider {
-  const all = mergeAll<SubHandler>(subHandlers);
-
   return {
-    ...provider,
     send: payload => {
       if (Array.isArray(payload)) {
         throw Error('Batch not suppoted');
       }
-      const maybeHandler = all[payload.method];
-      if (maybeHandler) {
-        return maybeHandler(payload).toPromise();
+
+      const [provider, ...rest] = providers.filter(x =>
+        'accept' in x ? x.accept(payload) : true
+      );
+
+      if (!provider) {
+        throw Error(`${payload.method} handler not found`);
       }
 
-      return provider.send(payload);
-    }
+      return provider.send(payload).catch(err => onError(err, rest, payload));
+    },
+    disconnect: () => {
+      providers.forEach(p => 'disconnect' in p && p.disconnect());
+    },
+    observe: (subId: string) => merge(...providers.map(x => x.observe(subId)))
   };
 }
+
+export const providerRetry = (
+  err: Error,
+  providers: Provider[],
+  payload: RpcRequest
+) => {
+  const [provider, ...rest] = providers;
+  if (!provider) {
+    return Promise.reject(err);
+  }
+  return provider.send(payload).catch(err => providerRetry(err, rest, payload));
+};

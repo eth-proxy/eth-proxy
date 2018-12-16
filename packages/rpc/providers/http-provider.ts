@@ -1,12 +1,25 @@
-import { Provider, BaseRpcResponse } from '../interfaces';
+import { Subprovider, BaseRpcResponse, RpcRequest } from '../interfaces';
 import { EMPTY } from 'rxjs';
-import { asHandler } from './utils';
 
 const fetch = require('isomorphic-fetch');
 const defaultUrl = 'http://localhost:8545';
 
-export function httpProvider(url = defaultUrl): Provider {
+interface HttpProviderConfig {
+  url?: string;
+  accept?: Subprovider['accept'];
+}
+
+const blacklistedMethods: RpcRequest['method'][] = [
+  'eth_subscribe',
+  'eth_unsubscribe'
+];
+
+export function httpSubprovider({
+  url = defaultUrl,
+  accept = req => !blacklistedMethods.includes(req.method)
+}: HttpProviderConfig): Subprovider {
   return {
+    accept,
     send: (payload: any) => {
       return fetch(url, {
         method: 'POST',
@@ -32,5 +45,3 @@ export function httpProvider(url = defaultUrl): Provider {
     disconnect: () => {}
   };
 }
-
-export const httpHandler = (url = defaultUrl) => asHandler(httpProvider(url));

@@ -1,6 +1,6 @@
 import { ActionsObservable, ofType } from 'redux-observable';
 import { map, retry, catchError, mergeMap } from 'rxjs/operators';
-import { Observable, of, from, defer } from 'rxjs';
+import { Observable, of, from, defer, EMPTY } from 'rxjs';
 
 import { EpicContext } from '../../context';
 import * as actions from './actions';
@@ -41,6 +41,7 @@ export const watchNewBlocks = (
   { provider }: EpicContext
 ): Observable<actions.Types> => {
   return from(subscribeNewHeads(provider, {})).pipe(
-    map(actions.createLoadBlockSuccess)
+    map(actions.createLoadBlockSuccess),
+    catchError(() => EMPTY)
   );
 };

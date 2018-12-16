@@ -4,13 +4,12 @@ import { reverse, times, max, pipe, assocPath, evolve, concat } from 'ramda';
 import { ethHexToNumber } from '../../utils';
 import { isTag, formatBlockNr } from '../../formatters';
 import { mergeMap, reduce } from 'rxjs/operators';
-import { Payload, Handler } from '../../providers';
 import { MiddlewareItem } from '../model';
 
 export function rangeSplitMiddleware(
   rangeSize: number = 10000
 ): MiddlewareItem {
-  return (payload: Payload, handle: Handler) => {
+  return (payload, handle) => {
     if (payload.method !== 'eth_getLogs') {
       return handle(payload);
     }
