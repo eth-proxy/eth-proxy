@@ -2,16 +2,13 @@ import { watchLogs } from './logs';
 import { marbles } from 'rxjs-marbles/mocha';
 import {
   EthGetFilterChanges,
-  EthNewFilter,
-  EthUninstallFilter,
   EthUninstallFilterRequest,
   RawLog,
-  Log,
-  Provider,
-  BaseRpcResponse
+  Log
 } from '../interfaces';
 import { Subject } from 'rxjs';
 import { omit } from 'ramda';
+import { testProvider } from '../mocks';
 
 const rawFilterArgs = {
   address: '123'
@@ -29,9 +26,6 @@ const formattedLogs = {
   c: { blockNumber: 2, data: 'log2' } as Log,
   d: { blockNumber: 3, data: 'log3' } as Log
 };
-function resultOf<T>(result: T) {
-  return { result } as BaseRpcResponse<T>;
-}
 
 describe('logs watch', () => {
   it(
@@ -84,42 +78,35 @@ describe('logs watch', () => {
         filter.push(...logs);
       });
 
-      const provider = {
-        sendAsync: (payload, cb) => {
-          server$.next(payload);
-          if (Array.isArray(payload)) {
-            return;
+      const provider = testProvider(payload => {
+        server$.next(payload);
+        if (Array.isArray(payload)) {
+          throw Error('Should not be a batch');
+        }
+        switch (payload.method) {
+          case 'eth_newFilter': {
+            filters[filterId] = [];
+            // todo: check if ok
+            return m.cold('--r|', { r: filterId });
           }
-          switch (payload.method) {
-            case 'eth_newFilter': {
-              filters[filterId] = [];
-              // todo: check if ok
-              m.cold('--r|').subscribe(() =>
-                cb(null, resultOf(filterId) as EthNewFilter['response'])
-              );
-              return;
-            }
-            case 'eth_getFilterLogs': {
-              return cb(null, resultOf(allLogs) as BaseRpcResponse<RawLog[]>);
-            }
-            case 'eth_getFilterChanges': {
-              const id = (payload as EthGetFilterChanges['request']).params[0];
-              const changes = filters[id];
-              filters[filterId] = [];
+          case 'eth_getFilterLogs': {
+            return allLogs;
+          }
+          case 'eth_getFilterChanges': {
+            const id = (payload as EthGetFilterChanges['request']).params[0];
+            const changes = filters[id];
+            filters[filterId] = [];
 
-              return cb(null, resultOf(
-                changes
-              ) as EthGetFilterChanges['response']);
-            }
-            case 'eth_uninstallFilter': {
-              const id = (payload as EthUninstallFilterRequest).params[0];
-              filters = omit([id], filters);
+            return changes;
+          }
+          case 'eth_uninstallFilter': {
+            const id = (payload as EthUninstallFilterRequest).params[0];
+            filters = omit([id], filters);
 
-              return cb(null, resultOf(true) as EthUninstallFilter['response']);
-            }
+            return true;
           }
         }
-      } as Provider;
+      });
 
       const result$ = watchLogs(provider, {
         timer$: poll,

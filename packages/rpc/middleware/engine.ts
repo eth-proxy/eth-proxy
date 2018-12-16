@@ -1,29 +1,32 @@
-import { Provider } from '../interfaces';
+import { Provider, RpcRequest } from '../interfaces';
 import { reduceRight, curry } from 'ramda';
-import { MiddlewareItem } from './model';
-import { Payload, Handler } from '../providers';
+import { MiddlewareItem, RpcRequestHandler } from './model';
+import { from } from 'rxjs';
 
 export const applyMiddleware = curry(
-  (interceptors: MiddlewareItem[], handler: Handler) => {
-    const engine = createEngine(interceptors, handler);
+  (interceptors: MiddlewareItem[], provider: Provider): Provider => {
+    const engine = createEngine(interceptors, asHandler(provider));
 
     return {
-      sendAsync: (payload: any, cb: any) => {
-        engine(payload).subscribe({
-          next: results => cb(null, results),
-          error: cb
-        });
-      }
-    } as Provider;
+      ...provider,
+      send: (payload: any) => engine(payload).toPromise()
+    };
   }
 );
 
-function createEngine(interceptors: MiddlewareItem[], handler: Handler) {
+function createEngine(
+  interceptors: MiddlewareItem[],
+  handler: RpcRequestHandler
+) {
   return reduceRight(
     (interceptor, handler) => {
-      return (payload: Payload) => interceptor(payload, handler);
+      return payload => interceptor(payload, handler);
     },
     handler,
     interceptors
   );
+}
+
+export function asHandler(provider: Provider): RpcRequestHandler {
+  return (payload: RpcRequest) => from(provider.send(payload));
 }

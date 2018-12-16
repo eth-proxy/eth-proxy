@@ -1,5 +1,4 @@
 import { map, mergeMap } from 'rxjs/operators';
-import { Payload, Handler } from '../../providers';
 import { MiddlewareItem } from '../model';
 import {
   NumberLike,
@@ -21,7 +20,7 @@ export function gasPriceMiddleware(loader: GasPriceLoader): MiddlewareItem {
     'gasPrice'
   ]);
 
-  return (payload: Payload, next: Handler) => {
+  return (payload, next) => {
     if (payload.method !== 'eth_sendTransaction') {
       return next(payload);
     }

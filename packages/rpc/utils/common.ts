@@ -5,12 +5,12 @@ import {
   FunctionDescription,
   EventDescription,
   ConstructorDescription,
-  SendRequest,
-  SendObservableRequest
+  SendObservableRequest,
+  SendRequest
 } from '../interfaces';
-import { Observable } from 'rxjs';
 import { pipe, isNil } from 'ramda';
 import { BigNumber } from 'bignumber.js';
+import { defer } from 'rxjs';
 
 export function bind<T extends (...args: any[]) => any>(fn: T, obj: any): T {
   return fn.bind(obj);
@@ -33,38 +33,6 @@ export const fromAscii = (ascii: string) => web3Utils.fromAscii(ascii);
 
 export const caseInsensitiveCompare = (a: string, b: string) =>
   a && b && a.toLowerCase() === b.toLowerCase();
-
-export function send(provider: Provider): SendRequest {
-  return payload => {
-    return new Promise((res, rej) => {
-      provider.sendAsync(payload, (err, response) => {
-        const error =
-          err || (response.error && new Error(response.error.message));
-        if (error) {
-          rej(error);
-          return;
-        }
-        res(response.result);
-      });
-    });
-  };
-}
-
-export function send$(provider: Provider): SendObservableRequest {
-  return payload =>
-    new Observable(observer => {
-      provider.sendAsync(payload, (err, response) => {
-        const error =
-          err || (response.error && new Error(response.error.message));
-        if (error) {
-          observer.error(error);
-          return;
-        }
-        observer.next(response.result);
-        observer.complete();
-      });
-    });
-}
 
 export function extractNonTuple(args: any) {
   return args.length === 1 ? args[0] : args;
@@ -111,4 +79,12 @@ export const arrify = <T>(value: T | T[]) =>
 export function createIdGenerator() {
   let id = 0;
   return () => id++;
+}
+
+export function send$(provider: Provider): SendObservableRequest {
+  return payload => defer(() => send(provider)(payload));
+}
+
+export function send(provider: Provider): SendRequest {
+  return payload => provider.send(payload).then(x => x.result);
 }

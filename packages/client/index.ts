@@ -1,6 +1,6 @@
 import { Observable, timer } from 'rxjs';
 import { createEpicMiddleware } from 'redux-observable';
-import { Provider, Block, SendAsync, send, SendRequest } from '@eth-proxy/rpc';
+import { Provider, Block, RpcSend, send, SendRequest } from '@eth-proxy/rpc';
 
 import { createAppStore, getActiveAccount$, State, rootEpic } from './store';
 import { getDetectedNetwork$ } from './store';
@@ -37,8 +37,10 @@ export class EthProxy<T extends {} = {}> implements Provider {
   getBlock: (block: number) => Observable<Block>;
 
   rpc: SendRequest;
-  sendAsync: SendAsync;
-  stop: () => void;
+  send: RpcSend;
+
+  observe: (subscriptionId: string) => Observable<any>;
+  disconnect: () => void;
 }
 
 const defaultOptions: Partial<EthProxyOptions> = {
@@ -79,7 +81,6 @@ export function createProxy<T extends {}>(
     store
   };
 
-  const sendAsync = (payload, cb) => provider.sendAsync(payload, cb);
   const rpc = send(provider);
 
   return {
@@ -97,9 +98,11 @@ export function createProxy<T extends {}>(
     deploy: deploy(deps),
 
     rpc,
-    sendAsync,
 
-    stop: () => store.dispatch(createEthProxyStopped())
+    disconnect: () => {
+      store.dispatch(createEthProxyStopped());
+      provider.disconnect();
+    }
   };
 }
 

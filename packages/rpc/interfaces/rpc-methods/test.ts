@@ -33,9 +33,9 @@ export type TestIncreaseTime = Rpc<TestIncreaseTimeRequest, number>;
  */
 export interface TestMineRequest extends BaseRpcRequest {
   method: 'evm_mine';
-  params: [number];
+  params: [number?];
 }
-export type TestMine = Rpc<TestIncreaseTimeRequest, any>;
+export type TestMine = Rpc<TestMineRequest, any>;
 
 export type TestMethod =
   | TestSnapshot

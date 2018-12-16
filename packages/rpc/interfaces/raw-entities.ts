@@ -80,9 +80,25 @@ export interface RawLog {
   transactionIndex: Quantity;
 }
 
-export interface RawFilter {
-  fromBlock?: Quantity | Tag;
-  toBlock?: Quantity | Tag;
+export interface RawLogFilter {
   address?: Data | Data[];
   topics?: (Data | Data[])[];
+}
+
+export interface RawRangeFilter {
+  fromBlock?: Quantity | Tag;
+  toBlock?: Quantity | Tag;
+}
+
+export type RawFilter = RawLogFilter & RawRangeFilter;
+
+export interface RawSyncingState {
+  syncing: boolean;
+  status: {
+    startingBlock: number;
+    currentBlock: number;
+    highestBlock: number;
+    pulledStates: number;
+    knownStates: number;
+  };
 }

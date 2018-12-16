@@ -1,49 +1,37 @@
 import { getReceipt } from './get-receipt';
-import * as sinon from 'sinon';
 import {
-  Provider,
   RawTransactionReceipt,
   TransactionReceipt,
   TransactionStatus
 } from '../interfaces';
 import { expect } from 'chai';
-
-const rpcResult = <T>(result) => ({ result });
+import { testProvider } from '../mocks';
 
 const txHash =
   '0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238';
 
 describe('Get receipt', () => {
-  let provider: Provider;
-  beforeEach(() => {
-    provider = {
-      sendAsync: () => {}
-    } as any;
-  });
-
   it('Calls eth_getTransactionReceipt method wit hash', async () => {
-    const sendAsync = sinon.stub(provider, 'sendAsync');
-    sendAsync.callsFake((args, cb) => cb(null, rpcResult({})));
+    const provider = testProvider();
 
     await getReceipt(provider, txHash);
 
-    expect(sendAsync.firstCall.args[0]).to.deep.eq({
+    expect(provider.getOnlyRequest()).to.deep.eq({
       method: 'eth_getTransactionReceipt',
       params: [txHash]
     });
   });
 
   it('Return null when no result', async () => {
-    const sendAsync = sinon.stub(provider, 'sendAsync');
-    sendAsync.callsFake((args, cb) => cb(null, rpcResult(null)));
+    const provider = testProvider(() => null);
 
     const result = await getReceipt(provider, txHash);
     expect(result).to.be.null;
   });
 
   it('Return formatted receipt', async () => {
-    const sendAsync = sinon.stub(provider, 'sendAsync');
-    sendAsync.callsFake((_, cb) => cb(null, rpcResult(unformattedReceipt)));
+    const provider = testProvider(() => unformattedReceipt);
+
     const result = await getReceipt(provider, txHash);
 
     expect(result).to.deep.eq(formattedReceipt);

@@ -17,8 +17,8 @@ export default {
     ...Object.keys(pkg.dependencies || {}),
     ...Object.keys(pkg.peerDependencies || {}),
     'rxjs/operators',
+    'rxjs/webSocket',
     'web3/lib/utils/utils',
-    'web3/lib/web3/httpprovider',
     'crypto-js/sha3',
     'web3/lib/solidity/coder'
   ],

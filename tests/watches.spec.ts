@@ -8,23 +8,26 @@ import {
   delay,
   distinctUntilChanged
 } from 'rxjs/operators';
-import { snapshot, revert, mine } from './utils';
-import {
-  httpProvider,
-  watchBlocks,
-  getAccounts,
-  getReceipt,
-  getLogs,
-  watchLogs
-} from '@eth-proxy/rpc';
-import { sendTransactionWithData } from '@eth-proxy/rpc/methods/request/send-transaction';
+import { httpSubprovider, createRpc } from '@eth-proxy/rpc';
 
 describe('ERC20', () => {
-  beforeEach(() => snapshot());
-  afterEach(() => revert());
+  const {
+    snapshot,
+    revert,
+    watchBlocks,
+    mine,
+    watchLogs,
+    getAccounts,
+    sendTransactionWithData,
+    getReceipt,
+    getLogs
+  } = createRpc(httpSubprovider());
+
+  beforeEach(snapshot);
+  afterEach(revert);
 
   it('Watches latest block', done => {
-    const watch$ = watchBlocks(httpProvider(), {
+    const watch$ = watchBlocks({
       timer$: timer(0, 50)
     }).pipe(
       bufferCount(5),
@@ -44,7 +47,7 @@ describe('ERC20', () => {
   });
 
   it('Watches events', done => {
-    const watch$ = watchLogs(httpProvider(), {
+    const watch$ = watchLogs({
       filter: {
         fromBlock: 0,
         toBlock: 'latest',
@@ -52,18 +55,18 @@ describe('ERC20', () => {
       }
     }).pipe(first());
 
-    const accounts$ = getAccounts(httpProvider());
+    const accounts$ = getAccounts();
 
     const transfer$ = of(1, 2, 3).pipe(
       mergeMapTo(accounts$),
       mergeMap(([account1, account2]) =>
-        sendTransactionWithData(httpProvider(), {
+        sendTransactionWithData({
           from: account1,
           to: account2,
           value: '100',
           data: '0',
           gas: '101000'
-        }).then(getReceipt(httpProvider()))
+        }).then(getReceipt)
       )
     );
 
@@ -75,13 +78,13 @@ describe('ERC20', () => {
     of(null)
       .pipe(
         delay(5000),
-        mergeMap(() => {
-          return getLogs(httpProvider(), {
+        mergeMap(() =>
+          getLogs({
             fromBlock: 0,
             toBlock: 'latest',
             address: null
-          });
-        })
+          })
+        )
       )
       .subscribe();
   }).timeout(10000);

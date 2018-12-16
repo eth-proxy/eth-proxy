@@ -38,15 +38,14 @@ function toTxData({ abi, args }: TransactionInput) {
   return getMethodID(abi) + encodeArgs(abi, args);
 }
 
-export function sendTransactionWithData(
-  provider: Provider,
-  payload: TransactionInputParams
-) {
-  return send(provider)({
-    method: 'eth_sendTransaction',
-    params: [formatTxPayload(payload)]
-  });
-}
+export const sendTransactionWithData = curry(
+  (provider: Provider, payload: TransactionInputParams) => {
+    return send(provider)({
+      method: 'eth_sendTransaction',
+      params: [formatTxPayload(payload)]
+    });
+  }
+);
 
 function formatTxPayload(txParams: TransactionInputParams) {
   return {

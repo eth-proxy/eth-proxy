@@ -1,50 +1,38 @@
 import { getBlockByNumber, getBlockByHash } from './get-block';
-import * as sinon from 'sinon';
-import { Provider, Block, RawBlock } from '../interfaces';
+import { Block, RawBlock } from '../interfaces';
 import { expect } from 'chai';
 import { BigNumber } from 'bignumber.js';
-
-const rpcResult = <T>(result) => ({ result });
+import { testProvider } from '../mocks';
 
 const block100 = 100;
 const block100Hash = '0x123';
 const block100Hex = '0x64';
 
 describe('Get block by number', () => {
-  let provider: Provider;
-  beforeEach(() => {
-    provider = {
-      sendAsync: () => {}
-    } as any;
-  });
-
   it('Calls eth_getBlockByNumber method with number', async () => {
-    const sendAsync = sinon.stub(provider, 'sendAsync');
-    sendAsync.callsFake((args, cb) => cb(null, rpcResult({})));
+    const provider = testProvider();
 
     await getBlockByNumber(provider, { number: block100 });
 
-    expect(sendAsync.firstCall.args[0]).to.deep.eq({
+    expect(provider.getOnlyRequest()).to.deep.eq({
       method: 'eth_getBlockByNumber',
       params: [block100Hex, false]
     });
   });
 
   it('Calls eth_getBlockByNumber method with tag', async () => {
-    const sendAsync = sinon.stub(provider, 'sendAsync');
-    sendAsync.callsFake((args, cb) => cb(null, rpcResult({})));
+    const provider = testProvider();
 
     await getBlockByNumber(provider, { number: 'latest' });
 
-    expect(sendAsync.firstCall.args[0]).to.deep.eq({
+    expect(provider.getOnlyRequest()).to.deep.eq({
       method: 'eth_getBlockByNumber',
       params: ['latest', false]
     });
   });
 
   it('Throws when block is nil', async () => {
-    const sendAsync = sinon.stub(provider, 'sendAsync');
-    sendAsync.callsFake((args, cb) => cb(null, rpcResult(null)));
+    const provider = testProvider(() => null);
 
     try {
       await getBlockByNumber(provider, { number: block100 });
@@ -54,8 +42,7 @@ describe('Get block by number', () => {
   });
 
   it('Return formatted block', async () => {
-    const sendAsync = sinon.stub(provider, 'sendAsync');
-    sendAsync.callsFake((_, cb) => cb(null, rpcResult(unformattedBlock)));
+    const provider = testProvider(() => unformattedBlock);
     const result = await getBlockByNumber(provider, {
       number: block100
     });
@@ -65,28 +52,19 @@ describe('Get block by number', () => {
 });
 
 describe('Get block by Hash', () => {
-  let provider: Provider;
-  beforeEach(() => {
-    provider = {
-      sendAsync: () => {}
-    } as any;
-  });
-
   it('Calls eth_getBlockByHash method', async () => {
-    const sendAsync = sinon.stub(provider, 'sendAsync');
-    sendAsync.callsFake((args, cb) => cb(null, rpcResult({})));
+    const provider = testProvider();
 
     await getBlockByHash(provider, { hash: block100Hex });
 
-    expect(sendAsync.firstCall.args[0]).to.deep.eq({
+    expect(provider.getOnlyRequest()).to.deep.eq({
       method: 'eth_getBlockByHash',
       params: [block100Hex, false]
     });
   });
 
   it('Throws when block is nil', async () => {
-    const sendAsync = sinon.stub(provider, 'sendAsync');
-    sendAsync.callsFake((args, cb) => cb(null, rpcResult(null)));
+    const provider = testProvider(() => null);
 
     try {
       await getBlockByHash(provider, { hash: block100Hex });
@@ -96,8 +74,7 @@ describe('Get block by Hash', () => {
   });
 
   it('Return formatted block', async () => {
-    const sendAsync = sinon.stub(provider, 'sendAsync');
-    sendAsync.callsFake((_, cb) => cb(null, rpcResult(unformattedBlock)));
+    const provider = testProvider(() => unformattedBlock);
     const result = await getBlockByHash(provider, {
       hash: block100Hash
     });

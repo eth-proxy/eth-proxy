@@ -19,11 +19,12 @@ export const pollChanges = <T extends string | RawLog>(
           params: [id]
         });
 
-      const getChanges = () =>
-        send$(provider)({
+      const getChanges = () => {
+        return send$(provider)({
           method: 'eth_getFilterChanges',
           params: [id]
         }).pipe(mergeMap(x => x as T[]));
+      };
 
       return timer$.pipe(
         exhaustMap(getChanges),

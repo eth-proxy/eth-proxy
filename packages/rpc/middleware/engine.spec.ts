@@ -1,40 +1,34 @@
 import { applyMiddleware } from './engine';
-import sinon = require('sinon');
-import { Provider } from '../interfaces';
 import { throwError } from 'rxjs';
 import { expect } from 'chai';
-import { Payload, Handler, asHandler } from '../providers';
+import { testProvider } from '../mocks';
+import { RpcRequest } from 'rpc/interfaces';
+import { RpcRequestHandler } from './model';
 
 describe('engine', () => {
-  let provider: Provider;
-  beforeEach(() => {
-    provider = {
-      sendAsync: () => {}
-    } as any;
-  });
-
   it('Applies middleware', () => {
-    const sendAsync = sinon.stub(provider, 'sendAsync');
-    sendAsync.callsFake((args, cb) => cb(null, { result: args }));
+    const provider = testProvider();
 
     const updatedResult = { a: 12 };
-    const alwaysConstMiddleware = (_: Payload, next: Handler) =>
+    const alwaysConstMiddleware = (_: RpcRequest, next: RpcRequestHandler) =>
       next(updatedResult as any);
 
-    const p = applyMiddleware([alwaysConstMiddleware], asHandler(provider));
+    const p = applyMiddleware([alwaysConstMiddleware], provider);
 
-    p.sendAsync(null, () => {});
+    p.send(null);
 
-    expect(sendAsync.firstCall.args[0]).to.deep.eq(updatedResult);
+    expect(provider.getOnlyRequest()).to.deep.eq(updatedResult);
   });
 
   it('Propagates errors', done => {
+    const provider = testProvider();
+
     const errorText = 'Mock Error';
-    const alwaysErrorMiddleware = (_: Payload) => throwError(errorText);
+    const alwaysErrorMiddleware = (_: RpcRequest) => throwError(errorText);
 
-    const p = applyMiddleware([alwaysErrorMiddleware], asHandler(provider));
+    const p = applyMiddleware([alwaysErrorMiddleware], provider);
 
-    p.sendAsync(null, err => {
+    p.send(null).catch(err => {
       expect(err).to.eq(errorText);
       done();
     });

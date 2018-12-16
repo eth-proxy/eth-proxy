@@ -1,13 +1,9 @@
 import { watchBlocks } from './latest-block';
 import { marbles } from 'rxjs-marbles/mocha';
-import {
-  EthGetFilterChanges,
-  EthNewBlockFilter,
-  EthUninstallFilter,
-  EthUninstallFilterRequest
-} from '../interfaces';
+import { EthGetFilterChanges, EthUninstallFilterRequest } from '../interfaces';
 import { Subject } from 'rxjs';
 import { omit } from 'ramda';
+import { testProvider } from '../mocks';
 
 describe('latest block watch', () => {
   it(
@@ -48,46 +44,43 @@ describe('latest block watch', () => {
 
       const server$ = new Subject();
 
-      producer.subscribe(blocks => filters[filterId].push(blocks));
+      const provider = testProvider(payload => {
+        server$.next(payload);
 
-      const provider = {
-        sendAsync: (payload, cb) => {
-          server$.next(payload);
-          if (Array.isArray(payload)) {
-            return;
-          }
-          switch (payload.method) {
-            case 'eth_newBlockFilter': {
-              filters[filterId] = [];
-              cb(null, { result: '1' } as EthNewBlockFilter['response']);
-              return;
-            }
-            case 'eth_getFilterChanges': {
-              const id = (payload as EthGetFilterChanges['request']).params[0];
-              const changes = filters[id];
-              filters[filterId] = [];
-
-              cb(null, {
-                result: changes
-              } as EthGetFilterChanges['response']);
-              return;
-            }
-            case 'eth_uninstallFilter': {
-              const id = (payload as EthUninstallFilterRequest).params[0];
-              filters = omit([id], filters);
-
-              cb(null, {
-                result: true
-              } as EthUninstallFilter['response']);
-              return;
-            }
-          }
+        if (Array.isArray(payload)) {
+          throw Error('Unknown method');
         }
-      };
+
+        switch (payload.method) {
+          case 'eth_newBlockFilter': {
+            filters[filterId] = [];
+            return '1';
+          }
+
+          case 'eth_getFilterChanges': {
+            const id = (payload as EthGetFilterChanges['request']).params[0];
+            const changes = filters[id];
+            filters[filterId] = [];
+
+            return changes;
+          }
+
+          case 'eth_uninstallFilter': {
+            const id = (payload as EthUninstallFilterRequest).params[0];
+            filters = omit([id], filters);
+
+            return true;
+          }
+          default:
+            throw Error('Unknown method');
+        }
+      });
+
+      producer.subscribe(blocks => filters[filterId].push(blocks));
 
       const result$ = watchBlocks(provider, {
         timer$: poll
-      });
+      }).pipe();
 
       m.expect(server$).toBeObservable(requests);
       m.expect(result$).toBeObservable(expected);

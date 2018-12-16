@@ -1,7 +1,7 @@
 {
   "name": "@eth-proxy/rpc",
-  "version": "0.6.10",
-  "description": "Ethereum rpc specification as simple functions",
+  "version": "0.7.0",
+  "description": "Ethereum JSON rpc as functions",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "files": [
@@ -13,13 +13,11 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rimraf dist",
-    "build": "rollup -c",
-    "prepublish": "npm run build",
-    "postpublish": "npm run clean"
+    "build": "rollup -c"
   },
   "dependencies": {
-    "ramda": "0.25.0"
+    "ramda": "0.25.0",
+    "ws": "^6.1.2"
   },
   "peerDependencies": {
     "bignumber.js": "^6.0.0",
@@ -27,8 +25,10 @@
     "web3": "^0.20.3"
   },
   "devDependencies": {
+    "isomorphic-fetch": "2.2.1",
     "rimraf": "^2.6.2",
     "rollup": "^0.67.3",
+    "synchronous-promise": "2.0.6",
     "typescript": "^3.1.6"
   }
 }
