@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/rpc",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Ethereum JSON rpc as functions",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -16,10 +16,10 @@
     "build": "rollup -c"
   },
   "dependencies": {
+    "queueing-subject": "0.3.0",
     "ramda": "0.25.0",
-    "ws": "^6.1.2",
-    "rxjs-websockets" : "6.0.3",
-    "queueing-subject": "0.3.0"
+    "rxjs-websockets": "6.0.3",
+    "ws": "^6.1.2"
   },
   "peerDependencies": {
     "bignumber.js": "^6.0.0",
