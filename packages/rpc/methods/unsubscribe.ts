@@ -7,11 +7,6 @@ export const unsubscribe = curry(
     return send(provider)({
       method: 'eth_unsubscribe',
       params: [subscriptionId]
-    }).then(result => {
-      if (result !== true) {
-        throw Error('Unscubscribe failed');
-      }
-      return result;
     });
   }
 );
