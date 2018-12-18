@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/client",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Proxy for ethereum blockchain",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -15,7 +15,7 @@
     "build": "rollup -c"
   },
   "dependencies": {
-    "@eth-proxy/rpc": "^0.7.1",
+    "@eth-proxy/rpc": "^0.7.2",
     "ethjs-abi": "0.1.8",
     "ramda": "^0.25.0",
     "redux": "^4.0.0",
