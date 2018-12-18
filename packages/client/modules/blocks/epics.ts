@@ -1,10 +1,10 @@
 import { ActionsObservable, ofType } from 'redux-observable';
-import { map, retry, catchError, mergeMap } from 'rxjs/operators';
+import { map, retry, catchError, mergeMap, filter } from 'rxjs/operators';
 import { Observable, of, from, defer, EMPTY } from 'rxjs';
 
 import { EpicContext } from '../../context';
 import * as actions from './actions';
-import { subscribeNewHeads, getBlockByNumber } from '@eth-proxy/rpc';
+import { getBlockByNumber, getBlockByHash, watchBlocks } from '@eth-proxy/rpc';
 
 export const loadLatestBlock = (
   _: ActionsObservable<any>,
@@ -38,10 +38,20 @@ export const loadBlock = (
 export const watchNewBlocks = (
   _: ActionsObservable<any>,
   __,
-  { provider }: EpicContext
+  { provider, options }: EpicContext
 ): Observable<actions.Types> => {
-  return from(subscribeNewHeads(provider, {})).pipe(
-    map(actions.createLoadBlockSuccess),
-    catchError(() => EMPTY)
+  return of(options.watchBlocksTimer$).pipe(
+    filter(x => !!x),
+    mergeMap(timer$ => {
+      return watchBlocks(provider, { timer$ }).pipe(
+        mergeMap(hash => {
+          return from(getBlockByHash(provider, { hash })).pipe(
+            retry(10),
+            catchError(() => EMPTY)
+          );
+        })
+      );
+    }),
+    map(actions.createLoadBlockSuccess)
   );
 };

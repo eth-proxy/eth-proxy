@@ -25,8 +25,8 @@ export function websocketProvider(config: Config): Provider {
 
   const message$ = messages.pipe(
     retryWhen(delay(1000)),
-    share(),
-    takeUntil(disconnect$)
+    takeUntil(disconnect$),
+    share()
   );
 
   return {
