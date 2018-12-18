@@ -17,7 +17,9 @@
   },
   "dependencies": {
     "ramda": "0.25.0",
-    "ws": "^6.1.2"
+    "ws": "^6.1.2",
+    "rxjs-websockets" : "6.0.3",
+    "queueing-subject": "0.3.0"
   },
   "peerDependencies": {
     "bignumber.js": "^6.0.0",

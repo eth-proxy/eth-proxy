@@ -22,15 +22,4 @@ describe('Unsubscribe', () => {
 
     expect(await unsubscribe(provider, subscriptionId)).to.deep.eq(true);
   });
-
-  it('Fails when unsubscription failed', async () => {
-    let provider = testProvider(() => false);
-
-    await unsubscribe(provider, subscriptionId).then(
-      () => {
-        throw Error('NOT REJECTED');
-      },
-      err => expect(err).instanceOf(Error)
-    );
-  });
 });

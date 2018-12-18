@@ -1,28 +1,51 @@
-import { webSocket, WebSocketSubjectConfig } from 'rxjs/webSocket';
 import { Provider, RpcRequest, SubscriptionData } from '../interfaces';
-import { first, filter, map } from 'rxjs/operators';
+import {
+  first,
+  filter,
+  map,
+  share,
+  retryWhen,
+  delay,
+  takeUntil
+} from 'rxjs/operators';
 import { curry } from 'ramda';
+import { QueueingSubject } from 'queueing-subject';
+import websocketConnect from 'rxjs-websockets';
+import { Observable, Subject } from 'rxjs';
 
-export function websocketProvider(
-  config: string | WebSocketSubjectConfig<any>
-): Provider {
-  const ws = webSocket(config);
-  ws.subscribe();
+interface Config {
+  url: string;
+}
+
+export function websocketProvider(config: Config): Provider {
+  const input = new QueueingSubject<any>();
+  const disconnect$ = new Subject<any>();
+
+  const { messages } = jsonWebsocketConnect(config.url, input);
+
+  const message$ = messages.pipe(
+    retryWhen(delay(1000)),
+    share(),
+    takeUntil(disconnect$)
+  );
 
   return {
     send: (payload: RpcRequest | RpcRequest[]) => {
-      ws.next(payload);
+      input.next(payload);
 
-      return ws.pipe(first(isMatchingResponse(payload))).toPromise() as Promise<
-        any
-      >;
+      return message$
+        .pipe(first(isMatchingResponse(payload)))
+        .toPromise() as Promise<any>;
     },
     observe: <T>(subId: string) => {
-      return ws
+      return message$
         .pipe(filter(isMatchingSubscription(subId)))
         .pipe(map((x: SubscriptionData<T>) => x.params.result));
     },
-    disconnect: ws.unsubscribe.bind(ws)
+    disconnect: () => {
+      disconnect$.next();
+      disconnect$.complete();
+    }
   };
 }
 
@@ -45,3 +68,18 @@ const isMatchingResponse = curry(
     }
   }
 );
+
+function jsonWebsocketConnect(
+  url: string,
+  input: Observable<any>,
+  protocols?: string | string[]
+) {
+  const jsonInput = input.pipe(map(message => JSON.stringify(message)));
+  const { connectionStatus, messages } = websocketConnect(
+    url,
+    jsonInput,
+    protocols
+  );
+  const jsonMessages = messages.pipe(map(message => JSON.parse(message)));
+  return { connectionStatus, messages: jsonMessages };
+}
