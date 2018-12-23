@@ -1,5 +1,6 @@
-import { C, RequestFactory, EthProxy } from '@eth-proxy/client';
+import { C, RequestFactory, EthProxy, createProxy } from '@eth-proxy/client';
 import { Contracts } from '../contracts';
+import { httpSubprovider } from '@eth-proxy/rpc';
 
 export const { SampleToken } = (C as any) as RequestFactory<Contracts>;
 
@@ -17,3 +18,9 @@ export function deploySampleToken(proxy: EthProxy<Contracts>) {
     gas: 7000000
   });
 }
+
+export const ethProxy = () => {
+  return createProxy<Contracts>(httpSubprovider(), {
+    contractSchemaResolver: ({ name }) => import(`../schemas/${name}.json`)
+  });
+};

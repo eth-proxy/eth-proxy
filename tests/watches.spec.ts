@@ -1,12 +1,10 @@
-import { timer, of, from } from 'rxjs';
-import {
-  mergeMap,
-  first,
-  takeUntil,
-  bufferCount,
-  mergeMapTo
-} from 'rxjs/operators';
+import { timer, combineLatest } from 'rxjs';
+import { mergeMap, first, takeUntil, bufferCount } from 'rxjs/operators';
 import { httpSubprovider, createRpc } from '@eth-proxy/rpc';
+import { ethProxy, deploySampleToken, SampleToken } from './mocks';
+import { at } from '@eth-proxy/client';
+
+const proxy = ethProxy();
 
 describe('Watches', () => {
   const {
@@ -15,8 +13,7 @@ describe('Watches', () => {
     watchBlocks,
     mine,
     watchEvents,
-    getAccounts,
-    sendTransactionWithData
+    getAccounts
   } = createRpc(httpSubprovider());
 
   beforeEach(snapshot);
@@ -41,9 +38,7 @@ describe('Watches', () => {
     miner$.subscribe();
   });
 
-  it.skip('Watches events', done => {
-    const accounts$ = from(getAccounts());
-
+  it('Watches events', done => {
     const watch$ = watchEvents({
       filter: {
         fromBlock: 0,
@@ -52,16 +47,19 @@ describe('Watches', () => {
       }
     }).pipe(first());
 
-    const transfer$ = of(1, 2, 3).pipe(
-      mergeMapTo(accounts$),
-      mergeMap(([account1, account2]) =>
-        sendTransactionWithData({
-          from: account1,
-          to: account2,
-          value: '100',
-          data: '0',
-          gas: '101000'
-        })
+    const transfer$ = combineLatest(
+      deploySampleToken(proxy),
+      getAccounts()
+    ).pipe(
+      mergeMap(([addr, [account1]]) =>
+        proxy
+          .transaction(
+            at(SampleToken, addr).transfer({
+              _to: account1,
+              _value: 1
+            })
+          )
+          .pipe(first(x => x.status === 'tx'))
       )
     );
 

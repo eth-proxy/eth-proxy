@@ -1,15 +1,10 @@
-import { createProxy, at } from '@eth-proxy/client';
-import { of } from 'rxjs';
-import { mergeMap, tap, first, mapTo } from 'rxjs/operators';
+import { at } from '@eth-proxy/client';
+import { first } from 'rxjs/operators';
 import { expect } from 'chai';
-import { Contracts } from './contracts';
-import { httpSubprovider, revert, snapshot } from '@eth-proxy/rpc';
-import { deploySampleToken, SampleToken, myToken } from './mocks';
+import { revert, snapshot } from '@eth-proxy/rpc';
+import { deploySampleToken, SampleToken, myToken, ethProxy } from './mocks';
 
-const proxy = createProxy<Contracts>(httpSubprovider(), {
-  contractSchemaResolver: ({ name }) => import(`./schemas/${name}.json`)
-});
-
+const proxy = ethProxy();
 const transferAmount = '1000';
 const Recipient = '0xdd6f928583f8c421e5bc8bf4c9376bab98aa22ea';
 
