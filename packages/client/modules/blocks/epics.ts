@@ -7,7 +7,7 @@ import {
   retryWhen,
   delay
 } from 'rxjs/operators';
-import { Observable, of, from, defer } from 'rxjs';
+import { Observable, of, from, defer, EMPTY } from 'rxjs';
 
 import { EpicContext } from '../../context';
 import * as actions from './actions';
@@ -45,10 +45,12 @@ export const loadBlock = (
 export const watchNewBlocks = (
   _: ActionsObservable<any>,
   __,
-  { provider }: EpicContext
+  { provider, options }: EpicContext
 ): Observable<actions.Types> => {
-  return subscribeNewHeads(provider, {}).pipe(
-    retryWhen(delay(5000)),
-    map(actions.createLoadBlockSuccess)
-  );
+  return options.trackBlocks
+    ? subscribeNewHeads(provider, {}).pipe(
+        retryWhen(delay(5000)),
+        map(actions.createLoadBlockSuccess)
+      )
+    : EMPTY;
 };

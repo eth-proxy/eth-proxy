@@ -1,37 +1,32 @@
-import { timer, of } from 'rxjs';
+import { timer, of, from } from 'rxjs';
 import {
   mergeMap,
   first,
   takeUntil,
   bufferCount,
-  mergeMapTo,
-  delay,
-  distinctUntilChanged
+  mergeMapTo
 } from 'rxjs/operators';
 import { httpSubprovider, createRpc } from '@eth-proxy/rpc';
 
-describe('ERC20', () => {
+describe('Watches', () => {
   const {
     snapshot,
     revert,
     watchBlocks,
     mine,
-    watchLogs,
+    watchEvents,
     getAccounts,
-    sendTransactionWithData,
-    getReceipt,
-    getLogs
+    sendTransactionWithData
   } = createRpc(httpSubprovider());
 
   beforeEach(snapshot);
-  afterEach(revert);
+  afterEach(() => revert(1));
 
   it('Watches latest block', done => {
     const watch$ = watchBlocks({
       timer$: timer(0, 50)
     }).pipe(
       bufferCount(5),
-      distinctUntilChanged(),
       first()
     );
 
@@ -46,16 +41,16 @@ describe('ERC20', () => {
     miner$.subscribe();
   });
 
-  it('Watches events', done => {
-    const watch$ = watchLogs({
+  it.skip('Watches events', done => {
+    const accounts$ = from(getAccounts());
+
+    const watch$ = watchEvents({
       filter: {
         fromBlock: 0,
         toBlock: 'latest',
         address: null
       }
     }).pipe(first());
-
-    const accounts$ = getAccounts();
 
     const transfer$ = of(1, 2, 3).pipe(
       mergeMapTo(accounts$),
@@ -66,26 +61,14 @@ describe('ERC20', () => {
           value: '100',
           data: '0',
           gas: '101000'
-        }).then(getReceipt)
+        })
       )
     );
 
     watch$.subscribe(() => {
       done();
     });
-    transfer$.subscribe();
 
-    of(null)
-      .pipe(
-        delay(5000),
-        mergeMap(() =>
-          getLogs({
-            fromBlock: 0,
-            toBlock: 'latest',
-            address: null
-          })
-        )
-      )
-      .subscribe();
+    transfer$.subscribe();
   }).timeout(10000);
 });

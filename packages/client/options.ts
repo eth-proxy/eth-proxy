@@ -9,6 +9,6 @@ export interface EthProxyOptions {
   };
   interceptors?: Partial<EthProxyInterceptors>;
   watchAccountTimer?: Observable<any>;
-  watchBlocksTimer$?: Observable<any>;
   watchLogsTimer$?: Observable<any>;
+  trackBlocks?: boolean;
 }

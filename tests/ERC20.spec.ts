@@ -1,9 +1,10 @@
-import { createProxy, C, RequestFactory, at } from '@eth-proxy/client';
+import { createProxy, at } from '@eth-proxy/client';
 import { of } from 'rxjs';
 import { mergeMap, tap, first, mapTo } from 'rxjs/operators';
 import { expect } from 'chai';
 import { Contracts } from './contracts';
 import { httpSubprovider, revert, snapshot } from '@eth-proxy/rpc';
+import { deploySampleToken, SampleToken, myToken } from './mocks';
 
 const proxy = createProxy<Contracts>(httpSubprovider(), {
   contractSchemaResolver: ({ name }) => import(`./schemas/${name}.json`)
@@ -12,53 +13,35 @@ const proxy = createProxy<Contracts>(httpSubprovider(), {
 const transferAmount = '1000';
 const Recipient = '0xdd6f928583f8c421e5bc8bf4c9376bab98aa22ea';
 
-const { SampleToken } = (C as any) as RequestFactory<Contracts>;
-
-const myToken = {
-  _name: 'myToken',
-  _symbol: 'myTokenSymbol',
-  _decimals: 18,
-  supply: 10 * 10 ** 18
-};
-
 describe('ERC20', () => {
-  beforeEach(() => {
-    snapshot(proxy);
-  });
-  afterEach(() => {
-    revert(proxy);
+  beforeEach(() => snapshot(proxy));
+  afterEach(async () => {
+    await revert(proxy, 1);
     proxy.disconnect();
   });
 
-  it('Can use Sample Token', done => {
-    proxy
-      .deploy({
-        interface: 'SampleToken',
-        payload: myToken,
-        gas: 7000000
-      })
-      .pipe(
-        mergeMap(contractAddress => {
-          const MyToken = at(SampleToken, contractAddress);
+  it('Can use Sample Token', async () => {
+    const contractAddress = await deploySampleToken(proxy).toPromise();
 
-          return of(null).pipe(
-            mapTo(MyToken.symbol()),
-            mergeMap(proxy.ethCall),
-            tap(symbol => expect(symbol).to.eq(myToken._symbol)),
-            mapTo(
-              MyToken.transfer({
-                _to: Recipient,
-                _value: transferAmount
-              })
-            ),
-            mergeMap(proxy.transaction),
-            first(x => x.status === 'tx'),
-            mapTo(MyToken.balanceOf(Recipient)),
-            mergeMap(proxy.ethCall),
-            tap(balance => expect(balance.toString()).to.eq(transferAmount))
-          );
+    const MyToken = at(SampleToken, contractAddress);
+
+    const symbol = await proxy.ethCall(MyToken.symbol()).toPromise();
+    expect(symbol).to.eq(myToken._symbol);
+
+    await proxy
+      .transaction(
+        MyToken.transfer({
+          _to: Recipient,
+          _value: transferAmount
         })
       )
-      .subscribe(() => done());
+      .pipe(first(x => x.status === 'tx'))
+      .toPromise();
+
+    const balance = await proxy
+      .ethCall(MyToken.balanceOf(Recipient))
+      .toPromise();
+
+    expect(balance.toString()).to.eq(transferAmount);
   });
 });
