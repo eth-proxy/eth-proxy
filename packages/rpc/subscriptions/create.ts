@@ -1,6 +1,6 @@
 import { Provider, SubscribeArgs } from '../interfaces';
-import { mergeMap, finalize } from 'rxjs/operators';
-import { subscribe, unsubscribe } from '../methods';
+import { mergeMap } from 'rxjs/operators';
+import { subscribe } from '../methods';
 import { Observable, defer } from 'rxjs';
 
 export function createSubscription<T>(
