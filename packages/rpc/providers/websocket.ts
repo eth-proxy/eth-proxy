@@ -1,17 +1,22 @@
-import { Provider, RpcRequest, SubscriptionData } from '../interfaces';
+import {
+  Provider,
+  RpcRequest,
+  SubscriptionData,
+  RpcResponse
+} from '../interfaces';
 import {
   first,
   filter,
   map,
-  share,
+  mergeMap,
+  multicast,
   retryWhen,
-  delay,
-  takeUntil
+  delay
 } from 'rxjs/operators';
 import { curry } from 'ramda';
 import { QueueingSubject } from 'queueing-subject';
 import websocketConnect from 'rxjs-websockets';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, merge, throwError, NEVER } from 'rxjs';
 
 interface Config {
   url: string;
@@ -19,33 +24,39 @@ interface Config {
 
 export function websocketProvider(config: Config): Provider {
   const input = new QueueingSubject<any>();
-  const disconnect$ = new Subject<any>();
 
-  const { messages } = jsonWebsocketConnect(config.url, input);
-
-  const message$ = messages.pipe(
-    retryWhen(delay(1000)),
-    takeUntil(disconnect$),
-    share()
+  const { messages, connectionStatus } = jsonWebsocketConnect(
+    config.url,
+    input
   );
+
+  const errorOnClosed$ = connectionStatus.pipe(
+    mergeMap(x => (x === 0 ? throwError('Connection closed') : NEVER))
+  );
+
+  const message$ = messages.pipe(retryWhen(delay(1000)));
+
+  const multicastMessages$ = multicast(() => new Subject())(message$);
+  const sub = multicastMessages$.connect();
 
   return {
     send: (payload: RpcRequest | RpcRequest[]) => {
       input.next(payload);
 
-      return message$
-        .pipe(first(isMatchingResponse(payload)))
-        .toPromise() as Promise<any>;
+      return multicastMessages$
+        .pipe(
+          first(isMatchingResponse(payload)),
+          mergeMap(validateResponse)
+        )
+        .toPromise() as Promise<RpcResponse>;
     },
     observe: <T>(subId: string) => {
-      return message$
-        .pipe(filter(isMatchingSubscription(subId)))
-        .pipe(map((x: SubscriptionData<T>) => x.params.result));
+      return merge(multicastMessages$, errorOnClosed$).pipe(
+        filter(isMatchingSubscription(subId)),
+        map((x: SubscriptionData<T>) => x.params.result)
+      );
     },
-    disconnect: () => {
-      disconnect$.next();
-      disconnect$.complete();
-    }
+    disconnect: () => sub.unsubscribe()
   };
 }
 
@@ -56,7 +67,7 @@ const isMatchingSubscription = curry((subId: string, result: any) => {
 });
 
 const isMatchingResponse = curry(
-  (payload: RpcRequest | RpcRequest[], result: any) => {
+  (payload: RpcRequest | RpcRequest[], result: RpcResponse) => {
     if (Array.isArray(payload)) {
       return (
         Array.isArray(result) &&
@@ -80,6 +91,15 @@ function jsonWebsocketConnect(
     jsonInput,
     protocols
   );
+
   const jsonMessages = messages.pipe(map(message => JSON.parse(message)));
+
   return { connectionStatus, messages: jsonMessages };
+}
+
+function validateResponse(response: RpcResponse) {
+  if ('error' in response) {
+    return Promise.reject(response.error);
+  }
+  return Promise.resolve(response);
 }

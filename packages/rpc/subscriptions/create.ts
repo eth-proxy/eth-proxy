@@ -9,9 +9,9 @@ export function createSubscription<T>(
 ): Observable<T> {
   return defer(() => subscribe(provider, args)).pipe(
     mergeMap(subId => {
-      return provider
-        .observe(subId)
-        .pipe(finalize(() => unsubscribe(provider, subId)));
+      return provider.observe(subId);
+      // COMMENTED DUE TO UNSUBSCRIBE ISSUE
+      // .pipe(finalize(() => unsubscribe(provider, subId)));
     })
   );
 }
