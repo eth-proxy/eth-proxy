@@ -1,6 +1,6 @@
 import { Provider, SubscribeArgs } from '../interfaces';
-import { mergeMap, finalize } from 'rxjs/operators';
-import { subscribe, unsubscribe } from '../methods';
+import { mergeMap } from 'rxjs/operators';
+import { subscribe } from '../methods';
 import { Observable, defer } from 'rxjs';
 
 export function createSubscription<T>(
@@ -9,9 +9,9 @@ export function createSubscription<T>(
 ): Observable<T> {
   return defer(() => subscribe(provider, args)).pipe(
     mergeMap(subId => {
-      return provider
-        .observe(subId)
-        .pipe(finalize(() => unsubscribe(provider, subId)));
+      return provider.observe(subId);
+      // COMMENTED DUE TO UNSUBSCRIBE ISSUE
+      // .pipe(finalize(() => unsubscribe(provider, subId)));
     })
   );
 }

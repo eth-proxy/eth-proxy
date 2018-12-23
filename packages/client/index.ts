@@ -46,7 +46,8 @@ export class EthProxy<T extends {} = {}> implements Provider {
 const defaultOptions: Partial<EthProxyOptions> = {
   interceptors: {},
   store: undefined,
-  watchAccountTimer: timer(0)
+  watchAccountTimer: timer(0),
+  trackBlocks: false
 };
 
 let globalId = 0;
