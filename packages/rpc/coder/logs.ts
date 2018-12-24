@@ -1,43 +1,50 @@
-import { toSignatureHash, isEventAbi } from '../utils';
-import { AbiDefinition } from '../interfaces';
+import { toSignatureHash, isEventAbi, strip0x } from '../utils';
+import { AbiDefinition, Log } from '../interfaces';
 import { Dictionary } from 'ramda';
 import { EventDescription } from '../interfaces';
 import { BigNumber } from 'bignumber.js';
-
-const ethJSABI = require('ethjs-abi');
+import { decodeParams } from './decoder';
+import { zipObj } from 'ramda';
 
 export const decodeLogs = (abi: AbiDefinition[]) => {
   const events = eventsFromAbi(abi);
 
-  return (logs: any[]) => {
+  return (logs: Log[]) => {
     return logs
       .filter(log => {
         const eventAbi = events[log.topics[0]];
         return !!eventAbi;
       })
       .map(log => {
-        const eventAbi = events[log.topics[0]];
+        const { anonymous, inputs, name } = events[log.topics[0]];
 
-        var argTopics = eventAbi.anonymous ? log.topics : log.topics.slice(1);
+        const argTopics = (anonymous ? log.topics : log.topics.slice(1)) || [];
 
-        var indexedData =
-          '0x' + argTopics.map(topics => topics.slice(2)).join('');
-        var indexedParams = ethJSABI.decodeEvent(
-          partialABI(eventAbi, true),
+        const indexed = inputs.filter(i => i.indexed);
+        const indexedData = argTopics.map(topics => topics.slice(2)).join('');
+        const indexedValues = decodeParams(
+          indexed.map(x => x.type),
           indexedData
         );
+        const indexedParams = zipObj(indexed.map(x => x.name), indexedValues);
 
-        var notIndexedData = log.data;
-        var notIndexedParams = ethJSABI.decodeEvent(
-          partialABI(eventAbi, false),
+        const notIndexed = inputs.filter(i => !i.indexed);
+        const notIndexedData = strip0x(log.data || '');
+        const notIndexedValues = decodeParams(
+          notIndexed.map(x => x.type),
           notIndexedData
         );
+        const notIndexedParams = zipObj(
+          notIndexed.map(x => x.name),
+          notIndexedValues
+        );
+
         const params = {
           ...indexedParams,
           ...notIndexedParams
         };
 
-        const payload = eventAbi.inputs.reduce((acc, current) => {
+        const payload = inputs.reduce((acc, current) => {
           return {
             ...acc,
             [current.name]: parseArg(current.type, params[current.name])
@@ -45,17 +52,18 @@ export const decodeLogs = (abi: AbiDefinition[]) => {
         }, {});
 
         return {
-          type: eventAbi.name,
+          type: name,
           payload,
           meta: {
             ...log,
-            type: eventAbi.name
+            type: name
           }
         };
       });
   };
 };
 
+// Memoize
 export function eventsFromAbi(
   abi: AbiDefinition[]
 ): Dictionary<EventDescription> {
@@ -65,17 +73,6 @@ export function eventsFromAbi(
       [toSignatureHash(item)]: item
     };
   }, {});
-}
-
-function partialABI(fullABI: EventDescription, indexed) {
-  var inputs = fullABI.inputs.filter(i => i.indexed === indexed);
-
-  return {
-    inputs,
-    name: fullABI.name,
-    type: fullABI.type,
-    anonymous: fullABI.anonymous
-  };
 }
 
 function parseArg(type: string, value: any) {

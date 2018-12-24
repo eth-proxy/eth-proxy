@@ -1,5 +1,5 @@
 import { BigNumber } from 'bignumber.js';
-import { Tag, NumberLike, FilterObject, RawFilter } from '../interfaces';
+import { Tag, FilterObject, RawFilter, NumberLike } from '../interfaces';
 import { contains, evolve, pickBy } from 'ramda';
 import { isNotNil } from '../utils';
 

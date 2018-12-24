@@ -11,7 +11,7 @@ import {
 } from 'ramda';
 import { toObservableStore } from '../../utils';
 import { fillFilterWithMany, isEventMatching } from './utils';
-import { BlockchainEvent } from '@eth-proxy/rpc';
+import { BlockchainEvent, Log } from '@eth-proxy/rpc';
 
 export enum Action {
   Load = 'Load',
@@ -83,7 +83,7 @@ export interface Requests {
 }
 
 export interface State {
-  events: Dictionary<BlockchainEvent>;
+  events: Dictionary<Log>;
   requests: Requests;
 }
 

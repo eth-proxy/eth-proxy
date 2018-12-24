@@ -1,8 +1,3 @@
-import {
-  createGetReceiptFailed,
-  createLoadReceiptSuccess,
-  TX_GENERATED
-} from '../actions';
 import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import {
   mergeMap,
@@ -16,13 +11,13 @@ import {
   tap
 } from 'rxjs/operators';
 import { of, throwError as _throw, defer } from 'rxjs';
-import { getReceipt, TransactionReceipt } from '@eth-proxy/rpc';
+import { getReceipt, TransactionReceipt, decodeLogs } from '@eth-proxy/rpc';
+import { isNil } from 'ramda';
 
 import * as actions from '../actions';
 import { EpicContext } from '../../../context';
-import { getLogDecoder } from '../../schema';
 import { State } from '../../../store';
-import { isNil } from 'ramda';
+import * as fromSchema from '../../schema';
 
 export const findReceiptEpic = (
   actions$: ActionsObservable<actions.TxGenerated>,
@@ -30,14 +25,14 @@ export const findReceiptEpic = (
   { provider }: EpicContext
 ) => {
   return actions$.pipe(
-    ofType(TX_GENERATED),
+    ofType(actions.TX_GENERATED),
     withLatestFrom(state$),
     mergeMap(([{ payload: { tx } }, state]) =>
       defer(() => getReceipt(provider, tx)).pipe(
         tap(throwIfEmpty),
         map(receipt => {
-          const logs = getLogDecoder(state)(receipt.logs);
-          return createLoadReceiptSuccess({
+          const logs = decodeLogs(fromSchema.getAllAbis(state))(receipt.logs);
+          return actions.createLoadReceiptSuccess({
             receipt,
             logs
           });
@@ -49,7 +44,7 @@ export const findReceiptEpic = (
             concat(_throw('Transaction was not processed within 720s'))
           )
         ),
-        catchError(err => of(createGetReceiptFailed(tx, err)))
+        catchError(err => of(actions.createGetReceiptFailed(tx, err)))
       )
     )
   );

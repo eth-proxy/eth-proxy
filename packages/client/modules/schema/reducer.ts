@@ -5,7 +5,7 @@ import * as actions from './actions';
 import { ContractInfo, ContractRef, LoadingRecord, ErrorRecord } from './model';
 import { isString } from '../../utils';
 import { moduleId } from './constants';
-import { decodeLogs, AbiDefinition } from '@eth-proxy/rpc';
+import { AbiDefinition } from '@eth-proxy/rpc';
 
 export interface State {
   [contractName: string]:
@@ -94,11 +94,7 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
         values,
         map(propOr([], 'abi')),
         flatten
-      )(x)
-  );
-  const getLogDecoder = createSelector(
-    getAllAbis,
-    (abis: AbiDefinition[]) => decodeLogs(abis)
+      )(x) as AbiDefinition[]
   );
 
   return {
@@ -108,8 +104,7 @@ export const getSelectors = <T>(getModule: (state: T) => State) => {
     getContractsFromRefs,
     getAllAbis,
     getHasContracts,
-    getContractsByName,
-    getLogDecoder
+    getContractsByName
   };
 };
 
@@ -119,5 +114,5 @@ export const {
   getHasContracts,
   getContractsByName,
   getContractForRef,
-  getLogDecoder
+  getAllAbis
 } = getSelectors(m => m[moduleId]);

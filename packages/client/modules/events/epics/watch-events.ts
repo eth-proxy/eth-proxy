@@ -5,7 +5,7 @@ import * as actions from '../actions';
 import { merge, EMPTY } from 'rxjs';
 import { EpicContext } from '../../../context';
 import * as fromSchema from '../../schema';
-import { watchLogs } from '@eth-proxy/rpc';
+import { watchLogs, decodeLogs } from '@eth-proxy/rpc';
 
 // DONT WATCH SAME CONTRACTS MORE THEN ONCE
 export const watchEvents = (
@@ -40,7 +40,8 @@ export const watchEvents = (
         )
       ).pipe(
         takeUnilRemoved(id),
-        map(log => fromSchema.getLogDecoder(state$.value)([log])),
+        map(x => [x]),
+        map(decodeLogs(fromSchema.getAllAbis(state$.value))),
         map(actions.eventsLoaded),
         catchError((_, err$) => err$)
       );

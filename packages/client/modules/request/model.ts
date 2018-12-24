@@ -1,4 +1,4 @@
-import { NumberLike, ObjKey } from '../../interfaces';
+import { NumberLike } from '@eth-proxy/rpc';
 
 export interface RequestOptions {
   gas?: NumberLike;
