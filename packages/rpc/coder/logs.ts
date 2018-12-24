@@ -4,7 +4,7 @@ import { Dictionary } from 'ramda';
 import { EventDescription } from '../interfaces';
 import { BigNumber } from 'bignumber.js';
 import { decodeParams } from './decoder';
-import { zipObj } from 'ramda';
+import { zipObj, pipe } from 'ramda';
 
 export const decodeLogs = (abi: AbiDefinition[]) => {
   const events = eventsFromAbi(abi);
@@ -16,27 +16,18 @@ export const decodeLogs = (abi: AbiDefinition[]) => {
         return !!eventAbi;
       })
       .map(log => {
-        const { anonymous, inputs, name } = events[log.topics[0]];
+        const { anonymous, inputs, name: type } = events[log.topics[0]];
 
         const argTopics = (anonymous ? log.topics : log.topics.slice(1)) || [];
 
-        const indexed = inputs.filter(i => i.indexed);
         const indexedData = argTopics.map(topics => topics.slice(2)).join('');
-        const indexedValues = decodeParams(
-          indexed.map(x => x.type),
+        const indexedParams = decodeToObj(inputs.filter(i => i.indexed))(
           indexedData
         );
-        const indexedParams = zipObj(indexed.map(x => x.name), indexedValues);
 
-        const notIndexed = inputs.filter(i => !i.indexed);
         const notIndexedData = strip0x(log.data || '');
-        const notIndexedValues = decodeParams(
-          notIndexed.map(x => x.type),
+        const notIndexedParams = decodeToObj(inputs.filter(i => !i.indexed))(
           notIndexedData
-        );
-        const notIndexedParams = zipObj(
-          notIndexed.map(x => x.name),
-          notIndexedValues
         );
 
         const params = {
@@ -52,18 +43,17 @@ export const decodeLogs = (abi: AbiDefinition[]) => {
         }, {});
 
         return {
-          type: name,
+          type,
           payload,
           meta: {
             ...log,
-            type: name
+            type
           }
         };
       });
   };
 };
 
-// Memoize
 export function eventsFromAbi(
   abi: AbiDefinition[]
 ): Dictionary<EventDescription> {
@@ -83,4 +73,13 @@ function parseArg(type: string, value: any) {
     return new BigNumber('0x' + value.toString(16));
   }
   return value;
+}
+
+function decodeToObj<T extends { type: string; name: string }>(
+  deinitions: T[]
+) {
+  return pipe(
+    decodeParams(deinitions.map(x => x.type)),
+    zipObj(deinitions.map(x => x.name))
+  );
 }
