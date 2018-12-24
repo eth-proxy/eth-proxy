@@ -25,7 +25,7 @@ import {
 } from '../cache';
 import * as fromSchema from '../../schema';
 import { State } from '../../../store';
-import { getEvents } from '@eth-proxy/rpc';
+import { getEvents, decodeLogs } from '@eth-proxy/rpc';
 
 export const queryEventsEpic = (
   action$: ActionsObservable<QueryEvents>,
@@ -62,7 +62,7 @@ export const queryEventsEpic = (
             )
           ),
           first(),
-          rxMap(fromSchema.getLogDecoder(state$.value))
+          rxMap(decodeLogs(fromSchema.getAllAbis(state$.value)))
         )
         .pipe(
           rxMap(events => queryEventsSuccess({ id, events })),

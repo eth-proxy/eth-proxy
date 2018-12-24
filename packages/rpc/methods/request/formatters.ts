@@ -7,13 +7,13 @@ import {
   ConstructorDescription,
   FunctionParameter
 } from '../../interfaces';
-const Coder = require('web3/lib/solidity/coder');
+import { encodeParams, decodeParams } from '../../coder';
 
 export function encodeArgs(
   methodAbi: FunctionDescription | ConstructorDescription,
   args: any
 ) {
-  return Coder.encodeParams(
+  return encodeParams(
     methodAbi.inputs.map(x => x.type),
     formatPayload(args, methodAbi)
   );
@@ -21,7 +21,7 @@ export function encodeArgs(
 
 export const decodeArgs = curry(
   ({ outputs = [] }: FunctionDescription, data: string) => {
-    return Coder.decodeParams(outputs.map(x => x.type), data);
+    return decodeParams(outputs.map(x => x.type), data);
   }
 );
 

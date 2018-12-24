@@ -1,6 +1,4 @@
 export type ObjKey = string | number | symbol;
-export type NumberLike = number | string | BigNumber;
-
 export type Data<T> = DataNotAsked | DataLoading | DataLoaded<T> | DataError;
 
 export interface DataNotAsked {

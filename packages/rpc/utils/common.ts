@@ -11,6 +11,7 @@ import {
 import { pipe, isNil } from 'ramda';
 import { BigNumber } from 'bignumber.js';
 import { defer } from 'rxjs';
+import { NumberLike } from '../interfaces';
 
 export function bind<T extends (...args: any[]) => any>(fn: T, obj: any): T {
   return fn.bind(obj);
@@ -88,3 +89,6 @@ export function send$(provider: Provider): SendObservableRequest {
 export function send(provider: Provider): SendRequest {
   return payload => provider.send(payload).then(x => x.result);
 }
+
+export const bnOf = (value: NumberLike, base?: number) =>
+  new BigNumber(value, base);

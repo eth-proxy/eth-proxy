@@ -8,6 +8,18 @@ export type BlockchainEvent = {
   topics: string[];
 };
 
+export interface Log {
+  data: string;
+  removed: boolean;
+  address: string;
+  logIndex: number;
+  blockNumber: number;
+  transactionHash: string;
+  transactionIndex: number;
+  blockHash: string;
+  topics: string[];
+}
+
 export interface Block {
   difficulty: BigNumber;
   extraData: string;
@@ -61,18 +73,6 @@ export interface TransactionReceipt {
   status: TransactionStatus;
   from: string;
   to: string;
-}
-
-export interface Log {
-  data: string;
-  removed: boolean;
-  address: string;
-  logIndex: number;
-  blockNumber: number;
-  transactionHash: string;
-  transactionIndex: number;
-  blockHash: string;
-  topics: string[];
 }
 
 export enum TransactionStatus {

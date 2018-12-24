@@ -1,4 +1,4 @@
-import { BlockchainEvent } from '@eth-proxy/rpc';
+import { Log } from '@eth-proxy/rpc';
 import { isNil, isEmpty } from 'ramda';
 
 import { NormalizedFilter } from '../model';
@@ -19,17 +19,14 @@ export function addressMatches<E extends { address: string }>(
   return addressess.includes(event.address);
 }
 
-export function blocksMatches(
-  filter: NormalizedFilter,
-  event: BlockchainEvent
-) {
+export function blocksMatches(filter: NormalizedFilter, event: Log) {
   return (
     event.blockNumber >= filter.fromBlock && event.blockNumber <= filter.toBlock
   );
 }
 
 export function isEventMatching(filter: NormalizedFilter) {
-  return (event: BlockchainEvent) => {
+  return (event: Log) => {
     return (
       addressMatches(filter, event) &&
       blocksMatches(filter, event) &&
