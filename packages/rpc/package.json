@@ -22,14 +22,14 @@
     "ws": "^6.1.2"
   },
   "peerDependencies": {
-    "bignumber.js": "^6.0.0",
+    "bignumber.js": "^8.0.0",
     "rxjs": "^6.0.0",
     "web3": "^0.20.3"
   },
   "devDependencies": {
     "isomorphic-fetch": "2.2.1",
     "rimraf": "^2.6.2",
-    "rollup": "^0.67.3",
+    "rollup": "^0.68.0",
     "synchronous-promise": "2.0.6",
     "typescript": "^3.1.6"
   }

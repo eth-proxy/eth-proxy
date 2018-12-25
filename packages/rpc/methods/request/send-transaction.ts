@@ -7,8 +7,9 @@ import {
   NumberLike,
   FunctionDescription
 } from '../../interfaces';
-import { formatRequestInput, encodeArgs } from './formatters';
+import { formatRequestInput } from './formatters';
 import { BigNumber } from 'bignumber.js';
+import { encodeFromObjOrSingle } from '../../coder';
 
 export type TransactionInputParams = RequestInputParams & {
   nonce?: NumberLike;
@@ -25,7 +26,7 @@ export interface TransactionInput<T = any> {
  */
 export const sendTransaction = curry(
   (provider: Provider, input: TransactionInput) => {
-    validateInput(input);
+    validateValue(input);
 
     return sendTransactionWithData(provider, {
       ...input.txParams,
@@ -35,7 +36,7 @@ export const sendTransaction = curry(
 );
 
 function toTxData({ abi, args }: TransactionInput) {
-  return getMethodID(abi) + encodeArgs(abi, args);
+  return getMethodID(abi) + encodeFromObjOrSingle(abi, args);
 }
 
 export const sendTransactionWithData = curry(
@@ -52,10 +53,6 @@ function formatTxPayload(txParams: TransactionInputParams) {
     ...formatRequestInput(txParams),
     ...(txParams.nonce && { nonce: formatQuantity(txParams.nonce) })
   };
-}
-
-function validateInput(input: TransactionInput) {
-  return validateValue(input);
 }
 
 function validateValue(input: TransactionInput) {

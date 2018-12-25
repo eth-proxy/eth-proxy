@@ -4,17 +4,21 @@ import { RequestFactory, EntityModel } from '@eth-proxy/client';
 import { EventMetadata } from '@eth-proxy/rpc';
 
 export type ERC20Events = ERC20ApprovalEvent | ERC20TransferEvent;
-export type ContractsEvents = ERC20Events;
+export type KitchenSinkEvents = never;
+export type ContractsEvents = ERC20Events | KitchenSinkEvents;
 export type NumberLike = BigNumber | string | number;
 
 export interface EventsByType {
   ERC20: ERC20EventsByType;
+  KitchenSink: KitchenSinkEventsByType;
 }
 
 export interface ERC20EventsByType {
   Approval: ERC20ApprovalEvent;
   Transfer: ERC20TransferEvent;
 }
+
+export interface KitchenSinkEventsByType {}
 
 export interface TransactionOptions {
   from?: string;
@@ -26,6 +30,7 @@ export interface TransactionOptions {
 
 export interface Contracts {
   ERC20: ERC20;
+  KitchenSink: KitchenSink;
 }
 
 export interface ERC20 {
@@ -36,6 +41,10 @@ export interface ERC20 {
   balanceOf: ERC20BalanceOfDefinition;
   transfer: ERC20TransferDefinition;
   allowance: ERC20AllowanceDefinition;
+}
+
+export interface KitchenSink {
+  approve: KitchenSinkApproveDefinition;
 }
 
 export interface ERC20ApproveDefinition {
@@ -79,6 +88,12 @@ export interface ERC20AllowanceDefinition {
   events: ContractsEvents;
 }
 
+export interface KitchenSinkApproveDefinition {
+  in: KitchenSinkApproveInput;
+  out: KitchenSinkApproveOutput;
+  events: ContractsEvents;
+}
+
 export interface ERC20ApproveInput {
   spender: string;
   value: NumberLike;
@@ -97,6 +112,17 @@ export interface ERC20TransferInput {
 
 export interface ERC20AllowanceInput {
   owner: string;
+  spender: string;
+}
+
+export interface KitchenSinkApproveInput {
+  spender: string;
+  value: NumberLike;
+}
+
+export interface KitchenSinkApproveOutput {
+  0: boolean;
+  value: BigNumber;
   spender: string;
 }
 

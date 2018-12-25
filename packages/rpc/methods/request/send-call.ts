@@ -7,8 +7,9 @@ import {
   NumberLike,
   FunctionDescription
 } from '../../interfaces';
-import { formatRequestInput, encodeArgs, decodeArgs } from './formatters';
+import { formatRequestInput } from './formatters';
 import { formatBlockNr } from '../../formatters';
+import { decodeToObj, encodeFromObjOrSingle } from '../../coder';
 
 export interface CallInput<T = any> {
   abi: FunctionDescription;
@@ -37,20 +38,15 @@ export const sendCall = curry(
 );
 
 function toData({ abi, args }: CallInput) {
-  return getMethodID(abi) + encodeArgs(abi, args);
+  return getMethodID(abi) + encodeFromObjOrSingle(abi, args);
 }
 
 const fromResult = curry(({ abi }: CallInput, result: string) => {
-  // Is this necessary?
-  if (!result) {
-    return result;
-  }
-
-  const decoder = decodeArgs(abi);
+  const decode = decodeToObj(abi.outputs || []);
 
   return pipe(
     strip0x,
-    decoder,
+    decode,
     extractNonTuple
   )(result);
 });

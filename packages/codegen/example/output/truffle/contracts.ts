@@ -2,17 +2,21 @@
 import { BigNumber } from 'bignumber.js';
 
 export type ERC20Events = ERC20ApprovalEvent | ERC20TransferEvent;
-export type ContractsEvents = ERC20Events;
+export type KitchenSinkEvents = never;
+export type ContractsEvents = ERC20Events | KitchenSinkEvents;
 export type NumberLike = BigNumber | string | number;
 
 export interface EventsByType {
   ERC20: ERC20EventsByType;
+  KitchenSink: KitchenSinkEventsByType;
 }
 
 export interface ERC20EventsByType {
   Approval: ERC20ApprovalEvent;
   Transfer: ERC20TransferEvent;
 }
+
+export interface KitchenSinkEventsByType {}
 
 export interface TransactionOptions {
   from?: string;
@@ -24,6 +28,7 @@ export interface TransactionOptions {
 
 export interface Contracts {
   ERC20: ERC20;
+  KitchenSink: KitchenSink;
 }
 
 export interface ERC20 extends TruffleContractInstance {
@@ -54,6 +59,14 @@ export interface ERC20 extends TruffleContractInstance {
     spender: string,
     options?: TransactionOptions
   ): Promise<BigNumber>;
+}
+
+export interface KitchenSink extends TruffleContractInstance {
+  approve(
+    spender: string,
+    value: NumberLike,
+    options?: TransactionOptions
+  ): Promise<[boolean, BigNumber, string]>;
 }
 
 export interface ERC20ApprovalPayload {
@@ -136,5 +149,6 @@ export interface TruffleContractAbstraction<T extends TruffleContractInstance> {
 }
 
 export enum ContractsNames {
-  ERC20 = 'ERC20'
+  ERC20 = 'ERC20',
+  KitchenSink = 'KitchenSink'
 }

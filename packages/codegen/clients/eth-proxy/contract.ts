@@ -1,11 +1,8 @@
-import {
-  InterfaceDeclarationStructure,
-  PropertySignatureStructure
-} from 'ts-simple-ast';
+import { PropertySignatureStructure } from 'ts-simple-ast';
 import { map } from 'ramda';
 import { toMethodDefinitionName } from './utils';
 import { createContractInterfaces } from '../../lib';
-import { FunctionDescription, TruffleJson } from '../../interfaces';
+import { FunctionDescription } from '../../interfaces';
 
 export const createEthProxyContractInterfaces = createContractInterfaces(
   ({ contractName }, functions) => {

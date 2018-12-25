@@ -8,7 +8,7 @@ import {
   SendObservableRequest,
   SendRequest
 } from '../interfaces';
-import { pipe, isNil } from 'ramda';
+import { pipe, isNil, values, head } from 'ramda';
 import { BigNumber } from 'bignumber.js';
 import { defer } from 'rxjs';
 import { NumberLike } from '../interfaces';
@@ -35,8 +35,10 @@ export const fromAscii = (ascii: string) => web3Utils.fromAscii(ascii);
 export const caseInsensitiveCompare = (a: string, b: string) =>
   a && b && a.toLowerCase() === b.toLowerCase();
 
-export function extractNonTuple(args: any) {
-  return args.length === 1 ? args[0] : args;
+export function extractNonTuple(args: {}) {
+  const argsValues = values(args);
+
+  return argsValues.length === 1 ? head(argsValues) : args;
 }
 
 export function strip0x(value: string) {
