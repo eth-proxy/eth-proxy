@@ -4,7 +4,7 @@ import {
   sendTransactionWithData,
   TransactionInputParams
 } from './send-transaction';
-import { encodeArgs } from './formatters';
+import { encodeFromObjOrSingle } from '../../coder';
 
 export interface DeploymentInput<T = any> {
   abi: ConstructorDescription;
@@ -23,5 +23,5 @@ export const deployContract = curry(
 );
 
 export function toDeploymentData({ abi, args, bytecode }: DeploymentInput) {
-  return `${bytecode}${encodeArgs(abi, args)}`;
+  return `${bytecode}${encodeFromObjOrSingle(abi, args)}`;
 }

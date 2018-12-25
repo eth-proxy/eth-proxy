@@ -48,7 +48,7 @@ export function getInputProperty(
   index: number
 ): PropertySignatureStructure {
   return {
-    name: name || 'anonymous' + index,
+    name: name || index.toString(),
     type: solidityToJsInputType(type)
   };
 }
@@ -58,7 +58,7 @@ export function getOutputProperty(
   index: number
 ): PropertySignatureStructure {
   return {
-    name: name || 'anonymous' + index,
+    name: name || index.toString(),
     type: solidityToJsOutputType(type)
   };
 }

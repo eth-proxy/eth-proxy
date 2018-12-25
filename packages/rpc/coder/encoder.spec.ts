@@ -1,4 +1,4 @@
-import { formatArg } from './formatters';
+import { formatArg } from './encoder';
 import { expect } from 'chai';
 import { BigNumber } from 'bignumber.js';
 
