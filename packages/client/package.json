@@ -12,7 +12,9 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "typecheck": "tsc -p ./tsconfig.build.json --noEmit",
+    "test": "mocha --require tsconfig-paths/register --require ts-node/register -P \"./tsconfig.test.json\"  \"./**/*.spec.ts\""
   },
   "dependencies": {
     "@eth-proxy/rpc": "^0.7.4",
@@ -27,6 +29,10 @@
   },
   "devDependencies": {
     "rollup": "^0.68.0",
-    "typescript": "^3.1.6"
+    "typescript": "3.1.6",
+    "ts-node": "^7.0.1",
+    "tsconfig-paths": "3.7.0",
+    "rollup-plugin-typescript-path-mapping": "1.0.2",
+    "mocha": "5.2.0"
   }
 }

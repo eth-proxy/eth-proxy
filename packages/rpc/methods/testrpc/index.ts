@@ -1,7 +1,7 @@
 import { send } from '../../utils';
 import { Provider } from '../../interfaces';
 import { curry } from 'ramda';
-import { formatQuantity } from '../../formatters';
+import { toQuantity } from '../../converters';
 
 /**
  * TESTRPC ONLY
@@ -21,7 +21,7 @@ export function snapshot(provider: Provider) {
 export const revert = curry((provider: Provider, version: number) => {
   return send(provider)({
     method: 'evm_revert',
-    params: [formatQuantity(version)]
+    params: [toQuantity(version)]
   });
 });
 

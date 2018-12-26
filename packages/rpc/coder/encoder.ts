@@ -69,7 +69,9 @@ export function formatArg(type: string, value: any) {
 
   if (type.match(arrayIndexRe)) {
     // could validate array length
-    return value.map(arg => formatArg(type.replace(arrayIndexRe, ''), arg));
+    return value.map((arg: any) =>
+      formatArg(type.replace(arrayIndexRe, ''), arg)
+    );
   }
   if (type === 'bool') {
     return Boolean(value);

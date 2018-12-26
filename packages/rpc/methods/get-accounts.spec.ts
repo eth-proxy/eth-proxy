@@ -37,7 +37,7 @@ describe('Default account', () => {
   });
 
   it('When no accounts, returns null', async () => {
-    const accounts = [];
+    const accounts: string[] = [];
     const provider = testProvider(() => accounts);
 
     expect(await getDefaultAccount(provider)).to.be.null;

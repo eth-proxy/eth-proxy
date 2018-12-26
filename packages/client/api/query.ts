@@ -6,7 +6,6 @@ import {
   distinctUntilChanged
 } from 'rxjs/operators';
 
-import { getQueryResultFromQueryId } from '../modules/events';
 import * as fromEvents from '../modules/events';
 import { Context } from '../context';
 import { getInterceptor } from '../utils';
@@ -30,7 +29,7 @@ export const query = ({ genId, options, store }: Context) => (
           })
         )
       ),
-      mergeMapTo(store.select(getQueryResultFromQueryId(id))),
+      mergeMapTo(store.select(fromEvents.getQueryResultFromQueryId(id))),
       distinctUntilChanged(
         (x, y) => x.status === y.status && x.events.length === y.events.length
       ),

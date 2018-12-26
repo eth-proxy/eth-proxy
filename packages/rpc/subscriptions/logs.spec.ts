@@ -12,7 +12,7 @@ describe('Logs subscription', () => {
     const provider = testProvider(() => subscriptionId);
     subscribeLogs(provider, logFilter).subscribe();
 
-    const { params } = provider.getRequests().find(ofMethod('eth_subscribe'));
+    const { params } = provider.getRequests().find(ofMethod('eth_subscribe'))!;
 
     assert.deepEqual(params, ['logs', logFilter]);
   });

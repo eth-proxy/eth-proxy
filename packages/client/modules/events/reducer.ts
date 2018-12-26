@@ -123,7 +123,9 @@ export const reducer = combineReducers<State>({
   modelsToCompose: modelsReducer
 });
 const loading = { status: 'loading', filters: [] as NormalizedFilter[] };
-export const getSelectors = <T>(getModule: (state: T) => State) => {
+export const getSelectors = <T = { [moduleId]: State }>(
+  getModule: (state: T) => State
+) => {
   const getEventEntities = createSelector(
     getModule,
     m => m.entities

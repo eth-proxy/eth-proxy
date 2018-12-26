@@ -1,7 +1,7 @@
 import { pipe } from 'ramda';
 import { prefix0x } from './common';
 
-var cryptoJSSha3 = require('crypto-js/sha3');
+const cryptoJSSha3 = require('crypto-js/sha3');
 
 export function sha3(value: string) {
   return pipe(

@@ -1,13 +1,13 @@
 import { curry } from 'ramda';
 import { getMethodID, send } from '../../utils';
-import { formatQuantity } from '../../formatters';
+import { toQuantity, toRequestInput } from '../../converters';
 import {
   Provider,
   RequestInputParams,
   NumberLike,
-  FunctionDescription
+  FunctionDescription,
+  TransactionParams
 } from '../../interfaces';
-import { formatRequestInput } from './formatters';
 import { BigNumber } from 'bignumber.js';
 import { encodeFromObjOrSingle } from '../../coder';
 
@@ -50,9 +50,9 @@ export const sendTransactionWithData = curry(
 
 function formatTxPayload(txParams: TransactionInputParams) {
   return {
-    ...formatRequestInput(txParams),
-    ...(txParams.nonce && { nonce: formatQuantity(txParams.nonce) })
-  };
+    ...toRequestInput(txParams),
+    ...(txParams.nonce && { nonce: toQuantity(txParams.nonce) })
+  } as TransactionParams;
 }
 
 function validateValue(input: TransactionInput) {

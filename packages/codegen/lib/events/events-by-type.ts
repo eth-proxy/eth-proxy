@@ -14,7 +14,7 @@ function getEventsByContract(
   return {
     name: 'EventsByType',
     properties: map(
-      ({ abi, contractName }) => ({
+      ({ contractName }) => ({
         name: contractName,
         type: toEventsByTypeName(contractName)
       }),
@@ -29,10 +29,12 @@ function getContractEventsByType(
   return map(
     ({ contractName, abi }) => ({
       name: toEventsByTypeName(contractName),
-      properties: abi.filter(a => a.type === 'event').map(({ name }) => ({
-        name,
-        type: toEventName(contractName, name)
-      }))
+      properties: abi
+        .filter(a => a.type === 'event')
+        .map(({ name }) => ({
+          name,
+          type: toEventName(contractName, name)
+        }))
     }),
     jsons
   );

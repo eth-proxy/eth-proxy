@@ -4,7 +4,7 @@ import { sha3 } from '@eth-proxy/rpc';
 import { moduleId } from './constants';
 import { omit } from 'ramda';
 
-export type State = {
+export interface State {
   requests: {
     [id: string]: {
       status: string;
@@ -15,7 +15,7 @@ export type State = {
   data: {
     [hash: string]: any;
   };
-};
+}
 
 function hashRequestData(data: any) {
   return sha3(JSON.stringify(data));
@@ -82,9 +82,17 @@ export function reducer(
   }
 }
 
-export const getSelectors = <T>(getModule: (state: T) => State) => {
-  const getRequestsById = createSelector(getModule, m => m.requests);
-  const getDataByHash = createSelector(getModule, m => m.data);
+export const getSelectors = <T = { [moduleId]: State }>(
+  getModule: (state: T) => State
+) => {
+  const getRequestsById = createSelector(
+    getModule,
+    m => m.requests
+  );
+  const getDataByHash = createSelector(
+    getModule,
+    m => m.data
+  );
 
   const getRequestById = (id: string) =>
     createSelector(

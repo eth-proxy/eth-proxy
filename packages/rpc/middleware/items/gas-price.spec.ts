@@ -7,11 +7,11 @@ import { expect } from 'chai';
 const _10wei = 10;
 const _10WeiInHex = '0xa';
 
-const mockNext = x => of(x);
+const mockNext = (x: any) => of(x);
 
 describe('gasPriceMiddleware', () => {
   it('sets gas price for transaction', async () => {
-    var always10GweiLoader = sinon.stub().returns(of(_10wei));
+    const always10GweiLoader = sinon.stub().returns(of(_10wei));
 
     const middleware = gasPriceMiddleware(always10GweiLoader);
 
@@ -35,7 +35,7 @@ describe('gasPriceMiddleware', () => {
   });
 
   it('does not modify payload when gasPrice not provided', async () => {
-    var alwaysUndefinedGasLoader = sinon.stub().returns(of(undefined));
+    const alwaysUndefinedGasLoader = sinon.stub().returns(of(undefined));
 
     const middleware = gasPriceMiddleware(alwaysUndefinedGasLoader);
 

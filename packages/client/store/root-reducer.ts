@@ -23,5 +23,5 @@ const initialState = reducer(undefined, { type: '' });
 
 export const ethProxyIntegrationReducer = (
   state: State = initialState as State,
-  action
+  action: { type: 'SET_ETH-PROXY_STATE'; payload: State }
 ) => (action.type === 'SET_ETH-PROXY_STATE' ? action.payload : state);

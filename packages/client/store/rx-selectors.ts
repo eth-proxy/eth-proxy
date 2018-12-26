@@ -1,20 +1,26 @@
 import { Observable } from 'rxjs';
 import { State } from './model';
 import { map as rxMap, filter, tap, first } from 'rxjs/operators';
-import { getContractsFromQueryModel, getDefaultTxParams } from './selectors';
-import { keys } from 'ramda';
+import { keys, map } from 'ramda';
 
 import * as fromEvents from '../modules/events';
 import * as fromAccounts from '../modules/account';
 import * as fromNetwork from '../modules/network';
 import * as fromSchema from '../modules/schema';
 import * as fromTransactions from '../modules/transaction';
+import { createSelector } from 'reselect';
+
+const getContractsFromQueryModel = (userModel: fromEvents.QueryModel) =>
+  createSelector(
+    fromSchema.getContractForRef,
+    contractsFromRefs => map(contractsFromRefs, keys(userModel.deps))
+  );
 
 export function getDetectedNetwork$(state$: Observable<State>) {
   return state$.pipe(
     rxMap(fromNetwork.getNetworkId),
     first(x => !!x)
-  );
+  ) as Observable<string>;
 }
 
 export function getContractsFromModel$(queryModel: fromEvents.QueryModel) {
@@ -50,7 +56,7 @@ export const getActiveAccount$ = (state$: Observable<State>) =>
   state$.pipe(
     rxMap(fromAccounts.getActiveAccount),
     filter(x => x !== undefined)
-  );
+  ) as Observable<null | string>;
 
 export const getTransactionResultFromInitId$ = (id: string) => (
   state$: Observable<State>
@@ -58,17 +64,8 @@ export const getTransactionResultFromInitId$ = (id: string) => (
   state$.pipe(
     rxMap(fromTransactions.getTransactionFromInitId(id)),
     tap(x => {
-      if (x.status === 'failed') {
+      if (x && x.status === 'failed') {
         throw x.error;
       }
     })
   );
-
-export function getTxParams(userParams: any) {
-  return (state$: Observable<State>) =>
-    state$.pipe(
-      rxMap(getDefaultTxParams),
-      rxMap(fromTransactions.mergeParams(userParams)),
-      first(fromTransactions.txParamsValid)
-    );
-}

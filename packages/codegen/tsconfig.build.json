@@ -5,8 +5,10 @@
     "declaration": true,
     "outDir": "./dist",
     "lib": ["es2017"],
-    "sourceMap": true
+    "sourceMap": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "include": ["**/*"],
-  "exclude": ["example/**/*", "dist"]
+  "exclude": ["./**/*.spec.ts", "example/**/*", "dist"]
 }

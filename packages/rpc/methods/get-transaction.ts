@@ -1,7 +1,7 @@
 import { curry, isNil } from 'ramda';
 import { send } from '../utils';
 import { Provider, RawTransaction } from '../interfaces';
-import { fromTransaction } from '../formatters';
+import { fromTransaction } from '../converters';
 
 /**
  * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash

@@ -1,8 +1,7 @@
 import { send } from '../utils';
 import { curry, isNil } from 'ramda';
 import { Provider, Tag, RawBlock } from '../interfaces';
-import { formatBlockNr } from '../formatters';
-import { fromBlock } from '../formatters';
+import { toBlockNr, fromBlock } from '../converters';
 
 interface GetBlockByNumberArgs {
   number: Tag | number;
@@ -18,7 +17,7 @@ export const getBlockByNumber = curry(
   ) => {
     return send(provider)({
       method: 'eth_getBlockByNumber',
-      params: [formatBlockNr(number), fullTransactions]
+      params: [toBlockNr(number), fullTransactions]
     }).then(resultMapper);
   }
 );

@@ -1,31 +1,26 @@
-import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
+import { ActionsObservable, StateObservable } from 'redux-observable';
 import { mergeMap, first, map as rxMap, map } from 'rxjs/operators';
 import { forkJoin, Observable } from 'rxjs';
 import { keys, isNil, chain } from 'ramda';
 
-import {
-  COMPOSE_QUERY_FROM_MODEL,
-  ComposeQueryFromModel,
-  queryEvents,
-  Types as ActionTypes
-} from '../actions';
+import * as actions from '../actions';
 import { getLatestBlock } from '../../blocks';
-import { EpicContext } from '../../../context';
+import { EpicContext } from 'client/context';
 import { BlockRange } from '../model';
 import { depsToTopics } from '../utils/expand-model';
 import { splitQueryByTopics, toTopicList } from '../utils';
-import { State } from '../../../store';
-import { getLoadedValue } from '../../../utils';
+import { State } from 'client/store';
+import { getLoadedValue, ofType } from 'client/utils';
 import { arrify } from '@eth-proxy/rpc';
 
 export const composeQueries = (
-  actions$: ActionsObservable<ActionTypes>,
+  actions$: ActionsObservable<actions.ComposeQueryFromModel>,
   state$: StateObservable<State>,
   { contractLoader }: EpicContext
-): Observable<ActionTypes> =>
+): Observable<actions.Types> =>
   actions$.pipe(
-    ofType(COMPOSE_QUERY_FROM_MODEL),
-    mergeMap(({ payload: { id, model } }: ComposeQueryFromModel) => {
+    ofType(actions.COMPOSE_QUERY_FROM_MODEL),
+    mergeMap(({ payload: { id, model } }) => {
       return forkJoin(keys(model.deps).map(contractLoader)).pipe(
         mergeMap(contracts => {
           return state$
@@ -43,14 +38,15 @@ export const composeQueries = (
                       model.fromBlock || 0,
                       genesisBlock || 0
                     );
-                    const queryAddress = model.addresses[name] || address;
+                    const queryAddress =
+                      (model.addresses || {})[name] || address;
                     if (isNil(queryAddress)) {
                       throw Error('Query address not found');
                     }
 
                     return {
                       range: [rangeStart, latestBlockNumber] as BlockRange,
-                      topics: depsToTopics(abi, model.deps[name]),
+                      topics: depsToTopics(abi, (model.deps as any)[name]),
                       address: arrify(queryAddress)
                     };
                   }
@@ -66,7 +62,7 @@ export const composeQueries = (
                   })
                 );
 
-                return queryEvents({
+                return actions.queryEvents({
                   id,
                   queries,
                   filters

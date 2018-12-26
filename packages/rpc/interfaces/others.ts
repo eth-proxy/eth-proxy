@@ -16,15 +16,15 @@ export type RpcSend = <
   payload: Request | Request[]
 ) => Promise<Extract<RpcMethod, { type: Type }>['response']>;
 
-export type LegacyProvider = {
-  sendAsync: (payload, cb) => void;
-};
+export interface LegacyProvider {
+  sendAsync: (payload: any, cb: any) => void;
+}
 
-export type Provider = {
+export interface Provider {
   send: RpcSend;
   observe: (subscriptionId: string) => Observable<any>;
   disconnect: () => void;
-};
+}
 
 export interface Subprovider extends Provider {
   accept: (req: RpcRequest) => boolean;
@@ -67,7 +67,9 @@ export interface LogFilter {
   topics?: (string | string[])[];
 }
 
-export type NewHeadsOptions = { includeTransactions?: boolean };
+export interface NewHeadsOptions {
+  includeTransactions?: boolean;
+}
 
 export interface NewHeadsArgs {
   type: 'newHeads';

@@ -16,13 +16,13 @@ export const applyMiddleware = curry(
 
 function createEngine(
   interceptors: MiddlewareItem[],
-  handler: RpcRequestHandler
+  primaryHandler: RpcRequestHandler
 ) {
   return reduceRight(
     (interceptor, handler) => {
-      return payload => interceptor(payload, handler);
+      return (payload: any) => interceptor(payload, handler);
     },
-    handler,
+    primaryHandler,
     interceptors
   );
 }

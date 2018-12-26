@@ -2,8 +2,13 @@ import { Observable, timer } from 'rxjs';
 import { createEpicMiddleware } from 'redux-observable';
 import { Provider, Block, RpcSend, send, SendRequest } from '@eth-proxy/rpc';
 
-import { createAppStore, getActiveAccount$, State, rootEpic } from './store';
-import { getDetectedNetwork$ } from './store';
+import {
+  createAppStore,
+  getActiveAccount$,
+  State,
+  rootEpic,
+  getDetectedNetwork$
+} from './store';
 import {
   sendCall,
   createSchemaLoader,
@@ -20,30 +25,30 @@ import { EpicContext } from './context';
 import { QueryModel } from './modules/events';
 import { ContractInfo } from './modules/schema';
 import { TransactionHandler, DeploymentInput } from './modules/transaction';
-import { EthProxyOptions } from './options';
+import { EthProxyOptions, UserConfig } from './options';
 import { CallHandler } from './modules/call';
 
 export class EthProxy<T extends {} = {}> implements Provider {
-  ethCall: CallHandler<T>;
-  transaction: TransactionHandler<T>;
-  network$: Observable<string>;
-  defaultAccount$: Observable<string | undefined>;
+  ethCall!: CallHandler<T>;
+  transaction!: TransactionHandler<T>;
+  network$!: Observable<string>;
+  defaultAccount$!: Observable<string | null>;
 
-  query: (queryModel: QueryModel<T>) => Observable<any>;
-  loadContractSchema: (
+  query!: (queryModel: QueryModel<T>) => Observable<any>;
+  loadContractSchema!: (
     name: Extract<keyof T, string>
   ) => Observable<ContractInfo>;
-  deploy: (request: DeploymentInput<string, any>) => Observable<string>;
-  getBlock: (block: number) => Observable<Block>;
+  deploy!: (request: DeploymentInput<string, any>) => Observable<string>;
+  getBlock!: (block: number) => Observable<Block>;
 
-  rpc: SendRequest;
-  send: RpcSend;
+  rpc!: SendRequest;
+  send!: RpcSend;
 
-  observe: (subscriptionId: string) => Observable<any>;
-  disconnect: () => void;
+  observe!: (subscriptionId: string) => Observable<any>;
+  disconnect!: () => void;
 }
 
-const defaultOptions: Partial<EthProxyOptions> = {
+const defaultOptions = {
   interceptors: {},
   store: undefined,
   watchAccountTimer: timer(0),
@@ -55,9 +60,9 @@ const genId = () => (globalId++).toString();
 
 export function createProxy<T extends {}>(
   provider: Provider,
-  userOptions: EthProxyOptions
+  userOptions: UserConfig<keyof typeof defaultOptions>
 ): EthProxy<T> {
-  const options = { ...defaultOptions, ...userOptions };
+  const options: EthProxyOptions = { ...defaultOptions, ...userOptions };
 
   const contractLoader = (name: string) => createSchemaLoader(store)(name);
   const blockLoader = (number: number) => createBlockLoader(store)(number);
@@ -73,7 +78,7 @@ export function createProxy<T extends {}>(
   const epicMiddleware = createEpicMiddleware<any, any, State, EpicContext>({
     dependencies: context
   });
-  var store = createAppStore(epicMiddleware, options.store);
+  const store = createAppStore(epicMiddleware, options.store);
   epicMiddleware.run(rootEpic);
   store.dispatch(createEthProxyStarted());
 
@@ -136,6 +141,7 @@ export { QueryModel } from './modules/events';
 export { EthProxyOptions } from './options';
 export { EthProxyInterceptors } from './interceptors';
 export { idFromEvent } from './utils';
-export function entity(arg) {
+
+export function entity(arg: any) {
   return arg;
 }

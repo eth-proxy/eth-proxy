@@ -8,7 +8,7 @@ import { getDefaultAccount } from '@eth-proxy/rpc';
 
 export const watchAccount = (
   _: ActionsObservable<actions.Types>,
-  __,
+  __: any,
   { provider, options }: EpicContext
 ): Observable<any> => {
   return options.watchAccountTimer.pipe(

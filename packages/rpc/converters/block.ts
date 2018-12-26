@@ -1,7 +1,18 @@
-import { RawBlock, Block } from '../../interfaces';
-import { evolve, map, when } from 'ramda';
-import { ethHexToBN, ethHexToNumber, isNotString, isNotNil } from '../../utils';
+import { RawBlock, Block, NumberLike } from '../interfaces';
+import { map, when, evolve } from 'ramda';
+import {
+  ethHexToBN,
+  ethHexToNumber,
+  isNotString,
+  isNotNil,
+  isTag
+} from '../utils';
 import { fromTransaction } from './transaction';
+import { toQuantity } from './quantity';
+
+export function toBlockNr(input: string | NumberLike) {
+  return isTag(input) ? input : toQuantity(input);
+}
 
 export function fromBlock(block: RawBlock): Block {
   return evolve(
@@ -13,7 +24,7 @@ export function fromBlock(block: RawBlock): Block {
       number: when(isNotNil, ethHexToNumber),
       difficulty: ethHexToBN,
       totalDifficulty: ethHexToBN,
-      transactions: map<RawBlock['transactions'], Block['transactions']>(
+      transactions: map<any, Block['transactions']>(
         when(isNotString, fromTransaction)
       )
     },

@@ -5,9 +5,9 @@ import {
   AbiDefinition,
   isEventAbi,
   EventDescription,
-  EventParameter
+  EventParameter,
+  arrify
 } from '@eth-proxy/rpc';
-import { arrify } from '@eth-proxy/rpc';
 
 const formatInput = (type: string) => (value: any) => {
   if (type === 'address') {
@@ -21,7 +21,7 @@ const TOPICS = ['t1', 't2', 't3'];
 
 export const expandArgumentTopics = (
   { inputs }: EventDescription,
-  filter: {}
+  filter: any
 ): {} => {
   const indexedArgs = (inputs as EventParameter[]).filter(arg => arg.indexed);
 
@@ -38,7 +38,7 @@ export const expandArgumentTopics = (
   return zipObj(TOPICS, topicValues) as any;
 };
 
-export function depsToTopics(abi: AbiDefinition[], contractDeps: {}) {
+export function depsToTopics(abi: AbiDefinition[], contractDeps: any) {
   const isWildcardContract = contractDeps === '*';
   const allEvents = abi.filter(isEventAbi);
 

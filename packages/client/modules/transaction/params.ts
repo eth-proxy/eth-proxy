@@ -1,7 +1,7 @@
 import { curry } from 'ramda';
 import { omitCustomProps } from '../request';
 
-export function txParamsValid(params) {
+export function txParamsValid(params: any) {
   return !!params.from;
 }
 

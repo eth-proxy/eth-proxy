@@ -1,10 +1,10 @@
 import { subscribeNewHeads } from './new-heads';
 import { testProvider, ofMethod } from '../mocks';
-import { NewHeadsOptions, RawLog, Block, RawBlock } from '../interfaces';
+import { Block, RawBlock, NewHeadsParams } from '../interfaces';
 import { assert } from 'chai';
 import { of } from 'rxjs';
 
-const options: NewHeadsOptions = { includeTransactions: true };
+const options = { includeTransactions: true };
 const subscriptionId = '1';
 
 describe('New heads', () => {
@@ -12,9 +12,9 @@ describe('New heads', () => {
     const provider = testProvider(() => subscriptionId);
     subscribeNewHeads(provider, options).subscribe();
 
-    const { params } = provider.getRequests().find(ofMethod('eth_subscribe'));
+    const { params } = provider.getRequests().find(ofMethod('eth_subscribe'))!;
 
-    assert.deepEqual(params, ['newHeads', options]);
+    assert.deepEqual(params as NewHeadsParams, ['newHeads', options]);
   });
 
   it('Returns parsed blocks', async () => {

@@ -8,10 +8,13 @@ export type RpcBundle<M> = { [P in keyof M]: ProviderBound<M[P]> };
 
 export function createCustomRpc<M>(
   provider: Provider,
-  methods: M
+  bundleMethods: M
 ): RpcBundle<M> {
   return {
-    ...map((method: any) => (...args) => method(provider, ...args), methods)
+    ...map(
+      (method: any) => (...args: any[]) => method(provider, ...args),
+      bundleMethods
+    )
   } as any;
 }
 

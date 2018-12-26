@@ -1,9 +1,8 @@
-import * as Web3 from 'web3';
-import { SampleToken } from '../../mocks';
+const Web3 = require('web3');
+import { SampleToken, testProvider } from '../../mocks';
 import { sendTransaction } from './send-transaction';
 import { expect } from 'chai';
 import { FunctionDescription, RpcRequest } from '../../interfaces';
-import { testProvider } from '../../mocks';
 
 const { abi } = SampleToken;
 const transferAbi = abi.find(
@@ -31,7 +30,7 @@ describe('Send transaction', () => {
 function getWeb3Payload() {
   return new Promise<RpcRequest>((res, rej) => {
     const web3 = new Web3({
-      sendAsync: payload => res(payload)
+      sendAsync: (payload: any) => res(payload)
     });
 
     const contract = web3.eth.contract(abi as any).at(txParams.to) as any;

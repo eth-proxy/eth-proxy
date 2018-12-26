@@ -4,14 +4,15 @@
     "target": "es2015",
     "declaration": true,
     "moduleResolution": "node",
-    "lib": ["es2017", "dom"],
+    "lib": ["es2017"],
     "baseUrl": "./packages",
     "paths": {
       "@eth-proxy/*": ["./*/"]
     },
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "strict": true
   },
-  "exclude": ["node_modules", "**/*/node_modules"],
+  "exclude": ["node_modules", "**/*/node_modules", "**/*/dist"],
   "compileOnSave": false,
   "buildOnSave": false
 }

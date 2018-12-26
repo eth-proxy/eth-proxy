@@ -7,7 +7,7 @@ type Omit<T, K extends string> = Pick<T, Exclude<keyof T, K>>;
 export type Adapted<T extends LegacyProvider> = Omit<T, 'sendAsync'> &
   Subprovider;
 
-const blacklistedMethods: RpcRequest['method'][] = [
+const blacklistedMethods: Array<RpcRequest['method']> = [
   'eth_subscribe',
   'eth_unsubscribe'
 ];
@@ -21,7 +21,7 @@ export const legacyProviderAdapter = <T extends LegacyProvider>(
     accept: req => !blacklistedMethods.includes(req.method),
     send: (payload: RpcRequest | RpcRequest[]) => {
       return new Promise((resolve, rej) => {
-        legacyProvider.sendAsync(payload, (err, res) => {
+        legacyProvider.sendAsync(payload, (err: any, res: any) => {
           const error = err || (res.error && new Error(res.error.message));
 
           error ? rej(error) : resolve(res);

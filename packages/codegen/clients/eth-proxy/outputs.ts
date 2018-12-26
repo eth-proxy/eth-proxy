@@ -1,7 +1,4 @@
-import {
-  InterfaceDeclarationStructure,
-  PropertySignatureStructure
-} from 'ts-simple-ast';
+import { InterfaceDeclarationStructure } from 'ts-simple-ast';
 import { toOutputName, getOutputProperty } from '../../lib';
 import { hasComplexOutput } from './utils';
 import { TruffleJson, FunctionDescription } from '../../interfaces';

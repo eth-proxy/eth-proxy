@@ -15,7 +15,7 @@ describe('engine', () => {
 
     const p = applyMiddleware([alwaysConstMiddleware], provider);
 
-    p.send(null);
+    p.send(null as any);
 
     expect(provider.getOnlyRequest()).to.deep.eq(updatedResult);
   });
@@ -28,7 +28,7 @@ describe('engine', () => {
 
     const p = applyMiddleware([alwaysErrorMiddleware], provider);
 
-    p.send(null).catch(err => {
+    p.send(null as any).catch(err => {
       expect(err).to.eq(errorText);
       done();
     });

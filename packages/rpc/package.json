@@ -13,13 +13,14 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "typecheck": "tsc -p ./tsconfig.build.json --noEmit",
+    "test": "mocha --require tsconfig-paths/register --require ts-node/register -P \"./tsconfig.test.json\"  \"./**/*.spec.ts\""
   },
   "dependencies": {
-    "queueing-subject": "0.3.0",
     "ramda": "0.25.0",
-    "rxjs-websockets": "6.0.3",
-    "ws": "^6.1.2"
+    "ws": "^6.1.2",
+    "utf8": "3.0.0"
   },
   "peerDependencies": {
     "bignumber.js": "^8.0.0",
@@ -27,10 +28,14 @@
     "web3": "^0.20.3"
   },
   "devDependencies": {
+    "@types/utf8": "2.1.6",
     "isomorphic-fetch": "2.2.1",
     "rimraf": "^2.6.2",
     "rollup": "^0.68.0",
     "synchronous-promise": "2.0.6",
-    "typescript": "^3.1.6"
+    "typescript": "3.1.6",
+    "ts-node": "^7.0.1",
+    "tsconfig-paths": "3.7.0",
+    "mocha": "5.2.0"
   }
 }

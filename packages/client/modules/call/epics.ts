@@ -1,4 +1,4 @@
-import { ActionsObservable, ofType } from 'redux-observable';
+import { ActionsObservable, StateObservable } from 'redux-observable';
 import { mergeMap, map, catchError } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
 
@@ -6,10 +6,11 @@ import * as actions from './actions';
 import { EpicContext } from '../../context';
 import { ContractInfo } from '../schema';
 import { CallInput, getFunction, sendCall } from '@eth-proxy/rpc';
+import { ofType } from '../../utils';
 
 export const processCallEpic = (
   actions$: ActionsObservable<actions.ProcessCall>,
-  _,
+  _: StateObservable<any>,
   { provider, contractLoader }: EpicContext
 ): Observable<actions.Types> => {
   return actions$.pipe(

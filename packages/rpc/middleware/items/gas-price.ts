@@ -7,7 +7,7 @@ import {
 } from '../../interfaces';
 import { SubscribableOrPromise, from } from 'rxjs';
 import { assocPath } from 'ramda';
-import { formatQuantity } from '../../formatters';
+import { toQuantity } from '../../converters';
 
 export type GasPriceLoader = (
   req: TransactionParams
@@ -31,7 +31,7 @@ export function gasPriceMiddleware(loader: GasPriceLoader): MiddlewareItem {
           return payload;
         }
 
-        const gasPrice = formatQuantity(amount);
+        const gasPrice = toQuantity(amount);
 
         return updateGas(gasPrice, payload);
       }),

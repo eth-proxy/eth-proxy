@@ -49,7 +49,7 @@ export function reducer(state: State = {}, action: actions.Types): State {
           name: contractName,
           genesisBlock,
           bytecode
-        }
+        } as ContractInfo
       };
     }
 
@@ -62,7 +62,9 @@ const contractForRef = (state: State) => (ref: ContractRef) => {
   return state[isString(ref) ? ref : ref.interface];
 };
 
-export const getSelectors = <T>(getModule: (state: T) => State) => {
+export const getSelectors = <T = { [moduleId]: State }>(
+  getModule: (state: T) => State
+) => {
   const getContractsByName = createSelector(
     getModule,
     m => m
