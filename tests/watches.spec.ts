@@ -38,12 +38,12 @@ describe('Watches', () => {
     miner$.subscribe();
   });
 
-  it('Watches events', done => {
+  it.only('Watches events', done => {
     const watch$ = watchEvents({
       filter: {
         fromBlock: 0,
         toBlock: 'latest',
-        address: []
+        address: null as any
       }
     }).pipe(first());
 
