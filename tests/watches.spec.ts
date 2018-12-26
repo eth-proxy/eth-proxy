@@ -43,7 +43,7 @@ describe('Watches', () => {
       filter: {
         fromBlock: 0,
         toBlock: 'latest',
-        address: null
+        address: []
       }
     }).pipe(first());
 
