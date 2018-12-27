@@ -5,12 +5,12 @@ import { keys, isNil, chain } from 'ramda';
 
 import * as actions from '../actions';
 import { getLatestBlock } from '../../blocks';
-import { EpicContext } from '@eth-proxy/client/context';
+import { EpicContext } from 'client/context';
 import { BlockRange } from '../model';
 import { depsToTopics } from '../utils/expand-model';
 import { splitQueryByTopics, toTopicList } from '../utils';
-import { State } from '@eth-proxy/client/store';
-import { getLoadedValue, ofType } from '@eth-proxy/client/utils';
+import { State } from 'client/store';
+import { getLoadedValue, ofType } from 'client/utils';
 import { arrify } from '@eth-proxy/rpc';
 
 export const composeQueries = (

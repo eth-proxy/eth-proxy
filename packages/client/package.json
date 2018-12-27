@@ -30,9 +30,10 @@
   "devDependencies": {
     "mocha": "5.2.0",
     "rollup": "^0.68.0",
-    "rollup-plugin-typescript-path-mapping": "1.0.2",
     "ts-node": "^7.0.1",
     "tsconfig-paths": "3.7.0",
-    "typescript": "3.1.6"
+    "typescript": "3.1.6",
+    "ttypescript": "^1.5.5",
+    "@zerollup/ts-transform-paths": "1.6.5"
   }
 }

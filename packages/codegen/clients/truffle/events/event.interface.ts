@@ -3,7 +3,7 @@ import {
   toEventPayloadName,
   toEventName,
   CreateEventDeclaraton
-} from '../../../lib';
+} from 'codegen/lib';
 import { TruffleJson } from '../../../interfaces';
 import { EventDescription } from '@eth-proxy/rpc';
 

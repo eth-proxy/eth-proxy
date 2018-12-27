@@ -2,8 +2,13 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "declarationDir": "./dist",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "client/*": ["./*"]
+    }
   },
   "include": ["./**/*.ts"],
-  "files": ["./index.ts"]
+  "files": ["./index.ts"],
+  "exclude": ["dist", "node_modules"]
 }
