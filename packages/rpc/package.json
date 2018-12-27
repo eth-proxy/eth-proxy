@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/rpc",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "description": "Ethereum JSON rpc as functions",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -19,8 +19,8 @@
   },
   "dependencies": {
     "ramda": "0.25.0",
-    "ws": "^6.1.2",
-    "utf8": "3.0.0"
+    "utf8": "3.0.0",
+    "ws": "^6.1.2"
   },
   "peerDependencies": {
     "bignumber.js": "^8.0.0",
@@ -30,12 +30,12 @@
   "devDependencies": {
     "@types/utf8": "2.1.6",
     "isomorphic-fetch": "2.2.1",
+    "mocha": "5.2.0",
     "rimraf": "^2.6.2",
     "rollup": "^0.68.0",
     "synchronous-promise": "2.0.6",
-    "typescript": "3.1.6",
     "ts-node": "^7.0.1",
     "tsconfig-paths": "3.7.0",
-    "mocha": "5.2.0"
+    "typescript": "3.1.6"
   }
 }
