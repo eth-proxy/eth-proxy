@@ -7,6 +7,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "gen": "cd dist && node index --cDir=\"../example/contracts\"",

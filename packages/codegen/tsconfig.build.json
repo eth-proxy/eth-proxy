@@ -3,9 +3,10 @@
   "compilerOptions": {
     "module": "commonjs",
     "declarationDir": "./dist",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "baseUrl": "."
   },
   "files": ["./index.ts"],
-  "exclude": ["./example"],
+  "exclude": ["example", "dist"],
   "include": ["./**/*.ts"]
 }
