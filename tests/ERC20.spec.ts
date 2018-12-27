@@ -18,7 +18,7 @@ describe('ERC20', () => {
   it('Can use Sample Token', async () => {
     const contractAddress = await deploySampleToken(proxy).toPromise();
 
-    const MyToken = at(SampleToken, contractAddress);
+    const MyToken = at(contractAddress, SampleToken);
 
     const symbol = await proxy.ethCall(MyToken.symbol()).toPromise();
     expect(symbol).to.eq(myToken._symbol);
