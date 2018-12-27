@@ -2,7 +2,7 @@ import { FunctionDescription } from '../interfaces';
 import { toSignatureHash, getMethodID } from './signature';
 import { expect } from 'chai';
 
-/*  
+/*
  * https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI#examples
  * contract Foo {
  *   function bar(fixed[2] xy) {}
@@ -23,7 +23,8 @@ const bazABI: FunctionDescription = {
       name: 'y',
       type: 'bool'
     }
-  ]
+  ],
+  outputs: []
 };
 
 describe('Signature hash', () => {
