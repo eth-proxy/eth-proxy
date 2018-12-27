@@ -9,6 +9,5 @@
     }
   },
   "include": ["./**/*.ts"],
-  "files": ["./index.ts"],
-  "exclude": ["dist", "node_modules"]
+  "exclude": ["dist", "node_modules", "./**/*.spec.ts"]
 }

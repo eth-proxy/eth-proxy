@@ -9,7 +9,6 @@
       "codegen/*": ["./*"]
     }
   },
-  "files": ["./index.ts"],
-  "exclude": ["example", "dist", "node_modules"],
-  "include": ["./**/*.ts"]
+  "include": ["./**/*.ts"],
+  "exclude": ["example", "dist", "node_modules", "**/*.spec.ts"],
 }

@@ -13,7 +13,7 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "typecheck": "tsc -p ./tsconfig.build.json --noEmit",
+    "typecheck": "ttsc -p ./tsconfig.build.json --noEmit",
     "test": "TS_NODE_PROJECT=tsconfig.test.json mocha --require tsconfig-paths/register --require ts-node/register \"./**/*.spec.ts\""
   },
   "dependencies": {
