@@ -5,5 +5,7 @@
     "declarationDir": "./dist",
     "outDir": "./dist"
   },
-  "files": ["./index.ts"]
+  "files": ["./index.ts"],
+  "exclude": ["./example"],
+  "include": ["./**/*.ts"]
 }
