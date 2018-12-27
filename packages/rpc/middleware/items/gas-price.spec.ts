@@ -1,5 +1,5 @@
 import { gasPriceMiddleware } from './gas-price';
-import sinon = require('sinon');
+import * as sinon from 'sinon';
 import { EthSendTransactionRequest } from '../../interfaces';
 import { of } from 'rxjs';
 import { expect } from 'chai';

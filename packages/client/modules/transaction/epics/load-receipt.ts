@@ -13,10 +13,10 @@ import { of, throwError as _throw, defer } from 'rxjs';
 import { getReceipt, decodeLogs } from '@eth-proxy/rpc';
 
 import * as actions from '../actions';
-import { EpicContext } from '@eth-proxy/client/context';
-import { State } from '@eth-proxy/client/store';
+import { EpicContext } from 'client/context';
+import { State } from 'client/store';
+import { ofType } from 'client/utils';
 import * as fromSchema from '../../schema';
-import { ofType } from '@eth-proxy/client/utils';
 
 export const findReceiptEpic = (
   actions$: ActionsObservable<actions.TxGenerated>,

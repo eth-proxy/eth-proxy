@@ -4,9 +4,11 @@
     "module": "commonjs",
     "declarationDir": "./dist",
     "outDir": "./dist",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "codegen/*": ["./*"]
+    }
   },
-  "files": ["./index.ts"],
-  "exclude": ["example", "dist"],
-  "include": ["./**/*.ts"]
+  "include": ["./**/*.ts"],
+  "exclude": ["example", "dist", "node_modules", "**/*.spec.ts"],
 }

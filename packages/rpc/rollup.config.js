@@ -1,4 +1,5 @@
-import typescript from 'rollup-plugin-typescript2';
+import tsPlugin from 'rollup-plugin-typescript2';
+import ttypescript from 'ttypescript';
 import pkg from './package.json';
 
 export default {
@@ -21,9 +22,9 @@ export default {
     'web3/lib/solidity/coder'
   ],
   plugins: [
-    typescript({
+    tsPlugin({
       tsconfig: 'tsconfig.build.json',
-      typescript: require('typescript')
+      typescript: ttypescript
     })
   ]
 };

@@ -16,7 +16,7 @@ import {
   QUERY_EVENTS,
   QueryEvents
 } from '../actions';
-import { EpicContext } from '@eth-proxy/client/context';
+import { EpicContext } from 'client/context';
 import {
   createEventCache,
   getFiltersToLoad,
@@ -24,9 +24,9 @@ import {
   getEventsForFilter
 } from '../cache';
 import * as fromSchema from '../../schema';
-import { State } from '@eth-proxy/client/store';
+import { State } from 'client/store';
 import { getEvents, decodeLogs } from '@eth-proxy/rpc';
-import { ofType } from '@eth-proxy/client/utils';
+import { ofType } from 'client/utils';
 
 export const queryEventsEpic = (
   action$: ActionsObservable<QueryEvents>,
