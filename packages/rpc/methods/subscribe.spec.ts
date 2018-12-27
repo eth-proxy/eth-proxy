@@ -7,7 +7,7 @@ const address = ['0x123'];
 
 describe('Subscribe', () => {
   it('Calls eth_subscribe', async () => {
-    let provider = testProvider();
+    const provider = testProvider();
 
     await subscribe(provider, { type: 'logs', args: { address } });
 
@@ -18,7 +18,7 @@ describe('Subscribe', () => {
   });
 
   it('Skipps arguments when not provided', async () => {
-    let provider = testProvider();
+    const provider = testProvider();
 
     await subscribe(provider, { type: 'syncing' });
 
@@ -29,7 +29,7 @@ describe('Subscribe', () => {
   });
 
   it('Returns subscriptionId', async () => {
-    let provider = testProvider(() => subscriptionId);
+    const provider = testProvider(() => subscriptionId);
 
     expect(
       await subscribe(provider, { type: 'newPendingTransactions' })

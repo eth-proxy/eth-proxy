@@ -1,8 +1,8 @@
 import { toName } from '../../lib';
-import { FunctionDescription, AbiDefinition } from '../../interfaces';
+import { FunctionDescription } from '@eth-proxy/rpc';
 
-export function hasComplexInput({ inputs, type }: AbiDefinition): boolean {
-  return type === 'function' && inputs.length > 1;
+export function hasComplexInput({ inputs }: FunctionDescription): boolean {
+  return inputs.length > 1;
 }
 
 export function hasComplexOutput({

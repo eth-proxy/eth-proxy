@@ -8,7 +8,7 @@ import {
   defaultIfEmpty
 } from 'rxjs/operators';
 import { chain, isEmpty } from 'ramda';
-import { ActionsObservable, StateObservable, ofType } from 'redux-observable';
+import { ActionsObservable, StateObservable } from 'redux-observable';
 
 import {
   queryEventsSuccess,
@@ -16,7 +16,7 @@ import {
   QUERY_EVENTS,
   QueryEvents
 } from '../actions';
-import { EpicContext } from '../../../context';
+import { EpicContext } from '@eth-proxy/client/context';
 import {
   createEventCache,
   getFiltersToLoad,
@@ -24,8 +24,9 @@ import {
   getEventsForFilter
 } from '../cache';
 import * as fromSchema from '../../schema';
-import { State } from '../../../store';
+import { State } from '@eth-proxy/client/store';
 import { getEvents, decodeLogs } from '@eth-proxy/rpc';
+import { ofType } from '@eth-proxy/client/utils';
 
 export const queryEventsEpic = (
   action$: ActionsObservable<QueryEvents>,

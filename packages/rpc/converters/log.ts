@@ -1,6 +1,6 @@
-import { RawLog, Log } from '../../interfaces';
+import { RawLog, Log } from '../interfaces';
 import { evolve } from 'ramda';
-import { ethHexToNumber } from '../../utils';
+import { ethHexToNumber } from '../utils';
 
 export function fromLog(log: RawLog): Log {
   return evolve(

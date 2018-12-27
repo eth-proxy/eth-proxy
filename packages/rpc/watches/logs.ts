@@ -4,13 +4,13 @@ import { curry } from 'ramda';
 import { Provider, FilterObject, RawLog, Log } from '../interfaces';
 import { arrify, send$ } from '../utils';
 import { pollChanges } from './common';
-import { formatFilter, fromLog } from '../formatters';
+import { toFilter, fromLog } from '../converters';
 
 export interface WatchLogsOptions {
   timer$?: Observable<any>;
   filter: FilterObject;
 }
-// TESTRPC & METAMASK WATCH DOES NOT WORK WITH ADDRESS LIST
+// METAMASK WATCH DOES NOT WORK WITH ADDRESS LIST
 export const watchLogs = curry(
   (provider: Provider, options: WatchLogsOptions) => {
     const eventLoaders$ = arrify(options.filter.address || [null]).map(
@@ -19,7 +19,7 @@ export const watchLogs = curry(
           ...options,
           filter: {
             ...options.filter,
-            address
+            ...(address && { address })
           }
         });
       }
@@ -36,7 +36,7 @@ export const watchEvents = curry(
   ) => {
     const createFilter$ = send$(provider)({
       method: 'eth_newFilter',
-      params: [formatFilter(filter)]
+      params: [toFilter(filter)]
     });
 
     return createFilter$.pipe(

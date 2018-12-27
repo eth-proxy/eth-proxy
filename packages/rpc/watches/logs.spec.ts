@@ -7,7 +7,7 @@ import {
   Log
 } from '../interfaces';
 import { Subject } from 'rxjs';
-import { omit } from 'ramda';
+import { omit, Dictionary } from 'ramda';
 import { testProvider } from '../mocks';
 
 const rawFilterArgs = {
@@ -52,14 +52,14 @@ describe('logs watch', () => {
         }
       };
 
-      let filters = {};
+      let filters: Dictionary<RawLog[]> = {};
       const logsByBlock = {
         0: [logs.a],
         1: [logs.b, logs.c],
         2: [],
         3: [logs.d]
       };
-      let allLogs: RawLog[] = logsByBlock[0];
+      const allLogs: RawLog[] = logsByBlock[0];
 
       // prettier-ignore
       const producer =     m.hot('-----1----23|', logsByBlock);
@@ -72,10 +72,10 @@ describe('logs watch', () => {
 
       const server$ = new Subject();
 
-      producer.subscribe(logs => {
-        allLogs.push(...logs);
-        let filter = filters[filterId];
-        filter.push(...logs);
+      producer.subscribe(next => {
+        allLogs.push(...next);
+        const filter = filters[filterId];
+        filter.push(...next);
       });
 
       const provider = testProvider(payload => {

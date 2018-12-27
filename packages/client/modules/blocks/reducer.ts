@@ -69,11 +69,22 @@ export function reducer(
   }
 }
 
-export const getSelectors = <T>(getModule: (state: T) => State) => {
-  const getState = createSelector(getModule, (state: State) => state);
-  const getBlocksByNumber = createSelector(getState, x => x.entities);
+export const getSelectors = <T = { [moduleId]: State }>(
+  getModule: (state: T) => State
+) => {
+  const getState = createSelector(
+    getModule,
+    (state: State) => state
+  );
+  const getBlocksByNumber = createSelector(
+    getState,
+    x => x.entities
+  );
   const getBlock = (number: number) =>
-    createSelector(getBlocksByNumber, blocks => blocks[number] || NOT_ASKED);
+    createSelector(
+      getBlocksByNumber,
+      blocks => blocks[number] || NOT_ASKED
+    );
 
   const getLatestBlockNumberOrNull = createSelector(
     getState,

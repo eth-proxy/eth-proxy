@@ -1,3 +1,5 @@
+import { Tag } from './interfaces';
+
 export const enum EthUnits {
   Wei = 0,
   Kwei = 3,
@@ -11,3 +13,5 @@ export const enum EthUnits {
   Gether = 27,
   Tether = 30
 }
+
+export const tags: Tag[] = ['earliest', 'latest', 'pending'];

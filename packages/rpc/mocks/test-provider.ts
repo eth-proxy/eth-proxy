@@ -10,7 +10,7 @@ export function testProvider(
   mapper: FakeResult = requestIdentity,
   observers: Dictionary<Observable<any>> = {}
 ) {
-  let payloads = [];
+  const payloads: RpcRequest[] = [];
 
   const helpers = {
     getRequests: () => payloads,
@@ -27,7 +27,7 @@ export function testProvider(
 
   return {
     send: payload => {
-      payloads.push(payload);
+      payloads.push(payload as RpcRequest);
       return new SynchronousPromise(res => {
         const result = mapper(payload);
 

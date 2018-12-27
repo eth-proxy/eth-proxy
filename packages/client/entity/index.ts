@@ -83,11 +83,11 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
         const byAddress = indexBy(x => x.address, contracts as ContractInfo[]);
 
         const eventTypes = pipe(
-          mapObjIndexed((handlers, interfaceName) => {
+          mapObjIndexed((hs, interfaceName) => {
             const { address, abi } = (contracts as ContractInfo[]).find(
               x => x.name === interfaceName
-            );
-            return keys(handlers)
+            )!;
+            return keys(hs)
               .filter(type =>
                 abi.find(x => x.type === 'event' && x.name === type)
               )
@@ -113,7 +113,9 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
 
         const initialState = mapObjIndexed(e => e.entity, snapshot.entities);
         return allEvents.filter(isEventInvolved).reduce((state: any, e) => {
-          const handler = model[byAddress[e.meta.address].name][e.type];
+          const handler = (model as any)[byAddress[e.meta.address].name][
+            e.type
+          ];
           const id = handler.identity(e.payload);
 
           const entitySnapshot = snapshot.entities[id];
@@ -141,8 +143,8 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
     snapshotSelector: (state: App) => Snapshot<T> = () => EMPTY_SNAPSHOT
   ) => {
     const transactionTypes = (pipe(
-      mapObjIndexed((handlers, interfaceName) => {
-        return keys(handlers).map((method: string) => ({
+      mapObjIndexed((hs, interfaceName) => {
+        return keys(hs).map((method: string) => ({
           method,
           interfaceName
         }));
@@ -166,7 +168,7 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
       getPendingTransactionsOfType(transactionTypes),
       (entities, transactions): { [id: string]: T } => {
         return transactions.reduce((state: any, t) => {
-          const handler = model[t.contractName][t.method];
+          const handler = (model as any)[t.contractName][t.method];
           const id = handler.identity(t.args, t);
 
           const canApply = !!state[id] || handler.root || !hasRoot;

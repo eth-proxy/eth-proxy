@@ -2,9 +2,9 @@ import * as actions from './actions';
 import { createSelector } from 'reselect';
 import { moduleId } from './constants';
 
-export type State = {
+export interface State {
   activeAccount?: string | null;
-};
+}
 export function reducer(state: State = {}, action: actions.Types): State {
   switch (action.type) {
     case actions.SET_ACTIVE_ACCOUNT:
@@ -17,9 +17,14 @@ export function reducer(state: State = {}, action: actions.Types): State {
   }
 }
 
-export const getSelectors = <T>(getModule: (state: T) => State) => {
+export const getSelectors = <T = { [moduleId]: State }>(
+  getModule: (state: T) => State
+) => {
   return {
-    getActiveAccount: createSelector(getModule, m => m.activeAccount)
+    getActiveAccount: createSelector(
+      getModule,
+      m => m.activeAccount
+    )
   };
 };
 

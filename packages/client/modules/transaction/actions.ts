@@ -75,7 +75,7 @@ export interface LoadReceiptFailed {
 
 export const createGetReceiptFailed = (
   tx: string,
-  error
+  error: any
 ): LoadReceiptFailed => ({
   type: LOAD_RECEIPT_FAILED,
   payload: {

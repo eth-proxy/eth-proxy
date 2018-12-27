@@ -2,7 +2,7 @@ export const SET_NETWORK = 'SET_NEWORK';
 
 export interface SetNetwork {
   type: 'SET_NEWORK';
-  payload;
+  payload: string;
 }
 
 export const createSetNetwork = (networkId: string): SetNetwork => ({

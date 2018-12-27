@@ -1,5 +1,5 @@
 import { getEvents } from './get-events';
-import { Provider, FilterObject, RawLog, Log } from '../interfaces';
+import { FilterObject, RawLog, Log } from '../interfaces';
 import { expect } from 'chai';
 import { testProvider } from '../mocks';
 
@@ -9,13 +9,6 @@ const block100Hex = '0x64';
 const topics = ['0x12', ['0x555', '0x222'], []];
 
 describe('Get logs', () => {
-  let provider: Provider;
-  beforeEach(() => {
-    provider = {
-      sendAsync: () => {}
-    } as any;
-  });
-
   it('Calls eth_getLogs method with formatted input', async () => {
     const filter: FilterObject = {
       address,

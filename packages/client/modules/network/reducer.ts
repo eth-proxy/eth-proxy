@@ -13,9 +13,14 @@ export function reducer(state: State = null, action: actions.Types): State {
   }
 }
 
-export const getSelectors = <T>(getModule: (state: T) => State) => {
+export const getSelectors = <T = { [moduleId]: State }>(
+  getModule: (state: T) => State
+) => {
   return {
-    getNetworkId: createSelector(getModule, identity)
+    getNetworkId: createSelector(
+      getModule,
+      identity
+    )
   };
 };
 

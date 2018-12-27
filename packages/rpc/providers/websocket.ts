@@ -14,21 +14,20 @@ import {
   delay
 } from 'rxjs/operators';
 import { curry } from 'ramda';
-import { QueueingSubject } from 'queueing-subject';
-import websocketConnect from 'rxjs-websockets';
-import { Observable, Subject, merge, throwError, NEVER } from 'rxjs';
+import { Subject, merge, throwError, NEVER } from 'rxjs';
+import { QueueingSubject, websocketConnect } from '../utils';
 
 interface Config {
   url: string;
 }
 
 export function websocketProvider(config: Config): Provider {
-  const input = new QueueingSubject<any>();
+  const input = new QueueingSubject<RpcRequest | RpcRequest[]>();
 
-  const { messages, connectionStatus } = jsonWebsocketConnect(
-    config.url,
-    input
-  );
+  const { messages, connectionStatus } = websocketConnect<
+    RpcRequest | RpcRequest[],
+    RpcResponse
+  >(config.url, input);
 
   const errorOnClosed$ = connectionStatus.pipe(
     mergeMap(x => (x === 0 ? throwError('Connection closed') : NEVER))
@@ -36,7 +35,9 @@ export function websocketProvider(config: Config): Provider {
 
   const message$ = messages.pipe(retryWhen(delay(1000)));
 
-  const multicastMessages$ = multicast(() => new Subject())(message$);
+  const multicastMessages$ = multicast(() => new Subject<RpcResponse>())(
+    message$
+  );
   const sub = multicastMessages$.connect();
 
   return {
@@ -45,7 +46,7 @@ export function websocketProvider(config: Config): Provider {
 
       return multicastMessages$
         .pipe(
-          first(isMatchingResponse(payload)),
+          first(x => isMatchingResponse(payload, x)),
           mergeMap(validateResponse)
         )
         .toPromise() as Promise<RpcResponse>;
@@ -79,23 +80,6 @@ const isMatchingResponse = curry(
     }
   }
 );
-
-function jsonWebsocketConnect(
-  url: string,
-  input: Observable<any>,
-  protocols?: string | string[]
-) {
-  const jsonInput = input.pipe(map(message => JSON.stringify(message)));
-  const { connectionStatus, messages } = websocketConnect(
-    url,
-    jsonInput,
-    protocols
-  );
-
-  const jsonMessages = messages.pipe(map(message => JSON.parse(message)));
-
-  return { connectionStatus, messages: jsonMessages };
-}
 
 function validateResponse(response: RpcResponse) {
   if ('error' in response) {

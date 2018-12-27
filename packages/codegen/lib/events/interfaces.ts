@@ -1,6 +1,7 @@
 import { InterfaceDeclarationStructure } from 'ts-simple-ast';
 import { chain } from 'ramda';
-import { TruffleJson, EventDescription } from '../../interfaces';
+import { TruffleJson } from '../../interfaces';
+import { EventDescription, isEventAbi } from '@eth-proxy/rpc';
 
 export type CreateEventDeclaraton = (
   e: EventDescription,
@@ -11,9 +12,7 @@ export const createEventInterfaces = (createFn: CreateEventDeclaraton) => (
   contracts: TruffleJson[]
 ) =>
   chain((json: TruffleJson) => {
-    const eventAbis = json.abi.filter(
-      a => a.type === 'event'
-    ) as EventDescription[];
+    const eventAbis = json.abi.filter(isEventAbi);
 
     return chain(
       eventDescription => createFn(eventDescription, json),

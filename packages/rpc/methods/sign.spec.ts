@@ -9,7 +9,7 @@ const signedMessage = 'Signed message';
 
 describe('Personal sign', () => {
   it('Calls personal_sign', async () => {
-    let provider = testProvider();
+    const provider = testProvider();
 
     await sign(provider, { address, data });
 
@@ -20,7 +20,7 @@ describe('Personal sign', () => {
   });
 
   it('Returns signed message', async () => {
-    let provider = testProvider(() => signedMessage);
+    const provider = testProvider(() => signedMessage);
 
     expect(await sign(provider, { address, data })).to.deep.eq(signedMessage);
   });

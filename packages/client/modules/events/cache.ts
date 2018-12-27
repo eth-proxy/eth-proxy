@@ -11,7 +11,7 @@ import {
 } from 'ramda';
 import { toObservableStore } from '../../utils';
 import { fillFilterWithMany, isEventMatching } from './utils';
-import { BlockchainEvent, Log } from '@eth-proxy/rpc';
+import { Log } from '@eth-proxy/rpc';
 
 export enum Action {
   Load = 'Load',
@@ -21,11 +21,11 @@ export enum Action {
 
 type ActionTypes = any;
 
-const idFromNativeEvent = e =>
+const idFromNativeEvent = (e: Log) =>
   e.transactionHash + e.transactionIndex + e.logIndex;
 
 export const eventStateReducer = (
-  state: Dictionary<BlockchainEvent> = {},
+  state: Dictionary<Log> = {},
   action: ActionTypes
 ) => {
   switch (action.type) {

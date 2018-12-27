@@ -2,7 +2,7 @@ import { BaseRpcRequest, Rpc } from '../rpc';
 import { Data } from '../primitives';
 import { RawLogFilter } from '../raw-entities';
 
-export type NewHeadsParams = ['newHeads', { includeTransactions: true }?];
+export type NewHeadsParams = ['newHeads', { includeTransactions: boolean }?];
 export type LogsParams = ['logs', RawLogFilter];
 export type NewPendingTransactionsParams = ['newPendingTransactions'];
 export type SyncingParams = ['syncing'];

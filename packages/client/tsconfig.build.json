@@ -1,18 +1,9 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "module": "es2015",
-    "target": "es2015",
-    "moduleResolution": "node",
-    "declaration": true,
     "declarationDir": "./dist",
-    "outDir": "./dist",
-    "lib": ["es2017"],
-    "sourceMap": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "outDir": "./dist"
   },
-  "include": [
-    "./**/*.ts"
-  ],
+  "include": ["./**/*.ts"],
   "files": ["./index.ts"]
 }

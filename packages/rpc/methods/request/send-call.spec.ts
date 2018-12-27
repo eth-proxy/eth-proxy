@@ -1,9 +1,8 @@
-import * as Web3 from 'web3';
-import { SampleToken } from '../../mocks';
+const Web3 = require('web3');
+import { SampleToken, testProvider } from '../../mocks';
 import { sendCall } from './send-call';
 import { expect } from 'chai';
 import { FunctionDescription, RpcRequest } from '../../interfaces';
-import { testProvider } from '../../mocks';
 
 const { abi } = SampleToken;
 const symbolEthCall = abi.find(
@@ -25,9 +24,9 @@ describe('Send call', () => {
 
 // Each time returns different data
 function getWeb3Payload() {
-  return new Promise<RpcRequest>((res, rej) => {
+  return new Promise<RpcRequest>(res => {
     const web3 = new Web3({
-      sendAsync: payload => res(payload)
+      sendAsync: (payload: any) => res(payload)
     });
 
     const contract = web3.eth.contract(abi as any).at(txParams.to) as any;
@@ -37,7 +36,7 @@ function getWeb3Payload() {
 }
 
 function getRxWeb3Payload() {
-  return new Promise<RpcRequest>((res, rej) => {
+  return new Promise<RpcRequest>(res => {
     const provider = testProvider(payload => res(payload as RpcRequest));
 
     sendCall(provider, {

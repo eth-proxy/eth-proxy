@@ -2,7 +2,7 @@ import { watchBlocks } from './latest-block';
 import { marbles } from 'rxjs-marbles/mocha';
 import { EthGetFilterChanges, EthUninstallFilterRequest } from '../interfaces';
 import { Subject } from 'rxjs';
-import { omit } from 'ramda';
+import { omit, Dictionary } from 'ramda';
 import { testProvider } from '../mocks';
 
 describe('latest block watch', () => {
@@ -32,7 +32,7 @@ describe('latest block watch', () => {
         }
       };
 
-      let filters = {};
+      let filters: Dictionary<string[]> = {};
       // prettier-ignore
       const producer =     m.hot('--a-b--cd|', data);
       // prettier-ignore

@@ -5,22 +5,20 @@ import Ast, {
   QuoteKind
 } from 'ts-simple-ast';
 import { concat, mergeDeepWith } from 'ramda';
-import * as requireDir from 'require-dir';
 import * as argv from 'minimist';
 import * as path from 'path';
 import { getSourceFile as getEthProxySourceFile } from './clients/eth-proxy';
 import { getSourceFile as getTruffleSourceFile } from './clients/truffle';
 import { getCommonSource } from './lib';
 import { TruffleJson } from './interfaces';
+const requireDir = require('require-dir');
 
-const args = argv(process.argv.slice(2));
+const args: any = argv(process.argv.slice(2));
+type Target = 'eth-proxy' | 'truffle';
 
-const contractsDir = path.join(
-  process.cwd(),
-  args['contractsDir'] || args['cDir']
-);
-const outputDir = path.join(process.cwd(), args['output'] || args['o']);
-const target = args['target'] || args['t'] || 'eth-proxy';
+const contractsDir = path.join(process.cwd(), args.contractsDir || args.cDir);
+const outputDir = path.join(process.cwd(), args.output || args.o);
+const target: Target = args.target || args.t || 'eth-proxy';
 
 const files = requireDir(contractsDir);
 const contracts = Object.values(files) as TruffleJson[];

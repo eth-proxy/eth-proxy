@@ -1,12 +1,11 @@
-import { curry, map } from 'ramda';
-import { flatten } from 'ramda';
+import { curry, map, flatten } from 'ramda';
 import { Provider, FilterObject, Log } from '../interfaces';
 import { send, arrify } from '../utils';
-import { formatFilter, fromLog } from '../formatters';
+import { toFilter, fromLog } from '../converters';
 
-// TESTRPC & METAMASK WATCH DOES NOT WORK WITH ADDRESS LIST
+// METAMASK WATCH DOES NOT WORK WITH ADDRESS LIST
 export const getEvents = curry((provider: Provider, options: FilterObject) => {
-  const eventLoaders$ = arrify(options.address).map(address => {
+  const eventLoaders$ = arrify(options.address || [null]).map(address => {
     return getLogs(provider)(
       Object.assign({}, options, {
         address
@@ -23,6 +22,6 @@ export const getEvents = curry((provider: Provider, options: FilterObject) => {
 export const getLogs = curry((provider: Provider, options: FilterObject) => {
   return send(provider)({
     method: 'eth_getLogs',
-    params: [formatFilter(options)]
+    params: [toFilter(options)]
   }).then(map(fromLog));
 });

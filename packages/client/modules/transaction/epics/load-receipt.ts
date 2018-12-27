@@ -1,4 +1,4 @@
-import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
+import { ActionsObservable, StateObservable } from 'redux-observable';
 import {
   mergeMap,
   retryWhen,
@@ -7,17 +7,16 @@ import {
   concat,
   map,
   catchError,
-  withLatestFrom,
-  tap
+  withLatestFrom
 } from 'rxjs/operators';
 import { of, throwError as _throw, defer } from 'rxjs';
-import { getReceipt, TransactionReceipt, decodeLogs } from '@eth-proxy/rpc';
-import { isNil } from 'ramda';
+import { getReceipt, decodeLogs } from '@eth-proxy/rpc';
 
 import * as actions from '../actions';
-import { EpicContext } from '../../../context';
-import { State } from '../../../store';
+import { EpicContext } from '@eth-proxy/client/context';
+import { State } from '@eth-proxy/client/store';
 import * as fromSchema from '../../schema';
+import { ofType } from '@eth-proxy/client/utils';
 
 export const findReceiptEpic = (
   actions$: ActionsObservable<actions.TxGenerated>,
@@ -29,7 +28,6 @@ export const findReceiptEpic = (
     withLatestFrom(state$),
     mergeMap(([{ payload: { tx } }, state]) =>
       defer(() => getReceipt(provider, tx)).pipe(
-        tap(throwIfEmpty),
         map(receipt => {
           const logs = decodeLogs(fromSchema.getAllAbis(state))(receipt.logs);
           return actions.createLoadReceiptSuccess({
@@ -49,9 +47,3 @@ export const findReceiptEpic = (
     )
   );
 };
-
-function throwIfEmpty(receipt: TransactionReceipt | null) {
-  if (isNil(receipt)) {
-    throw Error('Receipt not found');
-  }
-}

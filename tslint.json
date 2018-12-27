@@ -1,9 +1,6 @@
 {
   "defaultSeverity": "error",
-  "extends": [
-    "tslint:recommended",
-    "tslint-config-prettier"
-  ],
+  "extends": ["tslint:recommended", "tslint-config-prettier"],
   "jsRules": {},
   "rules": {
     "interface-name": [false],
@@ -12,11 +9,15 @@
     "no-empty-interface": [false],
     "ordered-imports": [false],
     "no-unused-variable": true,
-    "no-unused-expression": [true],
+    "no-unused-expression": [false],
     "no-floating-promises": [true],
     "member-access": false,
     "no-duplicate-imports": true,
-    "max-classes-per-file": false
+    "max-classes-per-file": false,
+    "no-var-requires": false,
+    "no-empty": false,
+    "array-type": false,
+    "variable-name": false
   },
   "rulesDirectory": []
 }

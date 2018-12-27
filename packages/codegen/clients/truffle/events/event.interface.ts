@@ -4,7 +4,8 @@ import {
   toEventName,
   CreateEventDeclaraton
 } from '../../../lib';
-import { TruffleJson, EventDescription } from '../../../interfaces';
+import { TruffleJson } from '../../../interfaces';
+import { EventDescription } from '@eth-proxy/rpc';
 
 export const createEventDeclaration: CreateEventDeclaraton = (
   { name, inputs }: EventDescription,
@@ -13,8 +14,8 @@ export const createEventDeclaration: CreateEventDeclaraton = (
   return [
     {
       name: toEventPayloadName(contractName, name),
-      properties: inputs.map(({ name, type }) => ({
-        name,
+      properties: inputs.map(({ name: inputName, type }) => ({
+        name: inputName,
         type: solidityToJsOutputType(type)
       }))
     },

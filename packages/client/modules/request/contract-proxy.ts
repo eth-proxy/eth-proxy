@@ -1,6 +1,6 @@
 export const methodProxy = {
-  get: (target, name) => {
-    return payload => ({
+  get: (target: {}, name: string) => {
+    return (payload: any) => ({
       ...target,
       payload,
       method: name
@@ -8,7 +8,7 @@ export const methodProxy = {
   }
 };
 export const interfaceProxy = {
-  get: (target, name) => {
+  get: (target: any, name: string) => {
     return new Proxy(
       {
         ...target,

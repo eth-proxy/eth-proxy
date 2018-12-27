@@ -1,6 +1,6 @@
 import { subscribeLogs } from './logs';
 import { testProvider, ofMethod } from '../mocks';
-import { LogFilter, RawLog } from '../interfaces';
+import { LogFilter } from '../interfaces';
 import { assert } from 'chai';
 import { of } from 'rxjs';
 
@@ -12,7 +12,7 @@ describe('Logs subscription', () => {
     const provider = testProvider(() => subscriptionId);
     subscribeLogs(provider, logFilter).subscribe();
 
-    const { params } = provider.getRequests().find(ofMethod('eth_subscribe'));
+    const { params } = provider.getRequests().find(ofMethod('eth_subscribe'))!;
 
     assert.deepEqual(params, ['logs', logFilter]);
   });

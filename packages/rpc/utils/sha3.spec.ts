@@ -1,4 +1,4 @@
-import * as Web3 from 'web3';
+const Web3 = require('web3');
 import { expect } from 'chai';
 import { sha3 } from './sha3';
 

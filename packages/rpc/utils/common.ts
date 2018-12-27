@@ -1,4 +1,3 @@
-import * as web3Utils from 'web3/lib/utils/utils';
 import {
   Provider,
   AbiDefinition,
@@ -6,19 +5,20 @@ import {
   EventDescription,
   ConstructorDescription,
   SendObservableRequest,
-  SendRequest
+  SendRequest,
+  NumberLike,
+  Tag
 } from '../interfaces';
-import { pipe, isNil, values, head } from 'ramda';
+import { pipe, isNil, values, head, contains } from 'ramda';
 import { BigNumber } from 'bignumber.js';
 import { defer } from 'rxjs';
-import { NumberLike } from '../interfaces';
+import { tags } from '../constants';
 
 export function bind<T extends (...args: any[]) => any>(fn: T, obj: any): T {
   return fn.bind(obj);
 }
 
 const toNumber = (bn: BigNumber) => bn.toNumber();
-export const toHex = (input: any) => web3Utils.toHex(input);
 const hexToBN = (hex: string) => new BigNumber(hex, 16);
 export const ethHexToBN = pipe(
   strip0x,
@@ -28,9 +28,6 @@ export const ethHexToNumber = pipe(
   ethHexToBN,
   toNumber
 );
-
-export const toAscii = (hex: string) => web3Utils.toAscii(hex);
-export const fromAscii = (ascii: string) => web3Utils.fromAscii(ascii);
 
 export const caseInsensitiveCompare = (a: string, b: string) =>
   a && b && a.toLowerCase() === b.toLowerCase();
@@ -61,6 +58,12 @@ export const getFunction = (name: string, abi: AbiDefinition[]) => {
 
 export const isEventAbi = (abi: AbiDefinition): abi is EventDescription => {
   return abi.type === 'event';
+};
+
+export const isFunctionAbi = (
+  abi: AbiDefinition
+): abi is FunctionDescription => {
+  return abi.type === 'function';
 };
 
 export const isConstructorAbi = (
@@ -94,3 +97,11 @@ export function send(provider: Provider): SendRequest {
 
 export const bnOf = (value: NumberLike, base?: number) =>
   new BigNumber(value, base);
+
+export function isBoolean(variable: any): variable is boolean {
+  return typeof variable === 'boolean';
+}
+
+export function isTag(value: string | NumberLike): value is Tag {
+  return contains(value, tags);
+}

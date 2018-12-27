@@ -1,14 +1,15 @@
-import { ActionsObservable, ofType } from 'redux-observable';
+import { ActionsObservable, StateObservable } from 'redux-observable';
 import { mergeMap, map, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import * as actions from '../actions';
 import { ContractInfo } from '../../schema';
-import { EpicContext } from '../../../context';
+import { EpicContext } from '@eth-proxy/client/context';
 import { TransactionInput, getFunction, sendTransaction } from '@eth-proxy/rpc';
+import { ofType } from '@eth-proxy/client/utils';
 
 export const processTransactionEpic = (
   actions$: ActionsObservable<actions.ProcessTransaction>,
-  _,
+  _: StateObservable<any>,
   { provider, contractLoader }: EpicContext
 ) => {
   return actions$.pipe(

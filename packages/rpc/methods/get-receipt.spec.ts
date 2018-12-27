@@ -22,11 +22,15 @@ describe('Get receipt', () => {
     });
   });
 
-  it('Return null when no result', async () => {
+  it('Throws when no receipt', async () => {
     const provider = testProvider(() => null);
 
-    const result = await getReceipt(provider, txHash);
-    expect(result).to.be.null;
+    try {
+      await getReceipt(provider, txHash);
+      throw Error('Should fail');
+    } catch (err) {
+      expect(err).to.be.instanceOf(Error);
+    }
   });
 
   it('Return formatted receipt', async () => {

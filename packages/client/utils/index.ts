@@ -23,7 +23,7 @@ export const networkNameFromId = (networkId: string) => {
   }
 };
 
-export const isString = (x): x is string =>
+export const isString = (x: unknown): x is string =>
   typeof x === 'string' || x instanceof String;
 
 export const isMain = (networkId: string) =>
@@ -43,7 +43,7 @@ export const sortEvents = sortWith<DecodedEvent>([
 
 export const createLengthEqualSelector = createSelectorCreator(
   defaultMemoize,
-  (x, y) => x && y && x.length === y.length
+  (x: any, y: any) => x && y && x.length === y.length
 );
 
 export const createDeepEqualSelector = createSelectorCreator(
@@ -91,3 +91,4 @@ export const isNotAsked = <T>(data: Data<T>): data is DataNotAsked =>
   data.status === 'NotAsked';
 
 export * from './observable-store';
+export * from './of-type';

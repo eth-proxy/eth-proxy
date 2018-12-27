@@ -2,39 +2,39 @@ import { Observable } from 'rxjs';
 import { TransactionReceipt, NumberLike, DecodedEvent } from '@eth-proxy/rpc';
 import { Request } from '../request';
 
-export interface TransactionInfo {
+export interface TransactionInfo<T = any> {
   contractName: string;
   address: string;
   method: string;
   txParams: any;
-  args: any;
+  args: T;
   initId: string;
 }
 
-export interface InitializedTransaction extends TransactionInfo {
+export interface InitializedTransaction<T = any> extends TransactionInfo<T> {
   status: 'init';
 }
-export interface TransactionWithHash extends TransactionInfo {
+export interface TransactionWithHash<T = any> extends TransactionInfo<T> {
   tx: string;
   status: 'tx';
 }
-export interface FailedTransaction extends TransactionInfo {
+export interface FailedTransaction<T = any> extends TransactionInfo<T> {
   tx: string;
   error: string;
   status: 'failed';
 }
-export interface ConfirmedTransaction extends TransactionInfo {
+export interface ConfirmedTransaction<T = any> extends TransactionInfo<T> {
   tx: string;
   status: 'confirmed';
   receipt: TransactionReceipt;
   logs: DecodedEvent[];
 }
 
-export type Transaction =
-  | InitializedTransaction
-  | TransactionWithHash
-  | FailedTransaction
-  | ConfirmedTransaction;
+export type Transaction<T = any> =
+  | InitializedTransaction<T>
+  | TransactionWithHash<T>
+  | FailedTransaction<T>
+  | ConfirmedTransaction<T>;
 
 export interface TransationHashEvent {
   type: 'tx';
@@ -57,12 +57,11 @@ export type ObservableTransactionResult<T> = Observable<
   TransationResultEvent<T>
 >;
 
-export type TransactionResult<T> = Observable<Transaction>;
+export type TransactionResult<T> = Observable<Transaction<T>>;
 
 export type TransactionHandler<T> = <
   I extends Extract<keyof T, string>,
-  M extends Extract<keyof T[I], string>,
-  V extends T[I][M]
+  M extends Extract<keyof T[I], string>
 >(
   request: Request<I, M, T[I][M] extends { in: infer In } ? In : never>
 ) => TransactionResult<

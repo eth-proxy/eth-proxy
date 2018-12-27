@@ -77,12 +77,20 @@ export function reducer(state: State = [], action: actions.Types): State {
   }
 }
 
-export const getSelectors = <T>(getModule: (state: T) => State) => {
+export const getSelectors = <T = { [moduleId]: State }>(
+  getModule: (state: T) => State
+) => {
   const getTransactionByTx = (tx: string) =>
-    createSelector(getModule, find(t => t.status !== 'init' && t.tx === tx));
+    createSelector(
+      getModule,
+      find(t => t.status !== 'init' && t.tx === tx)
+    );
 
   const getTransactionFromInitId = (initId: string) =>
-    createSelector(getModule, find(t => t.initId === initId));
+    createSelector(
+      getModule,
+      find(t => t.initId === initId)
+    );
 
   const getPendingTransactions = createSelector(
     getModule,

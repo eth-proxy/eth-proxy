@@ -7,8 +7,7 @@ import {
   NumberLike,
   FunctionDescription
 } from '../../interfaces';
-import { formatRequestInput } from './formatters';
-import { formatBlockNr } from '../../formatters';
+import { toBlockNr, toRequestInput } from '../../converters';
 import { decodeToObj, encodeFromObjOrSingle } from '../../coder';
 
 export interface CallInput<T = any> {
@@ -32,7 +31,7 @@ export const sendCall = curry(
 
     return send(provider)({
       method: 'eth_call',
-      params: [formatRequestInput(request), formatBlockNr(atBlock)]
+      params: [toRequestInput(request), toBlockNr(atBlock)]
     }).then(resultParser);
   }
 );

@@ -1,20 +1,25 @@
 import { combineLatest, from } from 'rxjs';
 
-import { getTxParams } from '../store';
 import { Context } from '../context';
-import { mergeMap, map } from 'rxjs/operators';
+import { mergeMap, map, first } from 'rxjs/operators';
 import { isConstructorAbi, deployContract, getReceipt } from '@eth-proxy/rpc';
 import * as fromTx from '../modules/transaction';
+import * as fromAccount from '../modules/account';
+import { DEFAULT_GAS } from '@eth-proxy/client/constants';
 
 /* 
   Only sutiable for testrpc
 */
 export function deploy({ store, contractLoader, provider }: Context) {
   return (input: fromTx.DeploymentInput<string, any>) => {
-    return combineLatest(
-      store.pipe(getTxParams(input)),
-      contractLoader(input.interface)
-    ).pipe(
+    const txParams$ = store.select(fromAccount.getActiveAccount).pipe(
+      map(account => {
+        return fromTx.mergeParams(input, { from: account, gas: DEFAULT_GAS });
+      }),
+      first(fromTx.txParamsValid)
+    );
+
+    return combineLatest(txParams$, contractLoader(input.interface)).pipe(
       mergeMap(([txParams, schema]) => {
         const abi = schema.abi.find(isConstructorAbi);
         if (!abi || !schema.bytecode) {
@@ -31,7 +36,7 @@ export function deploy({ store, contractLoader, provider }: Context) {
           })
         ).pipe(
           mergeMap(getReceipt(provider)),
-          map(x => x.contractAddress)
+          map(x => x.contractAddress!)
         );
       })
     );

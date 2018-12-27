@@ -17,7 +17,7 @@ export function toObservableStore<S>(redux: Store<S>) {
   const state$ = new BehaviorSubject<S>(redux.getState());
 
   Object.assign(observableStore, {
-    select: <T>(selector?: Selector<S, T>) => {
+    select: <T>(selector: Selector<S, T>) => {
       return state$.pipe(
         distinctUntilChanged(),
         map(selector),

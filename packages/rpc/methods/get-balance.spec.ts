@@ -3,8 +3,6 @@ import { expect } from 'chai';
 import { BigNumber } from 'bignumber.js';
 import { testProvider } from '../mocks';
 
-const rpcResult = result => ({ result });
-
 const account = '0xc94770007dda54cF92009BFF0dE90c06F603a09f';
 
 const balance100 = new BigNumber(100);

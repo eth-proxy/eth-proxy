@@ -1,7 +1,8 @@
+/// <reference lib="dom" />
 import { Subprovider, BaseRpcResponse, RpcRequest } from '../interfaces';
 import { EMPTY } from 'rxjs';
 
-const fetch = require('isomorphic-fetch');
+const fetch = require('isomorphic-fetch') as GlobalFetch['fetch'];
 const defaultUrl = 'http://localhost:8545';
 
 interface HttpProviderConfig {
@@ -9,7 +10,7 @@ interface HttpProviderConfig {
   accept?: Subprovider['accept'];
 }
 
-const blacklistedMethods: RpcRequest['method'][] = [
+const blacklistedMethods: Array<RpcRequest['method']> = [
   'eth_subscribe',
   'eth_unsubscribe'
 ];
@@ -20,7 +21,7 @@ export function httpSubprovider({
 }: HttpProviderConfig = {}): Subprovider {
   return {
     accept,
-    send: (payload: any) => {
+    send: payload => {
       return fetch(url, {
         method: 'POST',
         body: JSON.stringify(payload),

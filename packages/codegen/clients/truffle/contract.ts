@@ -1,13 +1,10 @@
-import {
-  InterfaceDeclarationStructure,
-  MethodDeclarationStructure
-} from 'ts-simple-ast';
+import { MethodDeclarationStructure } from 'ts-simple-ast';
 import {
   createContractInterfaces,
   solidityToJsInputType,
   solidityToJsOutputType
 } from '../../lib';
-import { FunctionDescription, TruffleJson } from '../../interfaces';
+import { FunctionDescription } from '@eth-proxy/rpc';
 
 export const createTruffleContractInterfaces = createContractInterfaces(
   (json, functions) => {
@@ -27,11 +24,11 @@ const createMethod = (
       funDesc.outputs.length === 0
         ? 'undefined'
         : funDesc.outputs.length === 1
-          ? solidityToJsOutputType(funDesc.outputs[0].type)
-          : `[${funDesc.outputs
-              .map(o => o.type)
-              .map(solidityToJsOutputType)
-              .join(',')}]`;
+        ? solidityToJsOutputType(funDesc.outputs[0].type)
+        : `[${funDesc.outputs
+            .map(o => o.type)
+            .map(solidityToJsOutputType)
+            .join(',')}]`;
 
     const parameters = funDesc.inputs.map(({ name, type }, index) => {
       return {

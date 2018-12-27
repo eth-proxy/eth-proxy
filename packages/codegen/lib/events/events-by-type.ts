@@ -2,6 +2,7 @@ import { InterfaceDeclarationStructure } from 'ts-simple-ast';
 import { toEventName, toEventsByTypeName } from '../utils';
 import { map } from 'ramda';
 import { TruffleJson } from '../../interfaces';
+import { isEventAbi } from '@eth-proxy/rpc';
 
 export const getEventsByTypeIntefaces = (jsons: TruffleJson[]) => [
   getEventsByContract(jsons),
@@ -14,7 +15,7 @@ function getEventsByContract(
   return {
     name: 'EventsByType',
     properties: map(
-      ({ abi, contractName }) => ({
+      ({ contractName }) => ({
         name: contractName,
         type: toEventsByTypeName(contractName)
       }),
@@ -29,7 +30,7 @@ function getContractEventsByType(
   return map(
     ({ contractName, abi }) => ({
       name: toEventsByTypeName(contractName),
-      properties: abi.filter(a => a.type === 'event').map(({ name }) => ({
+      properties: abi.filter(isEventAbi).map(({ name }) => ({
         name,
         type: toEventName(contractName, name)
       }))

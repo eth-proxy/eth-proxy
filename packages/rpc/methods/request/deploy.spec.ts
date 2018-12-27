@@ -1,10 +1,9 @@
-import * as Web3 from 'web3';
-import { SampleToken } from '../../mocks';
+const Web3 = require('web3');
+import { SampleToken, testProvider } from '../../mocks';
 import { deployContract } from './deploy';
 import { expect } from 'chai';
 import { isConstructorAbi } from '../../utils';
-import { testProvider } from '../../mocks';
-import { RpcRequest } from 'rpc/interfaces';
+import { RpcRequest } from '@eth-proxy/rpc/interfaces';
 
 const { abi, bytecode } = SampleToken;
 
@@ -31,9 +30,9 @@ describe('Deploy', () => {
 
 // Each time returns different data
 function getWeb3Payload() {
-  return new Promise<RpcRequest>((res, rej) => {
+  return new Promise<RpcRequest>(res => {
     const web3 = new Web3({
-      sendAsync: payload => res(payload)
+      sendAsync: (payload: any) => res(payload)
     });
 
     web3.eth
@@ -50,11 +49,11 @@ function getWeb3Payload() {
 }
 
 function getRxWeb3Payload() {
-  return new Promise<RpcRequest>((res, rej) => {
+  return new Promise<RpcRequest>(res => {
     const provider = testProvider(payload => res(payload as RpcRequest));
 
     deployContract(provider, {
-      abi: abi.find(isConstructorAbi),
+      abi: abi.find(isConstructorAbi)!,
       bytecode,
       txParams,
       args: myToken

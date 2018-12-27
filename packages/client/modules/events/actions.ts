@@ -71,7 +71,7 @@ export interface EventsLoaded {
   payload: any[];
 }
 
-export const eventsLoaded = (payload: any[]) => ({
+export const eventsLoaded = (payload: any[]): EventsLoaded => ({
   type: EVENTS_LOADED,
   payload
 });

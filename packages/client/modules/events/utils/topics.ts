@@ -38,7 +38,7 @@ export function mergeTopics(groupedTopics: Topics[]): Topics {
 }
 
 export function toTopicList(topic: Topics) {
-  return dropLastWhile(equals([]), [
+  return dropLastWhile(equals([] as any[]), [
     topic.eventTopic,
     topic.t1,
     topic.t2,
@@ -49,9 +49,9 @@ export function toTopicList(topic: Topics) {
 export function splitQueryByTopics({ address, range, topics }: ContractQuery) {
   const groupedTopics = groupByTopic(topics).map(mergeTopics);
 
-  return groupedTopics.map(topics => ({
+  return groupedTopics.map(topicGroup => ({
     address,
     range,
-    topics
+    topics: topicGroup
   }));
 }

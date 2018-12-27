@@ -1,8 +1,8 @@
 import { Tag, EthGetLogsRequest, EthGetLogs } from '../../interfaces';
 import { of } from 'rxjs';
 import { reverse, times, max, pipe, assocPath, evolve, concat } from 'ramda';
-import { ethHexToNumber } from '../../utils';
-import { isTag, formatBlockNr } from '../../formatters';
+import { ethHexToNumber, isTag } from '../../utils';
+import { toBlockNr } from '../../converters';
 import { mergeMap, reduce } from 'rxjs/operators';
 import { MiddlewareItem } from '../model';
 
@@ -27,8 +27,8 @@ export function rangeSplitMiddleware(
     return of(
       ...ranges.map(([newFrom, newTo]) => {
         return pipe(
-          assocPath(['params', 0, 'fromBlock'], formatBlockNr(newFrom)),
-          assocPath(['params', 0, 'toBlock'], formatBlockNr(newTo))
+          assocPath(['params', 0, 'fromBlock'], toBlockNr(newFrom)),
+          assocPath(['params', 0, 'toBlock'], toBlockNr(newTo))
         )(payload) as EthGetLogsRequest;
       })
     ).pipe(
@@ -67,6 +67,6 @@ export function calculateRanges(
   );
 }
 
-function isNumberBlock(block: Tag | string | undefined) {
-  return block && !isTag(block);
+function isNumberBlock(block: Tag | string | undefined): block is string {
+  return !!block && !isTag(block);
 }
