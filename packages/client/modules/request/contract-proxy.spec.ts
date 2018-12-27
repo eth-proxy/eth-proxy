@@ -51,7 +51,7 @@ describe('Create ', () => {
   });
 
   it('At address', () => {
-    const contractAt = at(Contract1, '5678');
+    const contractAt = at('5678', Contract1);
     const request = contractAt.method1('12');
 
     expect(request).to.deep.eq({
@@ -63,7 +63,7 @@ describe('Create ', () => {
   });
 
   it('With options', () => {
-    const request = withOptions(Contract1.method1('12'), { gas: 12 });
+    const request = withOptions({ gas: 12 }, Contract1.method1('12'));
 
     expect(request).to.deep.eq({
       interface: 'Contract1',
