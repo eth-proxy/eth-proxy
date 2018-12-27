@@ -3,10 +3,10 @@ import { ActionsObservable, StateObservable } from 'redux-observable';
 import * as actions from '../actions';
 
 import { merge, EMPTY, Observable } from 'rxjs';
-import { EpicContext } from 'client/context';
+import { EpicContext } from '@eth-proxy/client/context';
 import * as fromSchema from '../../schema';
 import { watchLogs, decodeLogs } from '@eth-proxy/rpc';
-import { ofType } from 'client/utils';
+import { ofType } from '@eth-proxy/client/utils';
 
 // DONT WATCH SAME CONTRACTS MORE THEN ONCE
 export const watchEvents = (

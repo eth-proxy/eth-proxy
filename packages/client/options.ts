@@ -1,7 +1,8 @@
 import { Observable } from 'rxjs';
 import { EthProxyInterceptors } from './interceptors';
 import { ContractSchemaResolver } from './modules/schema';
-import { Omit } from 'ramda';
+
+export type Omit<T, K extends string> = Pick<T, Exclude<keyof T, K>>;
 
 export interface EthProxyOptions {
   contractSchemaResolver: ContractSchemaResolver;

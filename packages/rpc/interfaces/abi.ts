@@ -28,7 +28,7 @@ export interface FunctionDescription {
   type: 'function';
   name: string;
   inputs: Array<FunctionParameter>;
-  outputs?: Array<FunctionParameter>;
+  outputs: Array<FunctionParameter>;
   constant?: boolean;
   payable?: boolean;
 }

@@ -38,7 +38,7 @@ describe('Watches', () => {
     miner$.subscribe();
   });
 
-  it.only('Watches events', done => {
+  it('Watches events', done => {
     const watch$ = watchEvents({
       filter: {
         fromBlock: 0,

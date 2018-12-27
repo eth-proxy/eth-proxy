@@ -3,11 +3,10 @@ import { expect } from 'chai';
 import { testProvider } from '../mocks';
 
 const subscriptionId = '123456';
-const address = ['0x123'];
 
 describe('Unsubscribe', () => {
   it('Calls eth_unsubscribe', async () => {
-    let provider = testProvider(() => true);
+    const provider = testProvider(() => true);
 
     await unsubscribe(provider, subscriptionId);
 
@@ -18,7 +17,7 @@ describe('Unsubscribe', () => {
   });
 
   it('Succeed when unsubscription success', async () => {
-    let provider = testProvider(() => true);
+    const provider = testProvider(() => true);
 
     expect(await unsubscribe(provider, subscriptionId)).to.deep.eq(true);
   });

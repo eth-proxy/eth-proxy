@@ -10,7 +10,8 @@ export {
   isConstructorAbi,
   arrify,
   send,
-  convert
+  convert,
+  isFunctionAbi
 } from './utils';
 export { TransactionInput } from './methods/request/send-transaction';
 export { CallInput } from './methods/request/send-call';

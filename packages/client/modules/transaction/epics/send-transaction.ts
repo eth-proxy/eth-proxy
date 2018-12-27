@@ -3,9 +3,9 @@ import { mergeMap, map, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import * as actions from '../actions';
 import { ContractInfo } from '../../schema';
-import { EpicContext } from 'client/context';
+import { EpicContext } from '@eth-proxy/client/context';
 import { TransactionInput, getFunction, sendTransaction } from '@eth-proxy/rpc';
-import { ofType } from 'client/utils';
+import { ofType } from '@eth-proxy/client/utils';
 
 export const processTransactionEpic = (
   actions$: ActionsObservable<actions.ProcessTransaction>,

@@ -1,18 +1,18 @@
 import { InterfaceDeclarationStructure } from 'ts-simple-ast';
 import { toOutputName, getOutputProperty } from '../../lib';
 import { hasComplexOutput } from './utils';
-import { TruffleJson, FunctionDescription } from '../../interfaces';
+import { TruffleJson } from '../../interfaces';
+import { isFunctionAbi } from '@eth-proxy/rpc';
 
 export function getOutputInterfaces({
   contractName,
   abi
 }: TruffleJson): InterfaceDeclarationStructure[] {
-  const functionsWithOutputs = abi.filter(
-    hasComplexOutput
-  ) as FunctionDescription[];
-
-  return functionsWithOutputs.map(({ name, outputs }) => ({
-    name: toOutputName(contractName)(name),
-    properties: outputs.map(getOutputProperty)
-  }));
+  return abi
+    .filter(isFunctionAbi)
+    .filter(hasComplexOutput)
+    .map(({ name, outputs }) => ({
+      name: toOutputName(contractName)(name),
+      properties: outputs.map(getOutputProperty)
+    }));
 }

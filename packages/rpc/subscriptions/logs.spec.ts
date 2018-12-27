@@ -1,6 +1,6 @@
 import { subscribeLogs } from './logs';
 import { testProvider, ofMethod } from '../mocks';
-import { LogFilter, RawLog } from '../interfaces';
+import { LogFilter } from '../interfaces';
 import { assert } from 'chai';
 import { of } from 'rxjs';
 

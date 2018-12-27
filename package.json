@@ -18,7 +18,7 @@
     "bootstrap": "lerna bootstrap",
     "testrpc": "ganache-cli -l 8000000",
     "gen:integration": "ts-node ./packages/codegen --o=\"tests/contracts.ts\" --cDir=\"tests/schemas\"",
-    "test:integration": "./node_modules/.bin/mocha --require tsconfig-paths/register --require ts-node/register  \"./tests/**/*.spec.ts\"",
+    "test:integration": "TS_NODE_PROJECT=./tests/tsconfig.test.json mocha --require tsconfig-paths/register --require ts-node/register  \"./tests/**/*.spec.ts\"",
     "delayed_integration": "sleep 5 && npm run test:integration",
     "integration": "npm-run-all -r -p testrpc delayed_integration",
     "test:watch": "npm test -- --watch",

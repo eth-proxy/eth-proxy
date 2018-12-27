@@ -1,6 +1,6 @@
 import { toUpper, curry } from 'ramda';
 import { PropertySignatureStructure } from 'ts-simple-ast';
-import { FunctionParameter } from '../interfaces';
+import { FunctionParameter } from '@eth-proxy/rpc';
 
 export function solidityToJsOutputType(type: string): string {
   const arrayIndexRe = /\[\d*\]/;
@@ -21,6 +21,7 @@ export function solidityToJsOutputType(type: string): string {
   if (type === 'bool') {
     return 'boolean';
   }
+  throw Error(`Unknown type, ${type}`);
 }
 
 export function solidityToJsInputType(type: string) {

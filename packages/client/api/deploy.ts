@@ -5,7 +5,7 @@ import { mergeMap, map, first } from 'rxjs/operators';
 import { isConstructorAbi, deployContract, getReceipt } from '@eth-proxy/rpc';
 import * as fromTx from '../modules/transaction';
 import * as fromAccount from '../modules/account';
-import { DEFAULT_GAS } from 'client/constants';
+import { DEFAULT_GAS } from '@eth-proxy/client/constants';
 
 /* 
   Only sutiable for testrpc

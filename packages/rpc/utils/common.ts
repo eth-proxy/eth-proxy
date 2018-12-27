@@ -60,6 +60,12 @@ export const isEventAbi = (abi: AbiDefinition): abi is EventDescription => {
   return abi.type === 'event';
 };
 
+export const isFunctionAbi = (
+  abi: AbiDefinition
+): abi is FunctionDescription => {
+  return abi.type === 'function';
+};
+
 export const isConstructorAbi = (
   abi: AbiDefinition
 ): abi is ConstructorDescription => {

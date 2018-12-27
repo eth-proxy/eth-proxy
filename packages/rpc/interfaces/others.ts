@@ -94,3 +94,5 @@ export type SubscribeArgs =
   | LogsArgs
   | NewPendingTransactionsArgs
   | SyncingArgs;
+
+export type Omit<T, K extends string> = Pick<T, Exclude<keyof T, K>>;

@@ -34,10 +34,6 @@ const account = '0x78a4b1857eff7346f3676d9d028ff321d14accbf';
 const accountTopic =
   '0x00000000000000000000000078a4b1857eff7346f3676d9d028ff321d14accbf';
 
-const account2 = '0xfbb1b73c4f0bda4f67dca266ce6ef42f520fbb98';
-const account2Topic =
-  '0x0000000000000000000000000xfbb1b73c4f0bda4f67dca266ce6ef42f520fbb98';
-
 describe('Expand user model', () => {
   it('expands wildcards', () => {
     expect(depsToTopics(tokenAbi, '*')).to.deep.eq([

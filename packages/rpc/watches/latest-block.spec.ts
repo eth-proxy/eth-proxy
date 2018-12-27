@@ -1,10 +1,6 @@
 import { watchBlocks } from './latest-block';
 import { marbles } from 'rxjs-marbles/mocha';
-import {
-  EthGetFilterChanges,
-  EthUninstallFilterRequest,
-  RawBlock
-} from '../interfaces';
+import { EthGetFilterChanges, EthUninstallFilterRequest } from '../interfaces';
 import { Subject } from 'rxjs';
 import { omit, Dictionary } from 'ramda';
 import { testProvider } from '../mocks';

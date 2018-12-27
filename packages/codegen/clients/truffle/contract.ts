@@ -4,7 +4,7 @@ import {
   solidityToJsInputType,
   solidityToJsOutputType
 } from '../../lib';
-import { FunctionDescription } from '../../interfaces';
+import { FunctionDescription } from '@eth-proxy/rpc';
 
 export const createTruffleContractInterfaces = createContractInterfaces(
   (json, functions) => {

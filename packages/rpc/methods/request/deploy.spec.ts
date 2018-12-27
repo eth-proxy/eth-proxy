@@ -3,7 +3,7 @@ import { SampleToken, testProvider } from '../../mocks';
 import { deployContract } from './deploy';
 import { expect } from 'chai';
 import { isConstructorAbi } from '../../utils';
-import { RpcRequest } from 'rpc/interfaces';
+import { RpcRequest } from '@eth-proxy/rpc/interfaces';
 
 const { abi, bytecode } = SampleToken;
 
@@ -30,7 +30,7 @@ describe('Deploy', () => {
 
 // Each time returns different data
 function getWeb3Payload() {
-  return new Promise<RpcRequest>((res, rej) => {
+  return new Promise<RpcRequest>(res => {
     const web3 = new Web3({
       sendAsync: (payload: any) => res(payload)
     });
@@ -49,7 +49,7 @@ function getWeb3Payload() {
 }
 
 function getRxWeb3Payload() {
-  return new Promise<RpcRequest>((res, rej) => {
+  return new Promise<RpcRequest>(res => {
     const provider = testProvider(payload => res(payload as RpcRequest));
 
     deployContract(provider, {

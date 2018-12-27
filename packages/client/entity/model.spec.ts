@@ -20,18 +20,18 @@ interface Contracts {
   };
 }
 
-const x: EntityModel<MyEntity, EventsByType, Contracts> = {
+export const x: EntityModel<MyEntity, EventsByType, Contracts> = {
   ERC20: {
     approve: {
-      handle: (x, y, z) => ({ a: 12 }),
-      identity: x => 13
+      handle: () => ({ a: 12 }),
+      identity: () => 13
     },
     event1: {
-      handle: (x, y, z) => ({ a: 12 }),
-      identity: x => 12
+      handle: () => ({ a: 12 }),
+      identity: () => 12
     }
-    //not vaid
-    //appro: {}
+    // not vaid
+    // appro: {}
   }
   // invalid
   // other: {}

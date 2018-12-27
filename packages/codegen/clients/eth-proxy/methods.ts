@@ -6,14 +6,14 @@ import {
   solidityToJsOutputType,
   solidityToJsInputType
 } from '../../lib';
-import { TruffleJson, FunctionDescription } from '../../interfaces';
+import { TruffleJson } from '../../interfaces';
+import { isFunctionAbi, FunctionDescription } from '@eth-proxy/rpc';
 
 export function getMethodsInterfaces({
   contractName,
   abi
 }: TruffleJson): InterfaceDeclarationStructure[] {
-  const functions = abi.filter(({ type }) => type === 'function');
-  return functions.map(getMethodDefinition(contractName));
+  return abi.filter(isFunctionAbi).map(getMethodDefinition(contractName));
 }
 
 const getMethodDefinition = (contractName: string) => (
@@ -23,8 +23,8 @@ const getMethodDefinition = (contractName: string) => (
     fun.outputs.length > 1
       ? toOutputName(contractName)(fun.name)
       : fun.outputs.length === 0
-        ? 'undefined'
-        : solidityToJsOutputType(fun.outputs[0].type);
+      ? 'undefined'
+      : solidityToJsOutputType(fun.outputs[0].type);
 
   const optionalProperties =
     fun.inputs.length > 0

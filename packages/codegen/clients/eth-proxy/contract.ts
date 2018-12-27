@@ -2,7 +2,7 @@ import { PropertySignatureStructure } from 'ts-simple-ast';
 import { map } from 'ramda';
 import { toMethodDefinitionName } from './utils';
 import { createContractInterfaces } from '../../lib';
-import { FunctionDescription } from '../../interfaces';
+import { FunctionDescription } from '@eth-proxy/rpc';
 
 export const createEthProxyContractInterfaces = createContractInterfaces(
   ({ contractName }, functions) => {

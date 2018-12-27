@@ -1,8 +1,6 @@
-import { RpcRequest, LegacyProvider, Subprovider } from '../interfaces';
+import { RpcRequest, LegacyProvider, Subprovider, Omit } from '../interfaces';
 import { EMPTY } from 'rxjs';
 import { omit } from 'ramda';
-
-type Omit<T, K extends string> = Pick<T, Exclude<keyof T, K>>;
 
 export type Adapted<T extends LegacyProvider> = Omit<T, 'sendAsync'> &
   Subprovider;

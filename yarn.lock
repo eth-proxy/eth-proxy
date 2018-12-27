@@ -714,6 +714,11 @@
   resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.25.45.tgz#e13456709bb4f2c5fcbfa6dcac8240eff75fe816"
   integrity sha512-J+xlbNyag7wgYRSuvRwu9zZY7t0vM4KMUVHxWLUMegqlz9+97v6jYo2JlvfsVC3qtulx7PKenFKzWCWsdVSCDw==
 
+"@types/require-dir@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/require-dir/-/require-dir-1.0.0.tgz#c68e8c4c3a35bc2f2b3145cb184d116169c1c8d3"
+  integrity sha512-KkJBNlfnyLYYj5y4j5081oFkaAbS56jeoYWJ3unpcj5yhRH+MNq4T9Ocbe8e0d/BP0At+m5Qcz8bj0p6NqQW3g==
+
 "@types/sinon@7.0.2":
   version "7.0.2"
   resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-7.0.2.tgz#234c03dd39bfa97616b28215caea3de043c63310"
@@ -4874,6 +4879,11 @@ rimraf@2, rimraf@^2.2.8, rimraf@^2.5.2, rimraf@^2.5.4, rimraf@^2.6.2:
   integrity sha512-lreewLK/BlghmxtfH36YYVg1i8IAce4TI7oao75I1g245+6BctqTVQiBP3YUJ9C6DQOXJmkYR9X9fCLtCOJc5w==
   dependencies:
     glob "^7.0.5"
+
+rollup-plugin-typescript-path-mapping@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-typescript-path-mapping/-/rollup-plugin-typescript-path-mapping-1.0.2.tgz#e4675930866cb9d45a491421b1d546817f9e3921"
+  integrity sha512-RZLIxSljzF38pWxLkiFo0tOukvPSLclDQ4ydrrOWIogQmJGo3o8NMt9UrhHCfiNqAGgrdgLRfHrA35jPVlCABQ==
 
 rollup-plugin-typescript2@0.18.1:
   version "0.18.1"
