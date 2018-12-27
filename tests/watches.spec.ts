@@ -54,7 +54,7 @@ describe('Watches', () => {
       mergeMap(([addr, [account1]]) =>
         proxy
           .transaction(
-            at(SampleToken, addr).transfer({
+            at(addr, SampleToken).transfer({
               _to: account1,
               _value: 1
             })
