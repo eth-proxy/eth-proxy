@@ -1,4 +1,4 @@
-import { getEvents } from './get-events';
+import { getEvents } from './get-logs';
 import { FilterObject, RawLog, Log } from '../interfaces';
 import { expect } from 'chai';
 import { testProvider } from '../mocks';

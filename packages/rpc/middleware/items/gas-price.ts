@@ -8,6 +8,7 @@ import {
 import { SubscribableOrPromise, from } from 'rxjs';
 import { assocPath } from 'ramda';
 import { toQuantity } from '../../converters';
+import { forEachRequest } from '../utils';
 
 export type GasPriceLoader = (
   req: TransactionParams
@@ -20,7 +21,7 @@ export function gasPriceMiddleware(loader: GasPriceLoader): MiddlewareItem {
     'gasPrice'
   ]);
 
-  return (payload, next) => {
+  return forEachRequest((payload, next) => {
     if (payload.method !== 'eth_sendTransaction') {
       return next(payload);
     }
@@ -37,5 +38,5 @@ export function gasPriceMiddleware(loader: GasPriceLoader): MiddlewareItem {
       }),
       mergeMap(next)
     );
-  };
+  });
 }

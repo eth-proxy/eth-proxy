@@ -1,5 +1,5 @@
 import { CurriedFunction2 } from 'ramda';
-import { RpcMethod, RpcRequest } from './rpc-methods';
+import { RpcRequest, RpcResponses, RpcResults } from './rpc-methods';
 import { Observable } from 'rxjs';
 import { BigNumber } from 'bignumber.js';
 
@@ -9,12 +9,9 @@ export type ProviderBound<T> = T extends (provider: Provider) => infer Result
   ? (arg: A1) => Result
   : never;
 
-export type RpcSend = <
-  Request extends RpcRequest,
-  Type extends Request['method']
->(
-  payload: Request | Request[]
-) => Promise<Extract<RpcMethod, { type: Type }>['response']>;
+export type RpcSend = <R extends RpcRequest | RpcRequest[]>(
+  payload: R
+) => Promise<RpcResponses<R>>;
 
 export interface LegacyProvider {
   sendAsync: (payload: any, cb: any) => void;
@@ -30,19 +27,13 @@ export interface Subprovider extends Provider {
   accept: (req: RpcRequest) => boolean;
 }
 
-export type SendObservableRequest = <
-  Request extends RpcRequest,
-  Type extends Request['method']
->(
-  payload: Request | Request[]
-) => Observable<Extract<RpcMethod, { type: Type }>['response']['result']>;
+export type SendObservableRequest = <R extends RpcRequest | RpcRequest[]>(
+  payload: R
+) => Observable<RpcResults<R>>;
 
-export type SendRequest = <
-  Request extends RpcRequest,
-  Type extends Request['method']
->(
-  payload: Request | Request[]
-) => Promise<Extract<RpcMethod, { type: Type }>['response']['result']>;
+export type SendRequest = <R extends RpcRequest | RpcRequest[]>(
+  payload: R
+) => Promise<RpcResults<R>>;
 
 export interface FilterObject {
   fromBlock?: number | string;
@@ -96,3 +87,8 @@ export type SubscribeArgs =
   | SyncingArgs;
 
 export type Omit<T, K extends string> = Pick<T, Exclude<keyof T, K>>;
+
+export type Batch<R extends RpcRequest | RpcRequest[]> = Extract<
+  R,
+  RpcRequest[]
+>;

@@ -1,6 +1,7 @@
 import { RpcRequest, LegacyProvider, Subprovider, Omit } from '../interfaces';
 import { EMPTY } from 'rxjs';
 import { omit } from 'ramda';
+import { validateResponse } from './utils';
 
 export type Adapted<T extends LegacyProvider> = Omit<T, 'sendAsync'> &
   Subprovider;
@@ -18,11 +19,18 @@ export const legacyProviderAdapter = <T extends LegacyProvider>(
   const provider = {
     accept: req => !blacklistedMethods.includes(req.method),
     send: (payload: RpcRequest | RpcRequest[]) => {
-      return new Promise((resolve, rej) => {
+      return new Promise((resolve, reject) => {
+        // TODO: validate array
         legacyProvider.sendAsync(payload, (err: any, res: any) => {
-          const error = err || (res.error && new Error(res.error.message));
-
-          error ? rej(error) : resolve(res);
+          try {
+            if (err) {
+              throw Error(err);
+            }
+            validateResponse(res);
+            resolve(res);
+          } catch (err) {
+            reject(err);
+          }
         });
       });
     },

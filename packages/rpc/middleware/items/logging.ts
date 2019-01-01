@@ -2,6 +2,7 @@ import { tap } from 'rxjs/operators';
 import { MiddlewareItem } from '../model';
 import { RpcRequest } from '../../interfaces';
 import { always } from 'ramda';
+import { forEachRequest } from '../utils';
 
 interface Logger {
   log: (message?: any, ...optionalParams: any[]) => void;
@@ -20,7 +21,7 @@ export function loggingMiddleware(
 ): MiddlewareItem {
   const { logger, pred } = { ...defaults, ...options };
 
-  return (payload, handle) => {
+  return forEachRequest((payload, handle) => {
     const shouldLog = pred(payload);
     const before = Date.now();
     if (shouldLog) {
@@ -49,5 +50,5 @@ export function loggingMiddleware(
         }
       })
     );
-  };
+  });
 }

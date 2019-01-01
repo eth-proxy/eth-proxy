@@ -1,11 +1,11 @@
-import { Provider, RpcRequest, RpcResponse } from '../interfaces';
+import { Provider, RpcRequest, RpcResponses } from '../interfaces';
 import { mergeProvidersWith } from './merge';
 
-export const providerRetry = (
+export const providerRetry = <R extends RpcRequest | RpcRequest[]>(
   err: Error,
   providers: Provider[],
-  payload: RpcRequest
-): Promise<RpcResponse> => {
+  payload: R
+): Promise<RpcResponses<R>> => {
   const [provider, ...rest] = providers;
   if (!provider) {
     return Promise.reject(err);

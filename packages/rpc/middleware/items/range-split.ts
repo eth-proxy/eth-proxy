@@ -5,11 +5,12 @@ import { ethHexToNumber, isTag } from '../../utils';
 import { toBlockNr } from '../../converters';
 import { mergeMap, reduce } from 'rxjs/operators';
 import { MiddlewareItem } from '../model';
+import { forEachRequest } from '../utils';
 
 export function rangeSplitMiddleware(
   rangeSize: number = 10000
 ): MiddlewareItem {
-  return (payload, handle) => {
+  return forEachRequest((payload, handle) => {
     if (payload.method !== 'eth_getLogs') {
       return handle(payload);
     }
@@ -45,7 +46,7 @@ export function rangeSplitMiddleware(
         { result: [] } as EthGetLogs['response']
       )
     );
-  };
+  });
 }
 
 export function calculateRanges(

@@ -4,3 +4,4 @@ export * from './http-provider';
 export * from './legacy-adapter';
 export * from './merge';
 export * from './websocket';
+export * from './utils';

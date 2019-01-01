@@ -36,7 +36,11 @@ export function testProvider(
           return;
         }
 
-        res({ result });
+        const response = Array.isArray(payload)
+          ? result.map((x: any) => ({ result: x }))
+          : { result };
+
+        res(response);
       }) as Promise<any>;
     },
     observe: id => observers[id] || EMPTY,

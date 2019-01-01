@@ -3,9 +3,9 @@ import { SubscribableOrPromise, from } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
 export function delayedProvider(
-  provider: SubscribableOrPromise<Provider>
+  lateProvider: SubscribableOrPromise<Provider>
 ): Provider {
-  const provider$ = from(provider);
+  const provider$ = from(lateProvider);
 
   return {
     send: payload => {

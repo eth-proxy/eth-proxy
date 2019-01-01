@@ -1,14 +1,11 @@
-import { RpcResponse, RpcRequest, RpcMethod } from '../interfaces';
+import { RpcRequest, RpcResponses } from '../interfaces';
 import { Observable } from 'rxjs';
 
-export type RpcRequestHandler = <
-  P extends RpcRequest,
-  Type extends P['method']
->(
-  payload: P
-) => Observable<Extract<RpcMethod, { type: Type }>['response']>;
+export type RpcRequestHandler = <R extends RpcRequest | RpcRequest[]>(
+  payload: R
+) => Observable<RpcResponses<R>>;
 
-export type MiddlewareItem = (
-  payload: RpcRequest,
+export type MiddlewareItem = <R extends RpcRequest | RpcRequest[]>(
+  payload: R,
   next: RpcRequestHandler
-) => Observable<RpcResponse>;
+) => Observable<RpcResponses<R>>;

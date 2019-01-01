@@ -1,6 +1,7 @@
 /// <reference lib="dom" />
-import { Subprovider, BaseRpcResponse, RpcRequest } from '../interfaces';
+import { Subprovider, RpcRequest, RpcResponses } from '../interfaces';
 import { EMPTY } from 'rxjs';
+import { validateResponse } from './utils';
 
 const fetch = require('isomorphic-fetch') as GlobalFetch['fetch'];
 const defaultUrl = 'http://localhost:8545';
@@ -33,13 +34,11 @@ export function httpSubprovider({
           if (!response.ok) {
             return Promise.reject({ status: response.status, data: response });
           }
-          return response.json() as Promise<BaseRpcResponse<any>>;
+          return response.json() as Promise<RpcResponses<any>>;
         })
-        .then(response => {
-          if ('error' in response) {
-            return Promise.reject(response.error);
-          }
-          return Promise.resolve(response);
+        .then(x => {
+          validateResponse(x);
+          return x;
         });
     },
     observe: () => EMPTY,

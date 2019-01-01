@@ -1,12 +1,13 @@
-import { Provider, Subprovider, RpcRequest, RpcResponse } from '../interfaces';
+import { Provider, Subprovider, RpcRequest, RpcResponses } from '../interfaces';
 import { merge } from 'rxjs';
 import { curry } from 'ramda';
+import { arrify } from '../utils';
 
-type OnError = (
+type OnError = <R extends RpcRequest | RpcRequest[]>(
   err: Error,
   providers: Provider[],
-  payload: RpcRequest
-) => Promise<RpcResponse>;
+  payload: R
+) => Promise<RpcResponses<R>>;
 
 interface MergeConfig {
   onError: OnError;
@@ -19,16 +20,15 @@ export const mergeProvidersWith = curry(
   ): Provider => {
     return {
       send: payload => {
-        if (Array.isArray(payload)) {
-          throw Error('Batch not suppoted');
-        }
-
-        const [provider, ...rest] = providers.filter(x =>
-          'accept' in x ? x.accept(payload) : true
-        );
+        const [provider, ...rest] = providers.filter(x => {
+          if ('accept' in x) {
+            return arrify(payload).every(req => x.accept(req));
+          }
+          return true;
+        });
 
         if (!provider) {
-          throw Error(`${payload.method} handler not found`);
+          throw Error(`${payload} handler not found`);
         }
 
         return provider.send(payload).catch(err => onError(err, rest, payload));

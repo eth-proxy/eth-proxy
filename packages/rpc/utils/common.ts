@@ -7,12 +7,17 @@ import {
   SendObservableRequest,
   SendRequest,
   NumberLike,
-  Tag
+  Tag,
+  RpcMethod,
+  RpcRequest,
+  RpcResponse,
+  RpcResponses,
+  Batch
 } from '../interfaces';
-import { pipe, isNil, values, head, contains } from 'ramda';
+import { pipe, isNil, values, head, contains, curry } from 'ramda';
 import { BigNumber } from 'bignumber.js';
-import { defer } from 'rxjs';
 import { tags } from '../constants';
+import { defer } from 'rxjs';
 
 export function bind<T extends (...args: any[]) => any>(fn: T, obj: any): T {
   return fn.bind(obj);
@@ -92,7 +97,18 @@ export function send$(provider: Provider): SendObservableRequest {
 }
 
 export function send(provider: Provider): SendRequest {
-  return payload => provider.send(payload).then(x => x.result);
+  return payload => provider.send(payload).then(r => unwrapResults(payload, r));
+}
+
+function unwrapResults<R extends RpcRequest | RpcRequest[]>(
+  requests: R,
+  response: RpcResponses<R>
+) {
+  if (isSingleReq(requests)) {
+    return ((response as any) as RpcResponse).result;
+  }
+
+  return ((response as any) as RpcResponse[]).map(x => x.result);
 }
 
 export const bnOf = (value: NumberLike, base?: number) =>
@@ -104,4 +120,53 @@ export function isBoolean(variable: any): variable is boolean {
 
 export function isTag(value: string | NumberLike): value is Tag {
   return contains(value, tags);
+}
+
+export interface RequestDef<T extends RpcMethod, R> {
+  payload: T['request'];
+  parseResult: (result: T['response']['result']) => R;
+}
+
+export interface MethodDef<Input, M extends RpcMethod, R> {
+  request: (input: Input) => M['request'];
+  result: (result: M['response']['result']) => R;
+}
+
+export function createRequest<Input, M extends RpcMethod, R>(
+  methodDef: MethodDef<Input, M, R>
+) {
+  return (input: Input): RequestDef<M, R> => {
+    const { request, result } = methodDef;
+    return {
+      payload: request(input),
+      parseResult: result
+    };
+  };
+}
+
+export function createMethod<Input, M extends RpcMethod, R>(
+  methodDef: MethodDef<Input, M, R>
+) {
+  return curry((provider: Provider, input: Input) => {
+    const { request, result } = methodDef;
+    const payload = request(input);
+    return send(provider)(payload).then(result);
+  });
+}
+
+export const sendRequest = curry(
+  ({ payload, parseResult }: RequestDef<any, any>, provider: Provider) => {
+    return send(provider)(payload).then(parseResult);
+  }
+);
+
+export function isBatch<R extends RpcRequest | RpcRequest[]>(
+  payload: R
+): payload is Batch<R> {
+  return Array.isArray(payload);
+}
+export function isSingleReq<R extends RpcRequest | RpcRequest[]>(
+  payload: R
+): payload is Extract<R, RpcRequest> {
+  return !isBatch(payload);
 }

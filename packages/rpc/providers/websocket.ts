@@ -11,11 +11,13 @@ import {
   mergeMap,
   multicast,
   retryWhen,
-  delay
+  delay,
+  tap
 } from 'rxjs/operators';
 import { curry } from 'ramda';
 import { Subject, merge, throwError, NEVER } from 'rxjs';
 import { QueueingSubject, websocketConnect } from '../utils';
+import { isMatchingResponse, validateResponse } from './utils';
 
 interface Config {
   url: string;
@@ -41,15 +43,15 @@ export function websocketProvider(config: Config): Provider {
   const sub = multicastMessages$.connect();
 
   return {
-    send: (payload: RpcRequest | RpcRequest[]) => {
-      input.next(payload);
+    send: req => {
+      input.next(req);
 
       return multicastMessages$
         .pipe(
-          first(x => isMatchingResponse(payload, x)),
-          mergeMap(validateResponse)
+          first(res => isMatchingResponse(req, res)),
+          tap(validateResponse)
         )
-        .toPromise() as Promise<RpcResponse>;
+        .toPromise() as Promise<any>;
     },
     observe: <T>(subId: string) => {
       return merge(multicastMessages$, errorOnClosed$).pipe(
@@ -66,24 +68,3 @@ const isMatchingSubscription = curry((subId: string, result: any) => {
     result.method === 'eth_subscription' && result.params.subscription === subId
   );
 });
-
-const isMatchingResponse = curry(
-  (payload: RpcRequest | RpcRequest[], result: RpcResponse) => {
-    if (Array.isArray(payload)) {
-      return (
-        Array.isArray(result) &&
-        result.length === payload.length &&
-        result[0].id === payload[0].id
-      );
-    } else {
-      return result.id === payload.id;
-    }
-  }
-);
-
-function validateResponse(response: RpcResponse) {
-  if ('error' in response) {
-    return Promise.reject(response.error);
-  }
-  return Promise.resolve(response);
-}
