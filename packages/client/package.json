@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/client",
-  "version": "0.7.5",
+  "version": "0.7.7",
   "description": "Proxy for ethereum blockchain",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -17,7 +17,7 @@
     "test": "TS_NODE_PROJECT=tsconfig.test.json mocha --require tsconfig-paths/register --require ts-node/register \"./**/*.spec.ts\""
   },
   "dependencies": {
-    "@eth-proxy/rpc": "^0.7.5",
+    "@eth-proxy/rpc": "^0.7.7",
     "ramda": "^0.25.0",
     "redux": "^4.0.0",
     "redux-observable": "^1.0.0",
@@ -28,12 +28,12 @@
     "rxjs": "^6.0.0"
   },
   "devDependencies": {
+    "@zerollup/ts-transform-paths": "1.6.5",
     "mocha": "5.2.0",
     "rollup": "^0.68.0",
     "ts-node": "^7.0.1",
     "tsconfig-paths": "3.7.0",
-    "typescript": "3.1.6",
     "ttypescript": "^1.5.5",
-    "@zerollup/ts-transform-paths": "1.6.5"
+    "typescript": "3.1.6"
   }
 }

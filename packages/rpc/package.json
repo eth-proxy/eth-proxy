@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/rpc",
-  "version": "0.7.5",
+  "version": "0.7.7",
   "description": "Ethereum JSON rpc as functions",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@types/utf8": "2.1.6",
+    "@zerollup/ts-transform-paths": "1.6.5",
     "isomorphic-fetch": "2.2.1",
     "mocha": "5.2.0",
     "rimraf": "^2.6.2",
@@ -36,8 +37,7 @@
     "synchronous-promise": "2.0.6",
     "ts-node": "^7.0.1",
     "tsconfig-paths": "3.7.0",
-    "typescript": "3.1.6",
     "ttypescript": "^1.5.5",
-    "@zerollup/ts-transform-paths": "1.6.5"
+    "typescript": "3.1.6"
   }
 }
