@@ -1,6 +1,6 @@
 import { methodProxy } from './contract-proxy';
 import { RequestOptions, Request } from './model';
-import { omit, curry } from 'ramda';
+import { curry } from 'ramda';
 
 export function at<T extends {}>(address: string, contractProxy: T): T;
 export function at(address: string): <T extends {}>(contractProxy: T) => T;
@@ -28,5 +28,3 @@ export const withRequestOptions = curry(
     return Object.assign({}, request, options);
   }
 );
-
-export const omitCustomProps = omit(['interface', 'method', 'payload']);

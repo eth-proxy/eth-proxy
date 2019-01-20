@@ -36,7 +36,8 @@ export const mergeProvidersWith = curry(
       disconnect: () => {
         providers.forEach(p => 'disconnect' in p && p.disconnect());
       },
-      observe: (subId: string) => merge(...providers.map(x => x.observe(subId)))
+      observe: (subId?: string) =>
+        merge(...providers.map(x => x.observe(subId)))
     };
   }
 );

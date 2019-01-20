@@ -15,8 +15,10 @@ import * as fromEvents from '../modules/events';
 import * as fromTransactions from '../modules/transaction';
 
 import { EntityModel } from './model';
-import { ContractInfo } from '../modules/schema';
 import { DecodedEvent } from '@eth-proxy/rpc';
+import { isLoaded } from '../utils';
+import { DataLoaded } from '../interfaces';
+import { ContractInfo } from '../methods/get-schema';
 
 const EMPTY_SNAPSHOT = {
   entities: {},
@@ -63,7 +65,7 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
         )
     );
 
-  const { getContractsFromRefs } = getInternalSelectors<App>(getModule);
+  const { getContractsFromNames } = getInternalSelectors<App>(getModule);
   interface EventType {
     type: string;
     address: string;
@@ -74,13 +76,16 @@ export const getSelectors = <App>(getModule: (state: App) => State) => {
   ) => {
     return createSelector(
       snapshotSelector,
-      getContractsFromRefs(keys(model)),
+      getContractsFromNames(keys(model)),
       getAllEvents,
-      (snapshot, contracts, allEvents) => {
-        if (contracts.some((x: any) => !x || x.loading || x.error)) {
+      (snapshot, contractDatas, allEvents) => {
+        if (!isLoaded(contractDatas)) {
           return {};
         }
-        const byAddress = indexBy(x => x.address, contracts as ContractInfo[]);
+        const contracts = contractDatas.value.map(
+          x => (x as DataLoaded<ContractInfo>).value
+        );
+        const byAddress = indexBy(x => x.address, contracts);
 
         const eventTypes = pipe(
           mapObjIndexed((hs, interfaceName) => {

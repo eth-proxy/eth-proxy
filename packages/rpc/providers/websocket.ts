@@ -53,7 +53,7 @@ export function websocketProvider(config: Config): Provider {
         )
         .toPromise() as Promise<any>;
     },
-    observe: <T>(subId: string) => {
+    observe: <T>(subId?: string) => {
       return merge(multicastMessages$, errorOnClosed$).pipe(
         filter(isMatchingSubscription(subId)),
         map((x: SubscriptionData<T>) => x.params.result)
@@ -63,8 +63,11 @@ export function websocketProvider(config: Config): Provider {
   };
 }
 
-const isMatchingSubscription = curry((subId: string, result: any) => {
-  return (
-    result.method === 'eth_subscription' && result.params.subscription === subId
-  );
-});
+const isMatchingSubscription = curry(
+  (subId: string | undefined, result: any) => {
+    return (
+      result.method === 'eth_subscription' &&
+      (!subId || result.params.subscription === subId)
+    );
+  }
+);

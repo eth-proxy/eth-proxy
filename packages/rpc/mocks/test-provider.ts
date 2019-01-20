@@ -43,7 +43,7 @@ export function testProvider(
         res(response);
       }) as Promise<any>;
     },
-    observe: id => observers[id] || EMPTY,
+    observe: id => observers[id!] || EMPTY,
     disconnect: () => {},
     ...helpers
   } as Provider & typeof helpers;

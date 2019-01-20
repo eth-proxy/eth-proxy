@@ -1,12 +1,14 @@
 import { curry } from 'ramda';
-import { getMethodID, send } from '../../utils';
+import { getMethodID, send, RequestDef, createMethod } from '../../utils';
 import { toQuantity, toRequestInput } from '../../converters';
 import {
   Provider,
   RequestInputParams,
   NumberLike,
   FunctionDescription,
-  TransactionParams
+  TransactionParams,
+  EthSendTransactionRequest,
+  EthSendTransaction
 } from '../../interfaces';
 import { BigNumber } from 'bignumber.js';
 import { encodeFromObjOrSingle } from '../../coder';
@@ -21,19 +23,40 @@ export interface TransactionInput<T = any> {
   txParams: TransactionInputParams;
 }
 
+function toRequest(input: TransactionInput): EthSendTransactionRequest {
+  validateValue(input);
+
+  return {
+    method: 'eth_sendTransaction',
+    params: [
+      formatTxPayload({
+        ...input.txParams,
+        data: toTxData(input)
+      })
+    ]
+  };
+}
+const sendTxDef = {
+  request: toRequest,
+  result: (x: string) => x
+};
+
 /**
  * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendtransaction
  */
-export const sendTransaction = curry(
-  (provider: Provider, input: TransactionInput) => {
-    validateValue(input);
+export const sendTransactionReq = <T>(
+  input: TransactionInput<T>
+): RequestDef<EthSendTransaction, string> => {
+  return {
+    payload: toRequest(input),
+    parseResult: sendTxDef.result
+  };
+};
 
-    return sendTransactionWithData(provider, {
-      ...input.txParams,
-      data: toTxData(input)
-    });
-  }
-);
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendtransaction
+ */
+export const sendTransaction = createMethod(sendTxDef);
 
 function toTxData({ abi, args }: TransactionInput) {
   return getMethodID(abi) + encodeFromObjOrSingle(abi, args);

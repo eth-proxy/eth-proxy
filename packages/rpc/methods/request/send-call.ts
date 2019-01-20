@@ -1,11 +1,18 @@
-import { curry, pipe } from 'ramda';
-import { getMethodID, send, strip0x, extractNonTuple } from '../../utils';
+import { pipe } from 'ramda';
 import {
-  Provider,
+  getMethodID,
+  strip0x,
+  extractNonTuple,
+  createMethod,
+  RequestDef
+} from '../../utils';
+import {
   RequestInputParams,
   Tag,
   NumberLike,
-  FunctionDescription
+  FunctionDescription,
+  EthCallRequest,
+  EthCall
 } from '../../interfaces';
 import { toBlockNr, toRequestInput } from '../../converters';
 import { decodeToObj, encodeFromObjOrSingle } from '../../coder';
@@ -17,30 +24,23 @@ export interface CallInput<T = any> {
   atBlock?: Tag | NumberLike;
 }
 
-/**
- * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call
- */
-export const sendCall = curry(
-  (provider: Provider, input: CallInput): Promise<any> => {
-    const { atBlock = 'latest' } = input;
-    const request = {
-      ...input.txParams,
-      data: toData(input)
-    };
-    const resultParser = fromResult(input);
-
-    return send(provider)({
-      method: 'eth_call',
-      params: [toRequestInput(request), toBlockNr(atBlock)]
-    }).then(resultParser);
-  }
-);
+function toRequest(input: CallInput): EthCallRequest {
+  const { atBlock = 'latest' } = input;
+  const request = {
+    ...input.txParams,
+    data: toData(input)
+  };
+  return {
+    method: 'eth_call',
+    params: [toRequestInput(request), toBlockNr(atBlock)]
+  };
+}
 
 function toData({ abi, args }: CallInput) {
   return getMethodID(abi) + encodeFromObjOrSingle(abi, args);
 }
 
-const fromResult = curry(({ abi }: CallInput, result: string) => {
+const fromResult = (result: string, { abi }: CallInput): any => {
   const decode = decodeToObj(abi.outputs || []);
 
   return pipe(
@@ -48,4 +48,24 @@ const fromResult = curry(({ abi }: CallInput, result: string) => {
     decode,
     extractNonTuple
   )(result);
-});
+};
+
+const callDef = {
+  request: toRequest,
+  result: fromResult
+};
+
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call
+ */
+export const sendCallReq = <T>(input: CallInput<T>): RequestDef<EthCall, T> => {
+  return {
+    payload: toRequest(input),
+    parseResult: x => fromResult(x, input)
+  };
+};
+
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call
+ */
+export const sendCall = createMethod(callDef);

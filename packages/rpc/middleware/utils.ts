@@ -1,7 +1,9 @@
-import { forkJoin, Observable } from 'rxjs';
+import { Observable, forkJoin, BehaviorSubject } from 'rxjs';
 import { MiddlewareItem, RpcRequestHandler } from './model';
 import { RpcRequest, RpcResponses } from '../interfaces';
 import { isBatch, isSingleReq } from '../utils';
+import { mergeMap, map, share, first, tap } from 'rxjs/operators';
+import { update } from 'ramda';
 
 export type SingleRequestMiddleware<R extends RpcRequest = RpcRequest> = (
   payload: R,
@@ -16,9 +18,34 @@ export function forEachRequest(
       return middleware(payload, next) as any;
     }
     if (isBatch(payload)) {
-      // Should handle each of them not skip
-      // return forkJoin(payload.map(req => middleware(req, next)));
-      return next(payload);
+      let resolvedCount = 0;
+      const request$ = new BehaviorSubject<RpcRequest[]>(
+        new Array(payload.length)
+      );
+
+      const result$ = request$.pipe(
+        first(() => resolvedCount === payload.length),
+        mergeMap(next),
+        share()
+      );
+
+      return forkJoin(
+        ...payload.map((req, index) => {
+          const resolved = () => resolvedCount++;
+
+          const itemResult$ = middleware(req, innerPayload => {
+            resolved();
+
+            request$.next(
+              update(index, innerPayload as RpcRequest, request$.value)
+            );
+
+            return result$.pipe(map(x => x[index])) as Observable<any>;
+          });
+
+          return itemResult$.pipe(tap(resolved));
+        })
+      );
     }
   };
 }

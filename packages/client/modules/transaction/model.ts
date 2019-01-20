@@ -3,12 +3,12 @@ import { TransactionReceipt, NumberLike, DecodedEvent } from '@eth-proxy/rpc';
 import { Request } from '../request';
 
 export interface TransactionInfo<T = any> {
+  id: string;
   contractName: string;
   address: string;
   method: string;
   txParams: any;
   args: T;
-  initId: string;
 }
 
 export interface InitializedTransaction<T = any> extends TransactionInfo<T> {

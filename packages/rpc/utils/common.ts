@@ -12,16 +12,13 @@ import {
   RpcRequest,
   RpcResponse,
   RpcResponses,
-  Batch
+  Batch,
+  Rpc
 } from '../interfaces';
 import { pipe, isNil, values, head, contains, curry } from 'ramda';
 import { BigNumber } from 'bignumber.js';
 import { tags } from '../constants';
 import { defer } from 'rxjs';
-
-export function bind<T extends (...args: any[]) => any>(fn: T, obj: any): T {
-  return fn.bind(obj);
-}
 
 const toNumber = (bn: BigNumber) => bn.toNumber();
 const hexToBN = (hex: string) => new BigNumber(hex, 16);
@@ -122,35 +119,35 @@ export function isTag(value: string | NumberLike): value is Tag {
   return contains(value, tags);
 }
 
-export interface RequestDef<T extends RpcMethod, R> {
-  payload: T['request'];
-  parseResult: (result: T['response']['result']) => R;
-}
-
 export interface MethodDef<Input, M extends RpcMethod, R> {
   request: (input: Input) => M['request'];
-  result: (result: M['response']['result']) => R;
+  result: (result: M['response']['result'], input: Input) => R;
 }
 
-export function createRequest<Input, M extends RpcMethod, R>(
+export interface RequestDef<M extends Rpc<any, any>, R> {
+  payload: M['request'];
+  parseResult: (result: any) => R;
+}
+
+export function createRequest<Input, M extends Rpc<any, any>, R>(
   methodDef: MethodDef<Input, M, R>
 ) {
   return (input: Input): RequestDef<M, R> => {
     const { request, result } = methodDef;
     return {
       payload: request(input),
-      parseResult: result
+      parseResult: x => result(x, input)
     };
   };
 }
 
-export function createMethod<Input, M extends RpcMethod, R>(
+export function createMethod<Input, M extends Rpc<any, any>, R>(
   methodDef: MethodDef<Input, M, R>
 ) {
   return curry((provider: Provider, input: Input) => {
     const { request, result } = methodDef;
     const payload = request(input);
-    return send(provider)(payload).then(result);
+    return send(provider)(payload).then(x => result(x, input));
   });
 }
 

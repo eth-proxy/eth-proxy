@@ -1,3 +1,7 @@
 export { deployContract } from './deploy';
-export { sendCall } from './send-call';
-export { sendTransaction, sendTransactionWithData } from './send-transaction';
+export { sendCall, sendCallReq } from './send-call';
+export {
+  sendTransaction,
+  sendTransactionWithData,
+  sendTransactionReq
+} from './send-transaction';

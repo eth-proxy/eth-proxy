@@ -1,30 +1,25 @@
-import * as actions from './actions';
-import { createSelector } from 'reselect';
 import { moduleId } from './constants';
+import * as actions from '../../actions';
+import { EthAccounts } from '@eth-proxy/rpc';
 
-export interface State {
-  activeAccount?: string | null;
-}
-export function reducer(state: State = {}, action: actions.Types): State {
-  switch (action.type) {
-    case actions.SET_ACTIVE_ACCOUNT:
-      return {
-        ...state,
-        activeAccount: action.payload || null
-      };
-    default:
-      return state;
+export type State = string | null;
+
+export function reducer(
+  state: State = null,
+  action: actions.Types<EthAccounts>
+): State {
+  if (action.method === 'eth_accounts' && action.type === 'response_success') {
+    const [defaultAccount] = action.payload.result;
+    return defaultAccount || null;
   }
+  return state;
 }
 
 export const getSelectors = <T = { [moduleId]: State }>(
   getModule: (state: T) => State
 ) => {
   return {
-    getActiveAccount: createSelector(
-      getModule,
-      m => m.activeAccount
-    )
+    getActiveAccount: getModule
   };
 };
 

@@ -1,1 +1,1 @@
-export const moduleId = 'accounts';
+export const moduleId = 'account';

@@ -1,50 +1,44 @@
-import { Observable, timer } from 'rxjs';
+import { Observable, timer, EMPTY } from 'rxjs';
 import { createEpicMiddleware } from 'redux-observable';
-import { Provider, Block, RpcSend, send, SendRequest } from '@eth-proxy/rpc';
+import {
+  Provider,
+  RpcSend,
+  send,
+  SendRequest,
+  subscribeNewHeads,
+  getBlockByNumber,
+  getDefaultAccount,
+  getNetwork
+} from '@eth-proxy/rpc';
 
 import {
   createAppStore,
   getActiveAccount$,
   State,
   rootEpic,
-  getDetectedNetwork$
+  getDetectedNetwork$,
+  ObservableStore
 } from './store';
-import {
-  sendCall,
-  createSchemaLoader,
-  sendTransaction,
-  query,
-  deploy
-} from './api';
-import { createBlockLoader } from './api/get-block';
-import {
-  createEthProxyStopped,
-  createEthProxyStarted
-} from './modules/lifecycle';
+import { sendTransaction, query, deploy } from './api';
 import { EpicContext } from './context';
 import { QueryModel } from './modules/events';
-import { ContractInfo } from './modules/schema';
 import { TransactionHandler, DeploymentInput } from './modules/transaction';
 import { EthProxyOptions, UserConfig } from './options';
-import { CallHandler } from './modules/call';
+import { connectProvider } from './connect-provider';
+import { retryWhen, delay, mergeMap } from 'rxjs/operators';
 
 export class EthProxy<T extends {} = {}> implements Provider {
-  ethCall!: CallHandler<T>;
   transaction!: TransactionHandler<T>;
   network$!: Observable<string>;
   defaultAccount$!: Observable<string | null>;
 
   query!: (queryModel: QueryModel<T>) => Observable<any>;
-  loadContractSchema!: (
-    name: Extract<keyof T, string>
-  ) => Observable<ContractInfo>;
   deploy!: (request: DeploymentInput<string, any>) => Observable<string>;
-  getBlock!: (block: number) => Observable<Block>;
 
   rpc!: SendRequest;
   send!: RpcSend;
 
-  observe!: (subscriptionId: string) => Observable<any>;
+  observe!: (subscriptionId?: string) => Observable<any>;
   disconnect!: () => void;
 }
 
@@ -62,54 +56,75 @@ export function createProxy<T extends {}>(
   provider: Provider,
   userOptions: UserConfig<keyof typeof defaultOptions>
 ): EthProxy<T> {
-  const options: EthProxyOptions = { ...defaultOptions, ...userOptions };
+  let store: ObservableStore<State>;
 
-  const contractLoader = (name: string) => createSchemaLoader(store)(name);
-  const blockLoader = (number: number) => createBlockLoader(store)(number);
+  const connectedProvider = connectProvider(
+    action => store.dispatch(action),
+    provider
+  );
+
+  const options: EthProxyOptions = { ...defaultOptions, ...userOptions };
 
   const context = {
     options,
-    contractLoader,
-    blockLoader,
     genId,
-    provider
+    provider: connectedProvider
   };
 
   const epicMiddleware = createEpicMiddleware<any, any, State, EpicContext>({
     dependencies: context
   });
-  const store = createAppStore(epicMiddleware, options.store);
+  store = createAppStore(epicMiddleware, options.store);
   epicMiddleware.run(rootEpic);
-  store.dispatch(createEthProxyStarted());
 
   const deps = {
     ...context,
     store
   };
 
-  const rpc = send(provider);
+  const rpc = send(connectedProvider);
+
+  loadNetwork(options, connectedProvider);
+  const sub = trackBlocks(options, connectedProvider);
+  sub.add(watchAccount(options, connectedProvider));
 
   return {
-    ...provider,
-    getBlock: blockLoader,
-
+    ...connectedProvider,
     query: query(deps),
 
     network$: store.pipe(getDetectedNetwork$),
     defaultAccount$: store.pipe(getActiveAccount$),
 
-    loadContractSchema: contractLoader,
     transaction: sendTransaction(deps) as any,
-    ethCall: sendCall(deps) as any,
     deploy: deploy(deps),
 
     rpc,
 
     disconnect: () => {
-      store.dispatch(createEthProxyStopped());
+      sub.unsubscribe();
       provider.disconnect();
     }
   };
+}
+
+function trackBlocks(options: EthProxyOptions, provider: Provider) {
+  getBlockByNumber(provider, { number: 'latest' });
+
+  const tracker$ = options.trackBlocks
+    ? subscribeNewHeads(provider, {}).pipe(retryWhen(delay(5000)))
+    : EMPTY;
+
+  return tracker$.subscribe();
+}
+
+function watchAccount(options: EthProxyOptions, provider: Provider) {
+  return options.watchAccountTimer
+    .pipe(mergeMap(() => getDefaultAccount(provider)))
+    .subscribe();
+}
+
+function loadNetwork(_: EthProxyOptions, provider: Provider) {
+  return getNetwork(provider);
 }
 
 export {
@@ -117,7 +132,6 @@ export {
   State as EthProxyState,
   getSelectors
 } from './store';
-export { ContractInfo, ContractSchema } from './modules/schema';
 export * from './modules/request';
 export { on, once } from './modules/transaction';
 export { at, withOptions } from './modules/request';
@@ -145,3 +159,5 @@ export { idFromEvent } from './utils';
 export function entity(arg: any) {
   return arg;
 }
+export * from './methods';
+export * from './middleware';

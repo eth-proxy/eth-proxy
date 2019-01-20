@@ -1,116 +1,86 @@
-import * as actions from './actions';
-import { createSelector } from 'reselect';
-import { sha3 } from '@eth-proxy/rpc';
 import { moduleId } from './constants';
-import { omit } from 'ramda';
+import { Data } from '../../interfaces';
+import * as actions from '../../actions';
+import { LOADING } from '../../constants';
+import { dataOf, dataError } from '../../utils';
+import { createSelector } from 'reselect';
+import { EthProxyCall } from '../../methods/proxy-call';
 
 export interface State {
-  requests: {
-    [id: string]: {
-      status: string;
-      hash: string;
-      err?: any;
-    };
-  };
-  data: {
-    [hash: string]: any;
-  };
+  [key: string]: Data<any>;
 }
 
-function hashRequestData(data: any) {
-  return sha3(JSON.stringify(data));
+interface RequestKeyParams {
+  method: string;
+  interface: string;
+  address?: string;
+}
+
+export function toRequestKey({
+  address,
+  interface: interfaceName,
+  method
+}: RequestKeyParams) {
+  const contract = address ? interfaceName + '@' + address : interfaceName;
+  return `${contract}/${method} `;
 }
 
 export function reducer(
-  state: State = {
-    requests: {},
-    data: {}
-  },
-  action: actions.Types
+  state: State = {},
+  action: actions.Types<EthProxyCall>
 ): State {
+  if (action.method !== 'eth-proxy_call') {
+    return state;
+  }
+
+  const { request } = action.payload;
+  const requestParams = request[0];
+
   switch (action.type) {
-    case actions.PROCESS_CALL: {
-      const { id } = action.payload;
+    case 'request': {
       return {
-        data: state.data,
-        requests: {
-          ...state.requests,
-          [id]: {
-            status: 'init',
-            hash: hashRequestData(omit(['id'], action.payload))
-          }
-        }
+        ...state,
+        [toRequestKey(requestParams)]: LOADING
       };
     }
 
-    case actions.PROCESS_CALL_SUCCESS: {
-      const { id, data } = action.payload;
-      const { hash } = state.requests[id];
+    case 'response_success': {
+      const { result } = action.payload;
       return {
-        data: {
-          ...state.data,
-          [hash]: data
-        },
-        requests: {
-          ...state.requests,
-          [id]: {
-            status: 'success',
-            hash
-          }
-        }
+        ...state,
+        [toRequestKey(requestParams)]: dataOf(result)
       };
     }
 
-    case actions.PROCESS_CALL_FAILED: {
-      const { id, err } = action.payload;
-      const { hash } = state.requests[id];
+    case 'response_error': {
+      const { error } = action.payload;
       return {
-        data: state.data,
-        requests: {
-          ...state.requests,
-          [id]: {
-            status: 'failed',
-            hash,
-            err
-          }
-        }
+        ...state,
+        [toRequestKey(requestParams)]: dataError(error)
       };
     }
-
-    default:
-      return state;
   }
 }
 
 export const getSelectors = <T = { [moduleId]: State }>(
   getModule: (state: T) => State
 ) => {
-  const getRequestsById = createSelector(
+  const getCalls = createSelector(
     getModule,
-    m => m.requests
-  );
-  const getDataByHash = createSelector(
-    getModule,
-    m => m.data
+    m => m
   );
 
-  const getRequestById = (id: string) =>
-    createSelector(
-      getRequestsById,
-      getDataByHash,
-      (requestsById, dataByHash) => {
-        const request = requestsById[id];
-        const data = dataByHash[request.hash];
-        return {
-          ...request,
-          data
-        };
+  const getCallFrom = (params: RequestKeyParams) => {
+    return createSelector(
+      getCalls,
+      calls => {
+        return calls[toRequestKey(params)];
       }
     );
+  };
 
   return {
-    getRequestById
+    getCalls,
+    getCallFrom
   };
 };
-
-export const { getRequestById } = getSelectors(m => m[moduleId]);

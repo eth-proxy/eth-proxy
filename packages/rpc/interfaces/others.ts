@@ -19,7 +19,7 @@ export interface LegacyProvider {
 
 export interface Provider {
   send: RpcSend;
-  observe: (subscriptionId: string) => Observable<any>;
+  observe: (subscriptionId?: string) => Observable<any>;
   disconnect: () => void;
 }
 
