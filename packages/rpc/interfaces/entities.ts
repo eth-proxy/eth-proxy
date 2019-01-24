@@ -1,12 +1,12 @@
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 
-export type BlockchainEvent = {
+export interface BlockchainEvent {
   event: string;
   address: string;
   args: string;
   blockNumber: number;
   topics: string[];
-};
+}
 
 export interface Log {
   data: string;

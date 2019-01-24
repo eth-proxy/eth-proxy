@@ -1,7 +1,7 @@
 import { CurriedFunction2 } from 'ramda';
 import { RpcMethod, RpcRequest } from './rpc-methods';
 import { Observable } from 'rxjs';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 
 export type ProviderBound<T> = T extends (provider: Provider) => infer Result
   ? () => Result

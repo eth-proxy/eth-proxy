@@ -1,6 +1,6 @@
 import { curry } from 'ramda';
 import { NumberLike } from '../interfaces';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 
 interface UnitConvert {
   from: number;

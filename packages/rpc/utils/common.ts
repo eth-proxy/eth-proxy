@@ -10,13 +10,9 @@ import {
   Tag
 } from '../interfaces';
 import { pipe, isNil, values, head, contains } from 'ramda';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { defer } from 'rxjs';
 import { tags } from '../constants';
-
-export function bind<T extends (...args: any[]) => any>(fn: T, obj: any): T {
-  return fn.bind(obj);
-}
 
 const toNumber = (bn: BigNumber) => bn.toNumber();
 const hexToBN = (hex: string) => new BigNumber(hex, 16);

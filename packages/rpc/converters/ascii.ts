@@ -20,7 +20,7 @@ export function toAscii(hex: string) {
 /**
  * Should be called to get hex representation (prefixed by 0x) of ascii string
  */
-export function fromAscii(str: string, num: number) {
+export function fromAscii(str: string, num = 0) {
   let hex = '';
   for (let i = 0; i < str.length; i++) {
     const code = str.charCodeAt(i);

@@ -16,7 +16,7 @@ interface LoggingOptions {
 const defaults: LoggingOptions = { logger: console, pred: always(true) };
 
 export function loggingMiddleware(
-  options: Partial<LoggingOptions>
+  options: Partial<LoggingOptions> = {}
 ): MiddlewareItem {
   const { logger, pred } = { ...defaults, ...options };
 

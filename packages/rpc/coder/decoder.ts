@@ -1,5 +1,5 @@
 import { curry, pipe, zipObj } from 'ramda';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { NumberLike } from '../interfaces';
 const Coder = require('web3/lib/solidity/coder');
 

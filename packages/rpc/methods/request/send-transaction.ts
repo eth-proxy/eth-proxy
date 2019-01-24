@@ -8,7 +8,7 @@ import {
   FunctionDescription,
   TransactionParams
 } from '../../interfaces';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { encodeFromObjOrSingle } from '../../coder';
 
 export type TransactionInputParams = RequestInputParams & {

@@ -1,4 +1,4 @@
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { NumberLike } from '../interfaces';
 
 export function toQuantity(value: NumberLike) {
