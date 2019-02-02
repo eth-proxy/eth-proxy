@@ -8,6 +8,7 @@ import {
 import { SubscribableOrPromise, from } from 'rxjs';
 import { assocPath } from 'ramda';
 import { toQuantity } from '../../converters';
+import { isNotNil } from '../../utils';
 
 export type GasLimitLoader = (
   req: TransactionParams
@@ -21,7 +22,10 @@ export function gasLimitMiddleware(loader: GasLimitLoader): MiddlewareItem {
   ]);
 
   return (payload, next) => {
-    if (payload.method !== 'eth_sendTransaction') {
+    if (
+      payload.method !== 'eth_sendTransaction' ||
+      isNotNil(payload.params[0].gas)
+    ) {
       return next(payload);
     }
 
