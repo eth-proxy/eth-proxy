@@ -11,8 +11,8 @@ export interface EthProxyOptions {
   };
   interceptors: Partial<EthProxyInterceptors>;
   watchAccountTimer: Observable<any>;
-  watchLogsTimer$?: Observable<any>;
   trackBlocks: boolean;
+  subscribeLogs: boolean;
 }
 
 export type UserConfig<Defaults extends keyof EthProxyOptions> = {

@@ -52,7 +52,8 @@ const defaultOptions = {
   interceptors: {},
   store: undefined,
   watchAccountTimer: timer(0),
-  trackBlocks: false
+  trackBlocks: false,
+  subscribeLogs: true
 };
 
 let globalId = 0;
