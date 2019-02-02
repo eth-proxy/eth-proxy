@@ -1,7 +1,8 @@
 import { RpcRequest, Provider } from '../interfaces';
 import { EMPTY, isObservable, Observable } from 'rxjs';
 import { SynchronousPromise } from 'synchronous-promise';
-import { Dictionary } from 'ramda';
+import { Dictionary, omit } from 'ramda';
+import { expect } from 'chai';
 
 type FakeResult = (payload: RpcRequest | RpcRequest[]) => any;
 const requestIdentity = (payload: RpcRequest | RpcRequest[]) => payload;
@@ -47,4 +48,10 @@ export function testProvider(
 
 export function ofMethod(method: RpcRequest['method']) {
   return (x: RpcRequest) => x.method === method;
+}
+
+export function expectRequestsEq(request1: RpcRequest, request2: RpcRequest) {
+  const omitId = omit(['id', 'jsonrpc']);
+
+  expect(omitId(request1)).to.deep.eq(omitId(request2));
 }

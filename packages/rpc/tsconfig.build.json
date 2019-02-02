@@ -2,11 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "declarationDir": "./dist",
-    "outDir": "./dist",
-    "baseUrl": ".",
-    "paths": {
-      "rpc/*": ["./*"]
-    }
+    "outDir": "./dist"
   },
   "include": ["./**/*.ts"],
   "exclude": ["dist", "node_modules", "**/*.spec.ts"]

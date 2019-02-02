@@ -3,11 +3,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "declarationDir": "./dist",
-    "outDir": "./dist",
-    "baseUrl": ".",
-    "paths": {
-      "codegen/*": ["./*"]
-    }
+    "outDir": "./dist"
   },
   "include": ["./**/*.ts"],
   "exclude": ["example", "dist", "node_modules", "**/*.spec.ts"],

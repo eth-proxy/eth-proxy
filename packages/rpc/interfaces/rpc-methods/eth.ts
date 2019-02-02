@@ -11,6 +11,24 @@ import { BaseRpcRequest, Rpc } from '../rpc';
 import { Tag, Quantity, Data } from '../primitives';
 
 /**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_estimategas
+ */
+export interface EthEstimateGasRequest extends BaseRpcRequest {
+  method: 'eth_estimateGas';
+  params: [ContractRequestParams];
+}
+export type EthEstimateGas = Rpc<EthEstimateGasRequest, Quantity>;
+
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_blocknumber
+ */
+export interface EthBlockNumberRequest extends BaseRpcRequest {
+  method: 'eth_blockNumber';
+  params: [];
+}
+export type EthBlockNumber = Rpc<EthBlockNumberRequest, Quantity>;
+
+/**
  * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call
  */
 export interface EthCallRequest extends BaseRpcRequest {
@@ -29,6 +47,15 @@ export interface EthSendTransactionRequest extends BaseRpcRequest {
 export type EthSendTransaction = Rpc<EthSendTransactionRequest, Data>;
 
 /**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendrawtransaction
+ */
+export interface EthSendRawTransactionRequest extends BaseRpcRequest {
+  method: 'eth_sendRawTransaction';
+  params: [Data];
+}
+export type EthSendRawTransaction = Rpc<EthSendRawTransactionRequest, Data>;
+
+/**
  * https://github.com/ethereum/go-ethereum/wiki/Management-APIs#personal_sign
  */
 export interface PersonalSignRequest extends BaseRpcRequest {
@@ -45,6 +72,18 @@ export interface GetBlockByNumberRequest extends BaseRpcRequest {
   params: [Quantity | Tag, boolean];
 }
 export type EthGetBlockByNumber = Rpc<GetBlockByNumberRequest, RawBlock>;
+
+/**
+ * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount
+ */
+export interface EthGetTransactionCountRequest extends BaseRpcRequest {
+  method: 'eth_getTransactionCount';
+  params: [Data, Quantity | Tag];
+}
+export type EthGetTransactionCount = Rpc<
+  EthGetTransactionCountRequest,
+  Quantity
+>;
 
 /**
  * https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbyhash
@@ -164,6 +203,8 @@ export interface EthGetFilterLogsRequest extends BaseRpcRequest {
 export type EthGetFilterLogs = Rpc<EthGetFilterLogsRequest, RawLog[]>;
 
 export type EthMethod =
+  | PersonalSign
+  | NetVersion
   | EthCall
   | EthSendTransaction
   | EthGetBlockByNumber
@@ -178,5 +219,7 @@ export type EthMethod =
   | EthGetFilterChanges
   | EthUninstallFilter
   | EthGetFilterLogs
-  | PersonalSign
-  | NetVersion;
+  | EthBlockNumber
+  | EthSendRawTransaction
+  | EthGetTransactionCount
+  | EthEstimateGas;

@@ -10,6 +10,20 @@ const balance100InHex = '0x64';
 
 describe('Balance', () => {
   it('Calls eth_getBalance', async () => {
+    const atBlock = 500;
+    const atBlockHex = '0x1f4';
+
+    const provider = testProvider(() => balance100InHex);
+
+    await getBalance(provider, { account, atBlock });
+
+    expect(provider.getOnlyRequest()).to.deep.eq({
+      method: 'eth_getBalance',
+      params: [account, atBlockHex]
+    });
+  });
+
+  it('Defaults atBlock to latest', async () => {
     const provider = testProvider(() => balance100InHex);
 
     await getBalance(provider, { account });
