@@ -16,8 +16,7 @@ const myToken = {
 
 const txParams = {
   data: bytecode,
-  from: '0x7d76cc1e430ff6f16d184a3e7ee003502a95d4bb',
-  gas: 1000000
+  from: '0x7d76cc1e430ff6f16d184a3e7ee003502a95d4bb'
 };
 
 describe('Deploy', () => {

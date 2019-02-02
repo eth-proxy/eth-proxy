@@ -6,7 +6,6 @@ import * as fromRequest from '../modules/request';
 import { AnyAction } from 'redux';
 import { expect } from 'chai';
 import { Observable } from 'rxjs';
-import { DEFAULT_GAS } from '../constants';
 
 const account = '123';
 
@@ -21,8 +20,7 @@ const id = '111';
 const genId = () => id;
 
 const txParams = {
-  from: account,
-  gas: DEFAULT_GAS
+  from: account
 };
 
 const transactionData = {
@@ -44,12 +42,12 @@ describe('Initialize transaction', () => {
   let sendTx: (request: fromRequest.Request<any, any, any>) => Observable<{}>;
   beforeEach(() => {
     store = createAppStore() as TestStore;
-    let next = store.dispatch;
+    const next = store.dispatch;
     store.dispatch = action => {
       store.dispatched = store.dispatched || [];
       store.dispatched.push(action);
       store.lastDispatched = action;
-      let result = next(action);
+      const result = next(action);
       return result;
     };
     sendTx = sendTransaction({ store, genId, options: {} } as any);

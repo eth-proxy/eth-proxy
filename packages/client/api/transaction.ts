@@ -7,13 +7,12 @@ import * as fromTx from '../modules/transaction';
 import * as fromAccount from '../modules/account';
 import { Context } from '../context';
 import { getInterceptor } from '../utils';
-import { DEFAULT_GAS } from '../constants';
 
 export function sendTransaction({ genId, store, options }: Context) {
   return (request: Request<any, any, any>) => {
     const txParams$ = store.select(fromAccount.getActiveAccount).pipe(
       map(account => {
-        return fromTx.mergeParams(request, { from: account, gas: DEFAULT_GAS });
+        return fromTx.mergeParams(request, { from: account });
       }),
       first(fromTx.txParamsValid)
     );
