@@ -1,7 +1,7 @@
 import { defer, throwError } from 'rxjs';
 import { curry } from 'ramda';
-import { Provider } from '../interfaces';
-import { getReceipt } from '../methods';
+import { Provider } from 'rpc/interfaces';
+import { getReceipt } from 'rpc/methods';
 import { retryWhen, delay, take, concat } from 'rxjs/operators';
 import { isString } from 'rpc/utils';
 
