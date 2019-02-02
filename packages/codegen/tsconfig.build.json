@@ -6,9 +6,10 @@
     "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
-      "codegen/*": ["./*"]
+      "codegen/*": ["./*"],
+      "rpc/*": ["./../rpc/*"]
     }
   },
   "include": ["./**/*.ts"],
-  "exclude": ["example", "dist", "node_modules", "**/*.spec.ts"],
+  "exclude": ["example", "dist", "node_modules", "**/*.spec.ts"]
 }

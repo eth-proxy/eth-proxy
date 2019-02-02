@@ -2,7 +2,7 @@ import { applyMiddleware } from './engine';
 import { throwError } from 'rxjs';
 import { expect } from 'chai';
 import { testProvider } from '../mocks';
-import { RpcRequest } from 'rpc/interfaces';
+import { RpcRequest } from '../interfaces';
 import { RpcRequestHandler } from './model';
 
 describe('engine', () => {

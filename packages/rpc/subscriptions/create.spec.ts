@@ -1,8 +1,8 @@
 import { marbles } from 'rxjs-marbles/mocha';
-import { Subject } from 'rxjs';
+import { Subject, ReplaySubject } from 'rxjs';
 import { testProvider } from '../mocks';
 import { createSubscription } from './create';
-import { takeUntil, tap } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 
 const subscriptionTopic = 'subscriptionTopic';
 const subscriptionArgs = { a: 12, b: 22 };
@@ -35,11 +35,9 @@ describe('Subscription creation', () => {
       // prettier-ignore
       const expected =    m.cold('--a---b|', data);
       // prettier-ignore
-      const unsub$ =       m.hot('-------u|');
+      const unsub$ =      m.cold('-------u|');
       // prettier-ignore
-      const requests =    m.cold('s--------', requestsPayloads);
-      // COMMENTED DUE TO UNSUBSCRIBE ISSUE
-      // const requests =    m.cold('s------u', requestsPayloads);
+      const requests =    m.cold('s------u', requestsPayloads);
 
       const server$ = new Subject();
 
@@ -71,16 +69,66 @@ describe('Subscription creation', () => {
       const result$ = createSubscription(provider, {
         args: subscriptionArgs,
         type: subscriptionTopic as any
-      }).pipe(
-        takeUntil(unsub$),
-        tap({
-          next: val => console.log('subscription next', val),
-          complete: () => console.log('subscription complete')
-        })
-      );
+      }).pipe(takeUntil(unsub$));
 
       m.expect(server$).toBeObservable(requests);
       m.expect(result$).toBeObservable(expected);
+    })
+  );
+
+  it(
+    'Does not unsubscribe on connection error',
+    marbles(m => {
+      const subscriptionId = '1';
+
+      // prettier-ignore
+      const producer =     m.hot('-------#');
+      // prettier-ignore
+      const requests =    m.cold('s------|', {
+        s: {
+          method: 'eth_subscribe',
+          params: [subscriptionTopic, subscriptionArgs]
+        }
+      });
+
+      const server$ = new ReplaySubject();
+
+      const provider = testProvider(
+        payload => {
+          server$.next(payload);
+
+          if (Array.isArray(payload)) {
+            throw Error('Unknown method');
+          }
+
+          switch (payload.method) {
+            case 'eth_subscribe': {
+              return subscriptionId;
+            }
+
+            case 'eth_unsubscribe': {
+              return true;
+            }
+
+            default:
+              throw Error('Unknown method');
+          }
+        },
+        {
+          [subscriptionId]: producer
+        }
+      );
+
+      createSubscription(provider, {
+        args: subscriptionArgs,
+        type: subscriptionTopic as any
+      }).subscribe({
+        error: () => {
+          server$.complete();
+        }
+      });
+
+      m.expect(server$).toBeObservable(requests);
     })
   );
 });

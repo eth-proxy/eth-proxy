@@ -4,10 +4,11 @@
     "declarationDir": "./dist",
     "outDir": "./dist",
     "baseUrl": ".",
-    "paths": {
-      "client/*": ["./*"]
+    "paths": {	
+      "client/*": ["./*"],
+      "rpc/*": ["./../rpc/*"]
     }
   },
   "include": ["./**/*.ts"],
-  "exclude": ["dist", "node_modules", "./**/*.spec.ts"]
+  "exclude": ["dist", "node_modules", "./**/*.spec.ts"],
 }

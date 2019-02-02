@@ -1,8 +1,8 @@
 const Web3 = require('web3');
-import { SampleToken, testProvider } from '../../mocks';
+import { SampleToken, testProvider, expectRequestsEq } from '../../mocks';
 import { sendCall } from './send-call';
-import { expect } from 'chai';
 import { FunctionDescription, RpcRequest } from '../../interfaces';
+import { assert } from 'chai';
 
 const { abi } = SampleToken;
 const symbolEthCall = abi.find(
@@ -13,12 +13,35 @@ const txParams = {
   from: '0x7d76cc1e430ff6f16d184a3e7ee003502a95d4bb',
   to: '0xa7744e243714407cddf93315902306dde53d8fe4'
 };
+const blockNr = 3220;
 
 describe('Send call', () => {
   it('generates same payload as web3 client', async () => {
-    const rxWeb3Payload = await getRxWeb3Payload();
-    const web3Payload = await getWeb3Payload();
-    expect(rxWeb3Payload.params).to.deep.eq(web3Payload.params);
+    const provider = testProvider(() => '');
+
+    sendCall(provider, {
+      abi: symbolEthCall,
+      args: undefined,
+      txParams,
+      atBlock: blockNr
+    });
+
+    expectRequestsEq(provider.getOnlyRequest(), await getWeb3Payload());
+  });
+
+  it('defaults atBlock to latest', async () => {
+    const provider = testProvider(() => '');
+
+    sendCall(provider, {
+      abi: symbolEthCall,
+      args: undefined,
+      txParams
+    });
+    const {
+      params: [, atBlock]
+    } = provider.getOnlyRequest();
+
+    assert.deepEqual(atBlock, 'latest');
   });
 });
 
@@ -31,18 +54,6 @@ function getWeb3Payload() {
 
     const contract = web3.eth.contract(abi as any).at(txParams.to) as any;
 
-    contract.symbol.call(txParams, () => {});
-  });
-}
-
-function getRxWeb3Payload() {
-  return new Promise<RpcRequest>(res => {
-    const provider = testProvider(payload => res(payload as RpcRequest));
-
-    sendCall(provider, {
-      abi: symbolEthCall,
-      args: undefined,
-      txParams
-    });
+    contract.symbol.call(txParams, blockNr, () => {});
   });
 }

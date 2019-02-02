@@ -1,6 +1,6 @@
 import { ActionsObservable, StateObservable } from 'redux-observable';
 import { mergeMap, map, catchError, first } from 'rxjs/operators';
-import { Observable, defer, of, combineLatest } from 'rxjs';
+import { defer, of, combineLatest, Observable } from 'rxjs';
 import { pathOr } from 'ramda';
 
 import { ResolvedContractSchema, ContractSchema } from './model';
@@ -31,18 +31,19 @@ export const loadContractSchema = (
   actions$: ActionsObservable<actions.LoadContractSchema>,
   state$: StateObservable<State>,
   { options }: EpicContext
-): Observable<actions.Types> => {
+) => {
   return actions$.pipe(
     ofType(actions.LOAD_CONTRACT_SCHEMA),
     mergeMap(({ payload: { name } }) => {
+      const networkId$ = state$.pipe(
+        map(fromNetwork.getNetworkId),
+        first(x => !!x)
+      ) as Observable<string>;
       return combineLatest(
         defer(() => options.contractSchemaResolver({ name })),
-        state$.pipe(
-          map(fromNetwork.getNetworkId),
-          first(x => !!x)
-        ),
-        mapResolvedContractSchema
+        networkId$
       ).pipe(
+        map(args => mapResolvedContractSchema(...args)),
         map(actions.createLoadContractSchemaSuccess),
         catchError(err => of(actions.createLoadContractSchemaFailed(name, err)))
       );
