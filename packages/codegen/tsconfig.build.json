@@ -5,8 +5,9 @@
     "declarationDir": "./dist",
     "outDir": "./dist",
     "baseUrl": ".",
-    "paths": {	
-      "codegen/*": ["./*"]	
+    "paths": {
+      "codegen/*": ["./*"],
+      "rpc/*": ["./../rpc/*"]
     }
   },
   "include": ["./**/*.ts"],
