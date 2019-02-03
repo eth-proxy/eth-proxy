@@ -25,6 +25,7 @@ export interface QueryEvents {
     id: string;
     queries: ContractQuery[];
     filters: NormalizedFilter[];
+    live: boolean;
   };
 }
 

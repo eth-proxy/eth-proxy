@@ -14,6 +14,11 @@ export const query = ({ genId, options, store }: Context) => (
   queryModel: fromEvents.QueryModel
 ): Observable<any> => {
   const id = genId();
+  const model = {
+    live: options.subscribeLogs,
+    addresses: {},
+    ...queryModel
+  };
   return merge(
     NEVER,
     of(queryModel).pipe(
@@ -22,10 +27,7 @@ export const query = ({ genId, options, store }: Context) => (
         store.dispatch(
           fromEvents.composeQueryFromModel({
             id,
-            model: {
-              ...queryModel,
-              addresses: queryModel.addresses || {}
-            }
+            model
           })
         )
       ),
@@ -43,6 +45,10 @@ export const query = ({ genId, options, store }: Context) => (
     )
   ).pipe(
     getInterceptor('postQuery', options),
-    finalize(() => store.dispatch(fromEvents.queryUnsubscribe(id)))
+    finalize(() => {
+      if (model.live) {
+        store.dispatch(fromEvents.queryUnsubscribe(id));
+      }
+    })
   );
 };
