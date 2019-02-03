@@ -39,7 +39,7 @@ type TestStore = ObservableStore<State> & {
 
 describe('Initialize transaction', () => {
   let store: TestStore;
-  let sendTx: (request: fromRequest.Request<any, any, any>) => Observable<{}>;
+  let sendTx: (request: fromRequest.Request<any, any, any>) => Observable<any>;
   beforeEach(() => {
     store = createAppStore() as TestStore;
     const next = store.dispatch;
