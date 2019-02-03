@@ -3,12 +3,13 @@ import {
   tap,
   finalize,
   mergeMapTo,
-  distinctUntilChanged
+  distinctUntilChanged,
+  filter,
+  map
 } from 'rxjs/operators';
 
 import * as fromEvents from '../modules/events';
 import { Context } from '../context';
-import { getInterceptor } from '../utils';
 
 export const query = ({ genId, options, store }: Context) => (
   queryModel: fromEvents.QueryModel
@@ -22,7 +23,6 @@ export const query = ({ genId, options, store }: Context) => (
   return merge(
     NEVER,
     of(queryModel).pipe(
-      getInterceptor('preQuery', options),
       tap(() =>
         store.dispatch(
           fromEvents.composeQueryFromModel({
@@ -41,10 +41,11 @@ export const query = ({ genId, options, store }: Context) => (
             throw Error('Could not fulfil request');
           }
         }
-      })
+      }),
+      filter(x => x.status === 'success'),
+      map(({ events }) => events)
     )
   ).pipe(
-    getInterceptor('postQuery', options),
     finalize(() => {
       if (model.live) {
         store.dispatch(fromEvents.queryUnsubscribe(id));

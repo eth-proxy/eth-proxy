@@ -1,7 +1,6 @@
-import { ascend, sortWith, path, equals, identity } from 'ramda';
+import { ascend, sortWith, path, equals } from 'ramda';
 import { createSelectorCreator, defaultMemoize } from 'reselect';
 import { DecodedEvent } from '@eth-proxy/rpc';
-import { EthProxyInterceptors } from '../interceptors';
 import { DataError, DataLoaded, Data, DataNotAsked } from '../interfaces';
 import { Observable } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
@@ -50,9 +49,6 @@ export const createDeepEqualSelector = createSelectorCreator(
   defaultMemoize,
   equals
 );
-
-export const getInterceptor = (key: keyof EthProxyInterceptors, options: any) =>
-  ((options.interceptors as any) || {})[key] || identity;
 
 export function dataError(error: any): DataError {
   return {

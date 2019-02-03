@@ -4,9 +4,8 @@ import { defer } from 'rxjs';
 import { Request, omitCustomProps } from '../modules/request';
 import { createProcessCall, getRequestById } from '../modules/call';
 import { Context } from '../context';
-import { getInterceptor } from '../utils';
 
-export function sendCall({ genId, options, store }: Context) {
+export function sendCall({ genId, store }: Context) {
   return (request: Request<string, string, any>) => {
     return defer(() => Promise.resolve().then(genId)).pipe(
       tap(id => {
@@ -32,8 +31,7 @@ export function sendCall({ genId, options, store }: Context) {
           first(x => x.status === 'success'),
           map(({ data }) => data)
         );
-      }),
-      getInterceptor('ethCall', options)
+      })
     );
   };
 }

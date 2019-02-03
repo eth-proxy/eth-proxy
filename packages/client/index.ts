@@ -49,7 +49,6 @@ export class EthProxy<T extends {} = {}> implements Provider {
 }
 
 const defaultOptions = {
-  interceptors: {},
   store: undefined,
   watchAccountTimer: timer(0),
   trackBlocks: false,
@@ -140,7 +139,6 @@ export {
 export { RequestFactory, ContractsAggregation } from './modules/request';
 export { QueryModel } from './modules/events';
 export { EthProxyOptions } from './options';
-export { EthProxyInterceptors } from './interceptors';
 export { idFromEvent } from './utils';
 
 export function entity(arg: any) {
