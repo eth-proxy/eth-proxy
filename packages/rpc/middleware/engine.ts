@@ -4,8 +4,8 @@ import { MiddlewareItem, RpcRequestHandler } from './model';
 import { from } from 'rxjs';
 
 export const applyMiddleware = curry(
-  (interceptors: MiddlewareItem[], provider: Provider): Provider => {
-    const engine = createEngine(interceptors, asHandler(provider));
+  (middlewares: MiddlewareItem[], provider: Provider): Provider => {
+    const engine = createEngine(middlewares, asHandler(provider));
 
     return {
       ...provider,
@@ -15,15 +15,15 @@ export const applyMiddleware = curry(
 );
 
 function createEngine(
-  interceptors: MiddlewareItem[],
+  middlewares: MiddlewareItem[],
   primaryHandler: RpcRequestHandler
 ) {
   return reduceRight(
-    (interceptor, handler) => {
-      return (payload: any) => interceptor(payload, handler);
+    (middleware, handler) => {
+      return (payload: any) => middleware(payload, handler);
     },
     primaryHandler,
-    interceptors
+    middlewares
   );
 }
 
