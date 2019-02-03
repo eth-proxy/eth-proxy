@@ -6,9 +6,8 @@ import { Request } from '../modules/request';
 import * as fromTx from '../modules/transaction';
 import * as fromAccount from '../modules/account';
 import { Context } from '../context';
-import { getInterceptor } from '../utils';
 
-export function sendTransaction({ genId, store, options }: Context) {
+export function sendTransaction({ genId, store }: Context) {
   return (request: Request<any, any, any>) => {
     const txParams$ = store.select(fromAccount.getActiveAccount).pipe(
       map(account => {
@@ -36,8 +35,7 @@ export function sendTransaction({ genId, store, options }: Context) {
       }),
       mergeMap(([initId]) =>
         store.pipe(getTransactionResultFromInitId$(initId))
-      ),
-      getInterceptor('transaction', options)
+      )
     );
   };
 }

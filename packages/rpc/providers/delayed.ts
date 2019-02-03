@@ -9,13 +9,13 @@ export function delayedProvider(
 
   return {
     send: payload => {
-      return provider$.toPromise().then(provider => provider.send(payload));
+      return provider$.toPromise().then(p => p.send(payload));
     },
     observe: subId => {
-      return provider$.pipe(mergeMap(provider => provider.observe(subId)));
+      return provider$.pipe(mergeMap(p => p.observe(subId)));
     },
     disconnect: () => {
-      return provider$.toPromise().then(provider => provider.disconnect());
+      return provider$.toPromise().then(p => p.disconnect());
     }
   };
 }
