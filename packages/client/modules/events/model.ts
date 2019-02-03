@@ -15,6 +15,7 @@ export interface QueryModel<T extends {} = {}> {
   };
   addresses?: Dictionary<string | string[]>;
   fromBlock?: number;
+  live?: boolean;
 }
 
 export interface QueryResult {

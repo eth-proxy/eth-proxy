@@ -65,7 +65,8 @@ export const composeQueries = (
                 return actions.queryEvents({
                   id,
                   queries,
-                  filters
+                  filters,
+                  live: model.live!
                 });
               })
             );

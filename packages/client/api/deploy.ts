@@ -5,7 +5,6 @@ import { mergeMap, map, first } from 'rxjs/operators';
 import { isConstructorAbi, deployContract, getReceipt } from '@eth-proxy/rpc';
 import * as fromTx from '../modules/transaction';
 import * as fromAccount from '../modules/account';
-import { DEFAULT_GAS } from 'client/constants';
 
 /* 
   Only sutiable for testrpc
@@ -14,7 +13,7 @@ export function deploy({ store, contractLoader, provider }: Context) {
   return (input: fromTx.DeploymentInput<string, any>) => {
     const txParams$ = store.select(fromAccount.getActiveAccount).pipe(
       map(account => {
-        return fromTx.mergeParams(input, { from: account, gas: DEFAULT_GAS });
+        return fromTx.mergeParams(input, { from: account });
       }),
       first(fromTx.txParamsValid)
     );

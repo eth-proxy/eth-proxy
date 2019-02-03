@@ -53,7 +53,7 @@ const defaultOptions = {
   store: undefined,
   watchAccountTimer: timer(0),
   trackBlocks: false,
-  subscribeLogs: true
+  subscribeLogs: false
 };
 
 let globalId = 0;

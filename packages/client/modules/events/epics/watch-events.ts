@@ -1,4 +1,11 @@
-import { takeUntil, mergeMap, filter, map } from 'rxjs/operators';
+import {
+  takeUntil,
+  mergeMap,
+  filter,
+  map,
+  retryWhen,
+  delay
+} from 'rxjs/operators';
 import { ActionsObservable, StateObservable } from 'redux-observable';
 import * as actions from '../actions';
 
@@ -12,32 +19,31 @@ import { ofType } from 'client/utils';
 export const watchEvents = (
   action$: ActionsObservable<actions.Types>,
   state$: StateObservable<any>,
-  { provider, options }: EpicContext
+  { provider }: EpicContext
 ): Observable<actions.Types> => {
-  if (!options.subscribeLogs) {
-    return EMPTY;
-  }
-
   return action$.pipe(
     ofType(actions.QUERY_EVENTS),
-    mergeMap(({ payload: { id, filters } }) => {
+    mergeMap(({ payload: { id, filters, live } }) => {
+      if (!live) {
+        return EMPTY;
+      }
       return merge(
         ...filters.map(f => {
           return subscribeLogs(provider, {
             address: f.address,
             topics: f.topics
-          });
+          }).pipe(retryWhen(delay(5000)));
         })
       ).pipe(
+        map(x => [x]),
+        map(decodeLogs(fromSchema.getAllAbis(state$.value))),
+        map(actions.eventsLoaded),
         takeUntil(
           action$.pipe(
             ofType(actions.QUERY_UNSUBSCRIBE),
             filter(({ payload }) => payload === id)
           )
-        ),
-        map(x => [x]),
-        map(decodeLogs(fromSchema.getAllAbis(state$.value))),
-        map(actions.eventsLoaded)
+        )
       );
     })
   );
