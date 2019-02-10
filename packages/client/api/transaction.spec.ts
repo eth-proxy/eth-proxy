@@ -1,11 +1,11 @@
 import { sendTransaction } from './transaction';
 import { createAppStore, ObservableStore, State } from '../store';
 import * as actions from '../modules/transaction';
-import * as fromAccount from '../modules/account';
 import * as fromRequest from '../modules/request';
 import { AnyAction } from 'redux';
 import { expect } from 'chai';
 import { Observable } from 'rxjs';
+import { testProvider } from '../../rpc/mocks';
 
 const account = '123';
 
@@ -50,12 +50,11 @@ describe('Initialize transaction', () => {
       const result = next(action);
       return result;
     };
-    sendTx = sendTransaction({ store, genId, options: {} } as any);
+    const provider = testProvider(() => [account]);
+    sendTx = sendTransaction({ store, genId, options: {}, provider } as any);
   });
 
   it('Dispatches process action', done => {
-    store.dispatch(fromAccount.createSetActiveAccount(account));
-
     sendTx({
       interface: interfaceName,
       method: methodName,
@@ -68,26 +67,9 @@ describe('Initialize transaction', () => {
     });
   });
 
-  describe('Controls the flow', () => {
-    const expectedAction = actions.createProcessTransaction(transactionData);
-
-    it('Waits for active account', done => {
-      sendTx({
-        interface: interfaceName,
-        method: methodName,
-        payload: args
-      }).subscribe(() => {
-        expect(store.lastDispatched).to.deep.equal(expectedAction);
-        done();
-      });
-      store.dispatch(fromAccount.createSetActiveAccount(account));
-    });
-  });
-
   describe('Returns result', () => {
     let result$: Observable<any>;
     beforeEach(() => {
-      store.dispatch(fromAccount.createSetActiveAccount(account));
       result$ = sendTx({
         interface: interfaceName,
         method: methodName,

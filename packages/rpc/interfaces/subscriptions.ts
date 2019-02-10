@@ -2,8 +2,21 @@ import { SubscriptionData } from './rpc';
 import { RawBlock, RawLog, RawSyncingState } from './raw-entities';
 import { Data } from './primitives';
 
-// Does it contain all props?
-export type NewHeadsData = SubscriptionData<RawBlock>;
-export type LogsData = SubscriptionData<RawLog>;
-export type NewPendingTransactionsData = SubscriptionData<Data>;
-export type SyncingData = SubscriptionData<RawSyncingState>;
+export interface SubscriptionEvent<M, R> {
+  method: M;
+  data: SubscriptionData<R>;
+}
+
+export type NewHeadsEvent = SubscriptionEvent<'newHeads', RawBlock>;
+export type LogsEvent = SubscriptionEvent<'logs', RawLog>;
+export type NewPendingTransactionsEvent = SubscriptionEvent<
+  'newPendingTransactions',
+  Data
+>;
+export type SyncingEvent = SubscriptionEvent<'syncing', RawSyncingState>;
+
+export type RpcSubscriptionEvent =
+  | NewHeadsEvent
+  | LogsEvent
+  | NewPendingTransactionsEvent
+  | SyncingEvent;

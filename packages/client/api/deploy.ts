@@ -1,21 +1,22 @@
 import { combineLatest, from } from 'rxjs';
 
 import { Context } from '../context';
-import { mergeMap, map, first } from 'rxjs/operators';
-import { isConstructorAbi, deployContract, getReceipt } from '@eth-proxy/rpc';
+import { mergeMap, map } from 'rxjs/operators';
+import {
+  isConstructorAbi,
+  deployContract,
+  getReceipt,
+  getDefaultAccount
+} from '@eth-proxy/rpc';
 import * as fromTx from '../modules/transaction';
-import * as fromAccount from '../modules/account';
 
 /* 
   Only sutiable for testrpc
 */
-export function deploy({ store, contractLoader, provider }: Context) {
+export function deploy({ contractLoader, provider }: Context) {
   return (input: fromTx.DeploymentInput<string, any>) => {
-    const txParams$ = store.select(fromAccount.getActiveAccount).pipe(
-      map(account => {
-        return fromTx.mergeParams(input, { from: account });
-      }),
-      first(fromTx.txParamsValid)
+    const txParams$ = getDefaultAccount(provider).then(account =>
+      fromTx.mergeParams(input, { from: account })
     );
 
     return combineLatest(txParams$, contractLoader(input.interface)).pipe(
