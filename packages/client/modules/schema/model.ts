@@ -12,17 +12,9 @@ export interface ContractSchema extends Partial<ContractSchemaExtras> {
   bytecode?: string;
 }
 
-export interface ResolvedContractSchema extends ContractSchema {
-  networks?: {
-    [networkId: string]: {
-      address: string;
-    };
-  };
-}
-
-export type ContractSchemaResolver = (
-  args: { name: string }
-) => SubscribableOrPromise<ResolvedContractSchema>;
+export type ContractSchemaResolver = (args: {
+  name: string;
+}) => SubscribableOrPromise<ContractSchema>;
 
 export type ContractLoader = (name: string) => Observable<ContractInfo>;
 

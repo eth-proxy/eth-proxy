@@ -1,19 +1,28 @@
-import * as actions from './actions';
 import { createSelector } from 'reselect';
 import { moduleId } from './constants';
+import * as actions from 'client/store/actions';
+import { Data } from 'client/interfaces';
+import { LOADING, NOT_ASKED } from 'client/constants';
+import { dataError, dataOf, isLoaded } from 'client/utils';
 
-export interface State {
-  activeAccount?: string | null;
-}
-export function reducer(state: State = {}, action: actions.Types): State {
+export type State = Data<string | null>;
+
+const initial: State = NOT_ASKED;
+
+export function reducer(state = initial, action: actions.Types): State {
+  if (action.method !== 'eth_accounts') {
+    return state;
+  }
+
   switch (action.type) {
-    case actions.SET_ACTIVE_ACCOUNT:
-      return {
-        ...state,
-        activeAccount: action.payload || null
-      };
-    default:
-      return state;
+    case 'request':
+      return isLoaded(state) ? state : LOADING;
+    case 'response_error':
+      return dataError(action.payload.error);
+    case 'response_success': {
+      const next = action.payload.result[0] || null;
+      return isLoaded(state) && next === state.value ? state : dataOf(next);
+    }
   }
 }
 
@@ -23,9 +32,7 @@ export const getSelectors = <T = { [moduleId]: State }>(
   return {
     getActiveAccount: createSelector(
       getModule,
-      m => m.activeAccount
+      m => m
     )
   };
 };
-
-export const { getActiveAccount } = getSelectors(x => x[moduleId]);

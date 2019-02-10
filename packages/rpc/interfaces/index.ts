@@ -5,3 +5,4 @@ export * from './others';
 export * from './primitives';
 export * from './raw-entities';
 export * from './rpc';
+export * from './subscriptions';

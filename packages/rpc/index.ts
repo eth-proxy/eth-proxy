@@ -2,17 +2,7 @@ export * from './methods';
 export * from './interfaces';
 export * from './watches';
 export * from './bundle';
-export {
-  sha3,
-  toSignatureHash,
-  getFunction,
-  isEventAbi,
-  isConstructorAbi,
-  arrify,
-  send,
-  convert,
-  isFunctionAbi
-} from './utils';
+export * from './utils';
 export { TransactionInput } from './methods/request/send-transaction';
 export { CallInput } from './methods/request/send-call';
 export { DeploymentInput } from './methods/request/deploy';

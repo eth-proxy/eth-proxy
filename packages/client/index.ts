@@ -1,14 +1,15 @@
-import { Observable, timer } from 'rxjs';
+import { Observable } from 'rxjs';
 import { createEpicMiddleware } from 'redux-observable';
-import { Provider, Block, RpcSend, send, SendRequest } from '@eth-proxy/rpc';
-
 import {
-  createAppStore,
-  getActiveAccount$,
-  State,
-  rootEpic,
-  getDetectedNetwork$
-} from './store';
+  Provider,
+  RpcSend,
+  send,
+  SendRequest,
+  applyMiddleware,
+  blockNumber
+} from '@eth-proxy/rpc';
+
+import { createAppStore, State, rootEpic, ObservableStore } from './store';
 import {
   sendCall,
   createSchemaLoader,
@@ -16,7 +17,6 @@ import {
   query,
   deploy
 } from './api';
-import { createBlockLoader } from './api/get-block';
 import {
   createEthProxyStopped,
   createEthProxyStarted
@@ -27,19 +27,17 @@ import { ContractInfo } from './modules/schema';
 import { TransactionHandler, DeploymentInput } from './modules/transaction';
 import { EthProxyOptions, UserConfig } from './options';
 import { CallHandler } from './modules/call';
+import { connectStoreMiddleware, connectSubscriptions } from './middleware';
 
 export class EthProxy<T extends {} = {}> implements Provider {
   ethCall!: CallHandler<T>;
   transaction!: TransactionHandler<T>;
-  network$!: Observable<string>;
-  defaultAccount$!: Observable<string | null>;
 
   query!: (queryModel: QueryModel<T>) => Observable<any>;
   loadContractSchema!: (
     name: Extract<keyof T, string>
   ) => Observable<ContractInfo>;
   deploy!: (request: DeploymentInput<string, any>) => Observable<string>;
-  getBlock!: (block: number) => Observable<Block>;
 
   rpc!: SendRequest;
   send!: RpcSend;
@@ -50,8 +48,6 @@ export class EthProxy<T extends {} = {}> implements Provider {
 
 const defaultOptions = {
   store: undefined,
-  watchAccountTimer: timer(0),
-  trackBlocks: false,
   subscribeLogs: false
 };
 
@@ -59,18 +55,32 @@ let globalId = 0;
 const genId = () => (globalId++).toString();
 
 export function createProxy<T extends {}>(
-  provider: Provider,
+  injectedProvider: Provider,
   userOptions: UserConfig<keyof typeof defaultOptions>
 ): EthProxy<T> {
+  let store: ObservableStore<State>;
+
   const options: EthProxyOptions = { ...defaultOptions, ...userOptions };
 
   const contractLoader = (name: string) => createSchemaLoader(store)(name);
-  const blockLoader = (number: number) => createBlockLoader(store)(number);
+
+  const provider: Provider = applyMiddleware(
+    [
+      connectStoreMiddleware({
+        providerRef: () => provider,
+        dispatch: action => store.dispatch(action)
+      }),
+      connectSubscriptions({
+        providerRef: () => provider,
+        dispatch: action => store.dispatch(action)
+      })
+    ],
+    injectedProvider
+  );
 
   const context = {
     options,
     contractLoader,
-    blockLoader,
     genId,
     provider
   };
@@ -78,7 +88,8 @@ export function createProxy<T extends {}>(
   const epicMiddleware = createEpicMiddleware<any, any, State, EpicContext>({
     dependencies: context
   });
-  const store = createAppStore(epicMiddleware, options.store);
+
+  store = createAppStore(epicMiddleware, options.store);
   epicMiddleware.run(rootEpic);
   store.dispatch(createEthProxyStarted());
 
@@ -89,14 +100,13 @@ export function createProxy<T extends {}>(
 
   const rpc = send(provider);
 
+  // Should not be necessary but its still used in some parts
+  blockNumber(provider);
+
   return {
     ...provider,
-    getBlock: blockLoader,
 
     query: query(deps),
-
-    network$: store.pipe(getDetectedNetwork$),
-    defaultAccount$: store.pipe(getActiveAccount$),
 
     loadContractSchema: contractLoader,
     transaction: sendTransaction(deps) as any,
@@ -107,7 +117,7 @@ export function createProxy<T extends {}>(
 
     disconnect: () => {
       store.dispatch(createEthProxyStopped());
-      provider.disconnect();
+      injectedProvider.disconnect();
     }
   };
 }
@@ -140,6 +150,7 @@ export { RequestFactory, ContractsAggregation } from './modules/request';
 export { QueryModel } from './modules/events';
 export { EthProxyOptions } from './options';
 export { idFromEvent } from './utils';
+export * from './middleware';
 
 export function entity(arg: any) {
   return arg;
