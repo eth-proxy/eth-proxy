@@ -54,26 +54,26 @@ export function reducer(
     switch (action.type) {
       case 'request': {
         return numberInRequest
-          ? state
-          : {
+          ? {
               ...state,
               entities: {
                 ...state.entities,
                 [ethHexToNumber(atBlock)]: LOADING
               }
-            };
+            }
+          : state;
       }
 
       case 'response_error': {
         return numberInRequest
-          ? state
-          : {
+          ? {
               ...state,
               entities: {
                 ...state.entities,
                 [ethHexToNumber(atBlock)]: dataError(action.payload)
               }
-            };
+            }
+          : state;
       }
 
       case 'response_success':
