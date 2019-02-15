@@ -68,6 +68,6 @@
     "typescript": "3.3.3",
     "web3": "0.20.7",
     "tslint-config-prettier": "^1.18.0",
-    "@zerollup/ts-transform-paths": "1.6.6"
+    "@zerollup/ts-transform-paths": "1.7.0"
   }
 }
