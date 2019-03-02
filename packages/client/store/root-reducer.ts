@@ -4,7 +4,6 @@ import * as fromNetwork from '../modules/network';
 import * as fromEvents from '../modules/events';
 import * as fromSchema from '../modules/schema';
 import * as fromTransactions from '../modules/transaction';
-import * as fromCalls from '../modules/call';
 import { combineReducers } from 'redux';
 
 import { State } from './model';
@@ -15,8 +14,7 @@ export const reducer = combineReducers<State>({
   [fromAccounts.moduleId]: fromAccounts.reducer,
   [fromTransactions.moduleId]: fromTransactions.reducer,
   [fromBlocks.moduleId]: fromBlocks.reducer,
-  [fromEvents.moduleId]: fromEvents.reducer,
-  [fromCalls.moduleId]: fromCalls.reducer
+  [fromEvents.moduleId]: fromEvents.reducer
 } as any);
 
 const initialState = reducer(undefined, { type: '' });

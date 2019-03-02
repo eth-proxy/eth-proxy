@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 import { ObservableStore, State, getLoadedContractFromRef$ } from '../store';
-import { ContractInfo } from '../modules/schema';
 import {
+  ContractInfo,
   getContractFromRef,
   createLoadContractSchema
 } from '../modules/schema';

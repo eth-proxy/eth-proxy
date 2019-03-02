@@ -44,6 +44,5 @@ export class JsonRpcError extends Error {
   constructor(err: RpcError) {
     super(err.message);
     this.code = err.code;
-    Error.captureStackTrace(this, JsonRpcError);
   }
 }

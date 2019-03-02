@@ -1,16 +1,15 @@
-import { gasLimitMiddleware } from './gas-limit';
+import { defaultAccountMiddleware } from './default-account';
 import { EthSendTransactionRequest } from '../../interfaces';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { expect } from 'chai';
 
-const _10wei = 10;
-const _10WeiInHex = '0xa';
+const defaultAccount = '0x7d76CC1e430fF6F16d184a3E7ee003502A95d4bB';
 
 const mockNext = (x: any) => of(x);
 
 describe('gasPriceMiddleware', () => {
   it('sets gas price for transaction', async () => {
-    const middleware = gasLimitMiddleware(() => of(_10wei));
+    const middleware = defaultAccountMiddleware(() => of(defaultAccount));
 
     const initialTx = {
       method: 'eth_sendTransaction',
@@ -21,7 +20,7 @@ describe('gasPriceMiddleware', () => {
       method: 'eth_sendTransaction',
       params: [
         {
-          gas: _10WeiInHex
+          from: defaultAccount
         }
       ]
     } as EthSendTransactionRequest;
@@ -31,16 +30,20 @@ describe('gasPriceMiddleware', () => {
     );
   });
 
-  it('does not modify payload when gas not provided', async () => {
-    const middleware = gasLimitMiddleware(() => of(undefined));
+  it('throws when cannot get account', async () => {
+    const err = Error('Cannot load account');
+    const middleware = defaultAccountMiddleware(() => throwError(err));
 
     const initialTx = {
       method: 'eth_sendTransaction',
       params: [{}]
     } as EthSendTransactionRequest;
 
-    expect(await middleware(initialTx, mockNext).toPromise()).to.deep.eq(
-      initialTx
-    );
+    try {
+      await middleware(initialTx, mockNext).toPromise();
+      throw Error('Should throw');
+    } catch (e) {
+      expect(e).to.eq(err);
+    }
   });
 });

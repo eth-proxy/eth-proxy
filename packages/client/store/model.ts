@@ -4,7 +4,6 @@ import * as fromNetwork from '../modules/network';
 import * as fromEvents from '../modules/events';
 import * as fromSchema from '../modules/schema';
 import * as fromTransactions from '../modules/transaction';
-import * as fromCalls from '../modules/call';
 
 export interface State {
   [fromNetwork.moduleId]: fromNetwork.State;
@@ -13,5 +12,4 @@ export interface State {
   [fromTransactions.moduleId]: fromTransactions.State;
   [fromBlocks.moduleId]: fromBlocks.State;
   [fromEvents.moduleId]: fromEvents.State;
-  [fromCalls.moduleId]: fromCalls.State;
 }

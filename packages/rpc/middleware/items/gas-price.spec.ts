@@ -1,5 +1,4 @@
 import { gasPriceMiddleware } from './gas-price';
-import * as sinon from 'sinon';
 import { EthSendTransactionRequest } from '../../interfaces';
 import { of } from 'rxjs';
 import { expect } from 'chai';
@@ -11,9 +10,7 @@ const mockNext = (x: any) => of(x);
 
 describe('gasPriceMiddleware', () => {
   it('sets gas price for transaction', async () => {
-    const always10GweiLoader = sinon.stub().returns(of(_10wei));
-
-    const middleware = gasPriceMiddleware(always10GweiLoader);
+    const middleware = gasPriceMiddleware(() => of(_10wei));
 
     const initialTx = {
       method: 'eth_sendTransaction',
@@ -35,9 +32,7 @@ describe('gasPriceMiddleware', () => {
   });
 
   it('does not modify payload when gasPrice not provided', async () => {
-    const alwaysUndefinedGasLoader = sinon.stub().returns(of(undefined));
-
-    const middleware = gasPriceMiddleware(alwaysUndefinedGasLoader);
+    const middleware = gasPriceMiddleware(() => of(undefined));
 
     const initialTx = {
       method: 'eth_sendTransaction',
