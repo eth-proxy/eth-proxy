@@ -1,4 +1,4 @@
-import { at } from '@eth-proxy/client';
+import { at, ethCall } from '@eth-proxy/client';
 import { first } from 'rxjs/operators';
 import { expect } from 'chai';
 import { revert, snapshot } from '@eth-proxy/rpc';
@@ -16,11 +16,11 @@ describe('ERC20', () => {
   });
 
   it('Can use Sample Token', async () => {
-    const contractAddress = await deploySampleToken(proxy).toPromise();
+    const { contractAddress } = await deploySampleToken(proxy);
 
-    const MyToken = at(contractAddress, SampleToken);
+    const MyToken = at(contractAddress!, SampleToken);
 
-    const symbol = await proxy.ethCall(MyToken.symbol()).toPromise();
+    const symbol = await ethCall(proxy, MyToken.symbol());
     expect(symbol).to.eq(myToken._symbol);
 
     await proxy
@@ -33,9 +33,7 @@ describe('ERC20', () => {
       .pipe(first(x => x.status === 'tx'))
       .toPromise();
 
-    const balance = await proxy
-      .ethCall(MyToken.balanceOf(Recipient))
-      .toPromise();
+    const balance = await ethCall(proxy, MyToken.balanceOf(Recipient));
 
     expect(balance.toString()).to.eq(transferAmount);
   });
