@@ -2,7 +2,7 @@ import { DeploymentInput } from '../modules/transaction';
 import { mergeMap } from 'rxjs/operators';
 import { isConstructorAbi, deployContract } from '@eth-proxy/rpc';
 
-export function deploy<T>(
+export function ethDeploy<T>(
   ethProxy: import('../index').EthProxy<T>,
   input: DeploymentInput<Extract<keyof T, string>, any>
 ) {
