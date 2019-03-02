@@ -10,13 +10,7 @@ import {
 } from '@eth-proxy/rpc';
 
 import { createAppStore, State, rootEpic, ObservableStore } from './store';
-import {
-  sendCall,
-  createSchemaLoader,
-  sendTransaction,
-  query,
-  deploy
-} from './api';
+import { createSchemaLoader, sendTransaction, query } from './api';
 import {
   createEthProxyStopped,
   createEthProxyStarted
@@ -24,20 +18,17 @@ import {
 import { EpicContext } from './context';
 import { QueryModel } from './modules/events';
 import { ContractInfo } from './modules/schema';
-import { TransactionHandler, DeploymentInput } from './modules/transaction';
+import { TransactionHandler } from './modules/transaction';
 import { EthProxyOptions, UserConfig } from './options';
-import { CallHandler } from './modules/call';
 import { connectStoreMiddleware, connectSubscriptions } from './middleware';
 
 export class EthProxy<T extends {} = {}> implements Provider {
-  ethCall!: CallHandler<T>;
   transaction!: TransactionHandler<T>;
 
   query!: (queryModel: QueryModel<T>) => Observable<any>;
   loadContractSchema!: (
     name: Extract<keyof T, string>
   ) => Observable<ContractInfo>;
-  deploy!: (request: DeploymentInput<string, any>) => Observable<string>;
 
   rpc!: SendRequest;
   send!: RpcSend;
@@ -110,8 +101,6 @@ export function createProxy<T extends {}>(
 
     loadContractSchema: contractLoader,
     transaction: sendTransaction(deps) as any,
-    ethCall: sendCall(deps) as any,
-    deploy: deploy(deps),
 
     rpc,
 
@@ -151,6 +140,7 @@ export { QueryModel } from './modules/events';
 export { EthProxyOptions } from './options';
 export { idFromEvent } from './utils';
 export * from './middleware';
+export * from './methods';
 
 export function entity(arg: any) {
   return arg;

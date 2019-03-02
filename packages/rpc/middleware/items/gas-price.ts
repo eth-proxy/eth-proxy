@@ -21,7 +21,10 @@ export function gasPriceMiddleware(loader: GasPriceLoader): MiddlewareItem {
   ]);
 
   return (payload, next) => {
-    if (payload.method !== 'eth_sendTransaction') {
+    if (
+      payload.method !== 'eth_sendTransaction' ||
+      payload.params[0].gasPrice
+    ) {
       return next(payload);
     }
 

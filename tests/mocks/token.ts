@@ -1,6 +1,19 @@
-import { C, RequestFactory, EthProxy, createProxy } from '@eth-proxy/client';
+import {
+  C,
+  RequestFactory,
+  EthProxy,
+  createProxy,
+  ethDeploy
+} from '@eth-proxy/client';
 import { Contracts } from '../contracts';
-import { httpSubprovider } from '@eth-proxy/rpc';
+import {
+  httpSubprovider,
+  getReceipt,
+  defaultAccountMiddleware,
+  getDefaultAccount,
+  Provider,
+  applyMiddleware
+} from '@eth-proxy/rpc';
 
 export const { SampleToken } = (C as any) as RequestFactory<Contracts>;
 
@@ -12,15 +25,24 @@ export const myToken = {
 };
 
 export function deploySampleToken(proxy: EthProxy<Contracts>) {
-  return proxy.deploy({
+  return ethDeploy(proxy, {
     interface: 'SampleToken',
     payload: myToken,
     gas: 7000000
-  });
+  }).then(getReceipt(proxy));
 }
 
 export const ethProxy = () => {
-  return createProxy<Contracts>(httpSubprovider(), {
+  const provider: Provider = applyMiddleware(
+    [
+      defaultAccountMiddleware(
+        () => getDefaultAccount(provider) as Promise<string>
+      )
+    ],
+    httpSubprovider()
+  );
+
+  return createProxy<Contracts>(provider, {
     contractSchemaResolver: ({ name }) => import(`../schemas/${name}.json`)
   });
 };

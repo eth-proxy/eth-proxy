@@ -10,7 +10,6 @@ import { State } from './model';
 import * as fromEvents from '../modules/events';
 import * as fromSchema from '../modules/schema';
 import * as fromTransactions from '../modules/transaction';
-import * as fromCalls from '../modules/call';
 import { takeUntil, mergeMapTo, first } from 'rxjs/operators';
 import * as fromLifecycle from '../modules/lifecycle';
 
@@ -25,8 +24,7 @@ export const rootEpic = (
     fromEvents.composeQueries,
     fromSchema.loadContractSchema,
     fromTransactions.processTransactionEpic,
-    fromTransactions.findReceiptEpic,
-    fromCalls.processCallEpic
+    fromTransactions.findReceiptEpic
   )(action$, state, dependencies);
 
   return action$.pipe(

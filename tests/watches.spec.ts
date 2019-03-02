@@ -51,10 +51,10 @@ describe('Watches', () => {
       deploySampleToken(proxy),
       getAccounts()
     ).pipe(
-      mergeMap(([addr, [account1]]) =>
+      mergeMap(([{ contractAddress }, [account1]]) =>
         proxy
           .transaction(
-            at(addr, SampleToken).transfer({
+            at(contractAddress!, SampleToken).transfer({
               _to: account1,
               _value: 1
             })
