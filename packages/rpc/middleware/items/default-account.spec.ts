@@ -7,7 +7,7 @@ const defaultAccount = '0x7d76CC1e430fF6F16d184a3E7ee003502A95d4bB';
 
 const mockNext = (x: any) => of(x);
 
-describe('gasPriceMiddleware', () => {
+describe('default account middleware', () => {
   it('sets gas price for transaction', async () => {
     const middleware = defaultAccountMiddleware(() => of(defaultAccount));
 

@@ -8,7 +8,7 @@ const _10WeiInHex = '0xa';
 
 const mockNext = (x: any) => of(x);
 
-describe('gasPriceMiddleware', () => {
+describe('gas limit middleware', () => {
   it('sets gas price for transaction', async () => {
     const middleware = gasLimitMiddleware(() => of(_10wei));
 
