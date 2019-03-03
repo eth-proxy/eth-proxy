@@ -1,9 +1,13 @@
 import { ActionsObservable, StateObservable } from 'redux-observable';
 import { mergeMap } from 'rxjs/operators';
-import { of } from 'rxjs';
 import * as actions from '../actions';
 import { EpicContext } from 'client/context';
-import { TransactionInput, getFunction, sendTransaction } from '@eth-proxy/rpc';
+import {
+  TransactionInput,
+  getFunction,
+  sendTransaction,
+  JsonRpcError
+} from '@eth-proxy/rpc';
 import { ofType } from 'client/utils';
 import { getSchema, ContractInfo } from 'client/methods';
 
@@ -20,13 +24,11 @@ export const processTransactionEpic = (
           sendTransaction(provider, toTxInput(payload, contract))
         )
         .then(actions.createTxGenerated(payload.initId))
-        .catch(err => {
-          return of(
-            actions.createProcessTransactionFailed({
-              initId: payload.initId,
-              err
-            })
-          );
+        .catch((err: JsonRpcError) => {
+          return actions.createProcessTransactionFailed({
+            initId: payload.initId,
+            err
+          });
         });
     })
   );

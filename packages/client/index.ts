@@ -68,8 +68,8 @@ export function createProxy<T extends {}>(
       })
     ],
     mergeProviders([
-      injectedProvider,
-      schemaSubprovider(options.contractSchemaLoader)
+      schemaSubprovider(options.contractSchemaLoader),
+      injectedProvider
     ])
   );
 
