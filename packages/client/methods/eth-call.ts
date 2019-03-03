@@ -1,6 +1,6 @@
 import { Request } from '../modules/request';
 import { sendCall, getFunction } from '@eth-proxy/rpc';
-import { mergeMap } from 'rxjs/operators';
+import { getSchema } from './get-schema';
 
 export type CallHandler<T> = <
   I extends Extract<keyof T, string>,
@@ -25,20 +25,17 @@ export function ethCall<
     ...params
   } = request;
 
-  return ethProxy
-    .loadContractSchema(contractName)
-    .pipe(
-      mergeMap(({ address: contractAddr, abi }) => {
-        return sendCall(ethProxy, {
-          abi: getFunction(method, abi),
-          args: payload,
-          atBlock: 'latest',
-          txParams: {
-            ...params,
-            to: address || contractAddr
-          }
-        });
-      })
-    )
-    .toPromise();
+  return getSchema(ethProxy, contractName).then(
+    ({ address: contractAddr, abi }) => {
+      return sendCall(ethProxy, {
+        abi: getFunction(method, abi),
+        args: payload,
+        atBlock: 'latest',
+        txParams: {
+          ...params,
+          to: address || contractAddr
+        }
+      });
+    }
+  );
 }

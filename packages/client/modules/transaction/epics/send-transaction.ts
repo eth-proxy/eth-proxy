@@ -1,34 +1,33 @@
 import { ActionsObservable, StateObservable } from 'redux-observable';
-import { mergeMap, map, catchError } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import * as actions from '../actions';
-import { ContractInfo } from '../../schema';
 import { EpicContext } from 'client/context';
 import { TransactionInput, getFunction, sendTransaction } from '@eth-proxy/rpc';
 import { ofType } from 'client/utils';
+import { getSchema, ContractInfo } from 'client/methods';
 
 export const processTransactionEpic = (
   actions$: ActionsObservable<actions.ProcessTransaction>,
   _: StateObservable<any>,
-  { provider, contractLoader }: EpicContext
+  { provider }: EpicContext
 ) => {
   return actions$.pipe(
     ofType(actions.PROCESS_TRANSACTION),
     mergeMap(({ payload }) => {
-      return contractLoader(payload.contractName).pipe(
-        mergeMap(contract =>
+      return getSchema(provider, payload.contractName)
+        .then(contract =>
           sendTransaction(provider, toTxInput(payload, contract))
-        ),
-        map(actions.createTxGenerated(payload.initId)),
-        catchError(err => {
+        )
+        .then(actions.createTxGenerated(payload.initId))
+        .catch(err => {
           return of(
             actions.createProcessTransactionFailed({
               initId: payload.initId,
               err
             })
           );
-        })
-      );
+        });
     })
   );
 };

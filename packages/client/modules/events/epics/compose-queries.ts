@@ -11,17 +11,21 @@ import { splitQueryByTopics, toTopicList } from '../utils';
 import { State } from 'client/store';
 import { ofType } from 'client/utils';
 import { arrify, blockNumber } from '@eth-proxy/rpc';
+import { getSchema } from 'client/methods';
 
 export const composeQueries = (
   actions$: ActionsObservable<actions.ComposeQueryFromModel>,
   _: StateObservable<State>,
-  { contractLoader, provider }: EpicContext
+  { provider }: EpicContext
 ): Observable<actions.Types> =>
   actions$.pipe(
     ofType(actions.COMPOSE_QUERY_FROM_MODEL),
     mergeMap(({ payload: { id, model } }) => {
-      return forkJoin(keys(model.deps).map(contractLoader)).pipe(
+      return forkJoin(keys(model.deps).map(getSchema(provider))).pipe(
         mergeMap(contracts => {
+          /**
+           * Should use latest loaded
+           */
           return defer(() => blockNumber(provider)).pipe(
             map(latestBlockNumber => {
               const queries = contracts.map(

@@ -8,7 +8,6 @@ import { EpicContext } from '../context';
 import { State } from './model';
 
 import * as fromEvents from '../modules/events';
-import * as fromSchema from '../modules/schema';
 import * as fromTransactions from '../modules/transaction';
 import { takeUntil, mergeMapTo, first } from 'rxjs/operators';
 import * as fromLifecycle from '../modules/lifecycle';
@@ -22,7 +21,6 @@ export const rootEpic = (
     fromEvents.queryEventsEpic,
     fromEvents.watchEvents,
     fromEvents.composeQueries,
-    fromSchema.loadContractSchema,
     fromTransactions.processTransactionEpic,
     fromTransactions.findReceiptEpic
   )(action$, state, dependencies);

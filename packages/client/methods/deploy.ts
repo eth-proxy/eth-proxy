@@ -1,6 +1,6 @@
 import { DeploymentInput } from '../modules/transaction';
-import { mergeMap } from 'rxjs/operators';
 import { isConstructorAbi, deployContract } from '@eth-proxy/rpc';
+import { getSchema } from './get-schema';
 
 export function ethDeploy<T>(
   ethProxy: import('../index').EthProxy<T>,
@@ -8,25 +8,20 @@ export function ethDeploy<T>(
 ) {
   const { payload, interface: contractInterface, ...txParams } = input;
 
-  return ethProxy
-    .loadContractSchema(contractInterface)
-    .pipe(
-      mergeMap(({ abi, bytecode }) => {
-        const constructorAbi = abi.find(isConstructorAbi);
+  return getSchema(ethProxy, contractInterface).then(({ abi, bytecode }) => {
+    const constructorAbi = abi.find(isConstructorAbi);
 
-        if (!constructorAbi || !bytecode) {
-          throw Error(
-            `Cannot deploy contract ${contractInterface}, missing abi or bytecode`
-          );
-        }
+    if (!constructorAbi || !bytecode) {
+      throw Error(
+        `Cannot deploy contract ${contractInterface}, missing abi or bytecode`
+      );
+    }
 
-        return deployContract(ethProxy, {
-          bytecode,
-          txParams,
-          abi: constructorAbi,
-          args: payload
-        });
-      })
-    )
-    .toPromise();
+    return deployContract(ethProxy, {
+      bytecode,
+      txParams,
+      abi: constructorAbi,
+      args: payload
+    });
+  });
 }

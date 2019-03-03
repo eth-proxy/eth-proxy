@@ -1,9 +1,9 @@
-import { ContractSchemaResolver } from './modules/schema';
+import { SchemaLoader } from './providers/schema.provider';
 
 export type Omit<T, K extends string> = Pick<T, Exclude<keyof T, K>>;
 
 export interface EthProxyOptions {
-  contractSchemaResolver: ContractSchemaResolver;
+  contractSchemaLoader: SchemaLoader;
   store?: {
     dispatch: (any: any) => void;
   };
