@@ -29,8 +29,16 @@ function toRequest(request: { contractName: string }) {
     params: [request]
   };
 }
+type TypedContractName<T> = T extends import('../index').EthProxy<infer C>
+  ? keyof C
+  : string;
 
-export const getSchema = curry(
+interface GetSchema {
+  <T>(provider: T): (name: TypedContractName<T>) => Promise<ContractInfo>;
+  <T>(provider: T, name: TypedContractName<T>): Promise<ContractInfo>;
+}
+
+export const getSchema: GetSchema = curry(
   (provider: Provider, contractName: string): Promise<ContractInfo> => {
     return send(provider)(toRequest({ contractName }) as any);
   }
