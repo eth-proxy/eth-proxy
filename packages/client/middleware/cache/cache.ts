@@ -1,18 +1,18 @@
-import { MiddlewareItem, RpcResponse, RpcRequest } from '@eth-proxy/rpc';
+import { MiddlewareItem } from '@eth-proxy/rpc';
 import { pick } from 'ramda';
 import { BehaviorSubject } from 'rxjs';
 import { dataOf, getLoadedValue } from 'client/utils';
-import { Data } from 'client/interfaces';
+import { Data, ClientRequest, ClientResponse } from 'client/interfaces';
 import { tap, map, first } from 'rxjs/operators';
 import { LOADING } from 'client/constants';
 import { isCacheable } from './is-cacheable';
 
 interface State {
-  [requestHash: string]: Data<RpcResponse>;
+  [requestHash: string]: Data<ClientResponse>;
 }
 
 interface CacheOptions {
-  isCacheable: (payload: RpcRequest) => boolean;
+  isCacheable: (payload: ClientRequest) => boolean;
 }
 
 export function cacheMiddleware(
@@ -50,6 +50,6 @@ export function cacheMiddleware(
   };
 }
 
-function requestHash(payload: RpcRequest) {
+function requestHash(payload: ClientRequest) {
   return JSON.stringify(pick(['method', 'params'], payload));
 }

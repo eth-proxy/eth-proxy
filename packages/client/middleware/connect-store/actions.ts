@@ -1,11 +1,10 @@
 import {
-  RpcRequest,
   RpcResponse,
   Rpc,
-  RpcMethod,
   SubscriptionData,
   RpcSubscriptionEvent
 } from '@eth-proxy/rpc';
+import { ClientMethod, ClientRequest } from 'client/interfaces';
 
 export const RPC_REQUEST = 'request';
 
@@ -17,7 +16,7 @@ export interface RpcRequestAction<T extends Rpc<any, any>> {
   };
 }
 
-export function toRequest<T extends RpcRequest>({ method, params }: T) {
+export function toRequest<T extends ClientRequest>({ method, params }: T) {
   return {
     type: RPC_REQUEST,
     method,
@@ -39,7 +38,7 @@ export interface RpcResponseAction<T extends Rpc<any, any>> {
 }
 
 export function toResponseSuccess(
-  { method, params }: RpcRequest,
+  { method, params }: ClientRequest,
   { result }: RpcResponse
 ) {
   return {
@@ -64,7 +63,7 @@ export interface RpcResponseErrorAction<T extends Rpc<any, any>> {
 }
 
 export function toResponseFailed(
-  { method, params }: RpcRequest,
+  { method, params }: ClientRequest,
   { error }: RpcResponse
 ) {
   return {
@@ -99,13 +98,15 @@ export type RpcSubscriptionActions = {
   >
 };
 
-type RpcActionType<T extends Rpc<any, any> = RpcMethod> =
+type RpcActionType<T extends Rpc<any, any> = ClientMethod> =
   | RpcRequestAction<T>
   | RpcResponseAction<T>
   | RpcResponseErrorAction<T>;
 
 type RpcActions = {
-  [P in RpcRequest['method']]: RpcActionType<Extract<RpcMethod, { type: P }>>
+  [P in ClientRequest['method']]: RpcActionType<
+    Extract<ClientMethod, { type: P }>
+  >
 };
 
 export type Types =

@@ -6,35 +6,35 @@ import {
   send,
   SendRequest,
   applyMiddleware,
-  blockNumber
+  blockNumber,
+  mergeProviders,
+  defaultAccountMiddleware,
+  getDefaultAccount
 } from '@eth-proxy/rpc';
 
 import { createAppStore, State, rootEpic, ObservableStore } from './store';
-import { createSchemaLoader, sendTransaction, query } from './api';
+import { sendTransaction, query } from './api';
 import {
   createEthProxyStopped,
   createEthProxyStarted
 } from './modules/lifecycle';
 import { EpicContext } from './context';
 import { QueryModel } from './modules/events';
-import { ContractInfo } from './modules/schema';
 import { TransactionHandler } from './modules/transaction';
 import { EthProxyOptions, UserConfig } from './options';
 import { connectStoreMiddleware, connectSubscriptions } from './middleware';
+import { schemaSubprovider } from './providers';
 
 export class EthProxy<T extends {} = {}> implements Provider {
   transaction!: TransactionHandler<T>;
 
   query!: (queryModel: QueryModel<T>) => Observable<any>;
-  loadContractSchema!: (
-    name: Extract<keyof T, string>
-  ) => Observable<ContractInfo>;
 
   rpc!: SendRequest;
   send!: RpcSend;
 
-  observe!: (subscriptionId: string) => Observable<any>;
-  disconnect!: () => void;
+  observe!: Provider['observe'];
+  disconnect!: Provider['disconnect'];
 }
 
 const defaultOptions = {
@@ -53,10 +53,11 @@ export function createProxy<T extends {}>(
 
   const options: EthProxyOptions = { ...defaultOptions, ...userOptions };
 
-  const contractLoader = (name: string) => createSchemaLoader(store)(name);
-
   const provider: Provider = applyMiddleware(
     [
+      defaultAccountMiddleware(
+        () => getDefaultAccount(provider) as Promise<string>
+      ),
       connectStoreMiddleware({
         providerRef: () => provider,
         dispatch: action => store.dispatch(action)
@@ -66,12 +67,14 @@ export function createProxy<T extends {}>(
         dispatch: action => store.dispatch(action)
       })
     ],
-    injectedProvider
+    mergeProviders([
+      schemaSubprovider(options.contractSchemaLoader),
+      injectedProvider
+    ])
   );
 
   const context = {
     options,
-    contractLoader,
     genId,
     provider
   };
@@ -98,8 +101,6 @@ export function createProxy<T extends {}>(
     ...provider,
 
     query: query(deps),
-
-    loadContractSchema: contractLoader,
     transaction: sendTransaction(deps) as any,
 
     rpc,
@@ -116,7 +117,6 @@ export {
   State as EthProxyState,
   getSelectors
 } from './store';
-export { ContractInfo, ContractSchema } from './modules/schema';
 export * from './modules/request';
 export { on, once } from './modules/transaction';
 export { at, withOptions } from './modules/request';
@@ -141,6 +141,7 @@ export { EthProxyOptions } from './options';
 export { idFromEvent } from './utils';
 export * from './middleware';
 export * from './methods';
+export * from './providers';
 
 export function entity(arg: any) {
   return arg;

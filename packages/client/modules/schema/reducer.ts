@@ -1,55 +1,39 @@
 import { createSelector } from 'reselect';
-import { pipe, values, flatten, map, all, propOr } from 'ramda';
+import { values, chain } from 'ramda';
 
-import * as actions from './actions';
-import { ContractInfo, ContractRef, LoadingRecord, ErrorRecord } from './model';
-import { isString } from '../../utils';
+import { dataError, dataOf, isLoaded } from 'client/utils';
 import { moduleId } from './constants';
-import { AbiDefinition } from '@eth-proxy/rpc';
+import { ContractInfo, GET_SCHEMA } from 'client/methods/get-schema';
+import { Data, DataLoaded } from 'client/interfaces';
+import * as actions from 'client/store/actions';
+import { LOADING } from 'client/constants';
 
 export interface State {
-  [contractName: string]:
-    | ContractInfo
-    | LoadingRecord<ContractInfo>
-    | ErrorRecord<ContractInfo>
-    | undefined;
+  [contractName: string]: Data<ContractInfo>;
 }
 
 export function reducer(state: State = {}, action: actions.Types): State {
+  if (action.method !== GET_SCHEMA) {
+    return state;
+  }
+  const { contractName } = action.payload.request[0];
   switch (action.type) {
-    case actions.LOAD_CONTRACT_SCHEMA: {
+    case 'request': {
       return {
         ...state,
-        [action.payload.name]: {
-          loading: true
-        }
+        [contractName]: LOADING
       };
     }
-    case actions.LOAD_CONTRACT_SCHEMA_FAILED: {
+    case 'response_error': {
       return {
         ...state,
-        [action.payload.name]: {
-          error: action.payload.err
-        }
+        [contractName]: dataError(action.payload.error)
       };
     }
-    case actions.LOAD_CONTRACT_SCHEMA_SUCCESS: {
-      const {
-        address,
-        abi,
-        contractName,
-        genesisBlock,
-        bytecode
-      } = action.payload;
+    case 'response_success': {
       return {
         ...state,
-        [contractName]: {
-          address,
-          abi,
-          name: contractName,
-          genesisBlock,
-          bytecode
-        } as ContractInfo
+        [contractName]: dataOf(action.payload.result)
       };
     }
 
@@ -57,64 +41,40 @@ export function reducer(state: State = {}, action: actions.Types): State {
       return state;
   }
 }
-
-const contractForRef = (state: State) => (ref: ContractRef) => {
-  return state[isString(ref) ? ref : ref.interface];
-};
-
 export const getSelectors = <T = { [moduleId]: State }>(
   getModule: (state: T) => State
 ) => {
-  const getContractsByName = createSelector(
-    getModule,
-    m => m
-  );
-  const getContractForRef = createSelector(
-    getModule,
-    contractForRef
-  );
-
-  const getContractsFromRefs = (refs: ContractRef[]) =>
-    createSelector(
-      getContractForRef,
-      getContract => map(getContract, refs)
-    );
-
-  const getHasContracts = (res: ContractRef[]) =>
-    createSelector(
-      getContractForRef,
-      getContract =>
-        pipe(
-          map(getContract),
-          all((x: any) => !!x && !x.loading)
-        )(res)
-    );
-  const getAllAbis = createSelector(
-    getModule,
-    x =>
-      pipe(
-        values,
-        map(propOr([], 'abi')),
-        flatten
-      )(x) as AbiDefinition[]
-  );
-
   return {
-    getContractForRef,
-    getContractFromRef: (contractRef: ContractRef) => (state: T) =>
-      getContractForRef(state)(contractRef),
-    getContractsFromRefs,
-    getAllAbis,
-    getHasContracts,
-    getContractsByName
+    getContractsFromNames: (names: string[]) => {
+      return createSelector(
+        getModule,
+        state => {
+          const contracts = names.map(x => state[x] || LOADING);
+
+          if (!contracts.every(isLoaded)) {
+            return LOADING;
+          }
+          return dataOf(
+            contracts.map(x => (x as DataLoaded<ContractInfo>).value)
+          );
+        }
+      );
+    },
+    getAllAbis: createSelector(
+      getModule,
+      state => {
+        const list = values(state)
+          .filter(isLoaded)
+          .map(x => x.value);
+        return chain(x => x.abi, list);
+      }
+    ),
+    getContractsByName: getModule
   };
 };
 
 export const {
-  getContractFromRef,
-  getContractsFromRefs,
-  getHasContracts,
+  getContractsFromNames,
   getContractsByName,
-  getContractForRef,
   getAllAbis
 } = getSelectors(m => m[moduleId]);

@@ -6,14 +6,7 @@ import {
   ethDeploy
 } from '@eth-proxy/client';
 import { Contracts } from '../contracts';
-import {
-  httpSubprovider,
-  getReceipt,
-  defaultAccountMiddleware,
-  getDefaultAccount,
-  Provider,
-  applyMiddleware
-} from '@eth-proxy/rpc';
+import { httpSubprovider, getReceipt } from '@eth-proxy/rpc';
 
 export const { SampleToken } = (C as any) as RequestFactory<Contracts>;
 
@@ -33,16 +26,8 @@ export function deploySampleToken(proxy: EthProxy<Contracts>) {
 }
 
 export const ethProxy = () => {
-  const provider: Provider = applyMiddleware(
-    [
-      defaultAccountMiddleware(
-        () => getDefaultAccount(provider) as Promise<string>
-      )
-    ],
-    httpSubprovider()
-  );
-
-  return createProxy<Contracts>(provider, {
-    contractSchemaResolver: ({ name }) => import(`../schemas/${name}.json`)
+  return createProxy<Contracts>(httpSubprovider(), {
+    contractSchemaLoader: ({ contractName }) =>
+      import(`../schemas/${contractName}.json`)
   });
 };
