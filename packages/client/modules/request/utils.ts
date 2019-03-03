@@ -17,7 +17,7 @@ interface WithOptions {
   ) => T;
   <T extends Request<any, any, any>>(options: RequestOptions, request: T): T;
 }
-export const withRequestOptions: WithOptions = curry(
+export const withOptions: WithOptions = curry(
   (options: RequestOptions, request: any) => {
     return Object.assign({}, request, options);
   }
