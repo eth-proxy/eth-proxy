@@ -3,8 +3,8 @@ import { RequestOptions, Request } from './model';
 import { omit, curry } from 'ramda';
 
 interface AtAddress {
-  (address: string): <T extends string>(contractProxy: T) => T;
-  <T extends string>(address: string, contractProxy: T): T;
+  (address: string): <T extends {}>(contractProxy: T) => T;
+  <T extends {}>(address: string, contractProxy: T): T;
 }
 export const at: AtAddress = curry((address: string, contractProxy: any) => {
   const current = Object.assign({ address }, contractProxy.fake());
