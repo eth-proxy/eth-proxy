@@ -19,10 +19,12 @@ export function reducer(state: State = {}, action: actions.Types): State {
   const { contractName } = action.payload.request[0];
   switch (action.type) {
     case 'request': {
-      return {
-        ...state,
-        [contractName]: LOADING
-      };
+      return state[contractName]
+        ? state
+        : {
+            ...state,
+            [contractName]: LOADING
+          };
     }
     case 'response_error': {
       return {
@@ -31,10 +33,12 @@ export function reducer(state: State = {}, action: actions.Types): State {
       };
     }
     case 'response_success': {
-      return {
-        ...state,
-        [contractName]: dataOf(action.payload.result)
-      };
+      return isLoaded(state[contractName])
+        ? state
+        : {
+            ...state,
+            [contractName]: dataOf(action.payload.result)
+          };
     }
 
     default:
