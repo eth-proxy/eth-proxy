@@ -17,7 +17,7 @@ export const applyMiddleware = curry(
 function createEngine(
   middlewares: MiddlewareItem[],
   primaryHandler: RpcRequestHandler
-) {
+): RpcRequestHandler {
   return reduceRight(
     (middleware, handler) => {
       return (payload: any) => middleware(payload, handler);
