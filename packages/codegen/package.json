@@ -1,6 +1,6 @@
 {
   "name": "@eth-proxy/codegen",
-  "version": "0.7.17",
+  "version": "0.7.18",
   "description": "Contracts code generation for @eth-proxy/client",
   "main": "dist/index.js",
   "bin": "dist/index.js",
@@ -20,7 +20,7 @@
     "typecheck": "ttsc -p ./tsconfig.build.json --noEmit"
   },
   "dependencies": {
-    "@eth-proxy/rpc": "^0.7.17",
+    "@eth-proxy/rpc": "^0.7.18",
     "glob": "7.1.3",
     "minimist": "1.2.0",
     "ramda": "^0.25.0",
