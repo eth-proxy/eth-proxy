@@ -65,7 +65,7 @@
     "ts-node": "^8.0.2",
     "tsconfig-paths": "3.8.0",
     "tslint": "5.12.1",
-    "typescript": "3.4.1",
+    "typescript": "~3.4.1",
     "web3": "0.20.7",
     "tslint-config-prettier": "^1.18.0",
     "@zerollup/ts-transform-paths": "1.7.0"
