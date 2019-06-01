@@ -1,4 +1,4 @@
-import { nonceMiddleware, NonceTracker } from './nonce';
+import { nonceMiddleware } from './nonce';
 import {
   EthSendTransactionRequest,
   EthAccountsRequest
@@ -6,6 +6,7 @@ import {
 import { of, throwError } from 'rxjs';
 import { expect, assert } from 'chai';
 import { Dictionary } from 'ramda';
+import { NonceTracker } from 'rpc/tools';
 
 const _nonce = 10;
 const _nonceHex = '0xa';
