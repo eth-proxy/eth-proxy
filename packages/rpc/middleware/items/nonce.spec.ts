@@ -18,7 +18,7 @@ const noncesMap: Dictionary<number> = {
 const mockNext = (x: any) => of(x);
 const nextError = () => throwError('ERROR');
 
-describe.only('nonceMiddleware', () => {
+describe('nonceMiddleware', () => {
   it('does not modify not transactions', async () => {
     const middleware = nonceMiddleware({
       up: addr => of(noncesMap[addr]),
