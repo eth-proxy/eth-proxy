@@ -30,7 +30,7 @@
   "devDependencies": {
     "@zerollup/ts-transform-paths": "1.7.1",
     "mocha": "6.1.4",
-    "rollup": "^1.12.4",
+    "rollup": "1.13.1",
     "ts-node": "^8.2.0",
     "tsconfig-paths": "^3.8.0",
     "ttypescript": "^1.5.6",
