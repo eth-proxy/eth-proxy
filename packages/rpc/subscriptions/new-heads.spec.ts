@@ -28,6 +28,15 @@ describe('New heads', () => {
 
     assert.deepEqual(result, formattedBlock);
   });
+
+  it('Subscribes to new heads without options', () => {
+    const provider = testProvider(() => subscriptionId);
+    subscribeNewHeads(provider, {}).subscribe();
+
+    const { params } = provider.getRequests().find(ofMethod('eth_subscribe'))!;
+
+    assert.deepEqual(params as NewHeadsParams, ['newHeads']);
+  });
 });
 
 const formattedBlock = {
