@@ -14,5 +14,3 @@ export const subscribeNewHeads = curry(
     }).pipe(map(fromBlock));
   }
 );
-
-subscribeNewHeads(undefined as any, {});
