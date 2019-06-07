@@ -27,3 +27,8 @@ export function createRpc(
     ...subscriptions
   });
 }
+
+export const testchange = 1;
+export const testchange2 = 2;
+export const testchange3 = 3;
+export const testchange4 = 4;
