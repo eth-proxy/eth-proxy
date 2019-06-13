@@ -73,7 +73,7 @@ export interface NewHeadsOptions {
 
 export interface NewHeadsArgs {
   type: 'newHeads';
-  args: NewHeadsOptions;
+  args?: NewHeadsOptions;
 }
 
 export interface LogsArgs {
