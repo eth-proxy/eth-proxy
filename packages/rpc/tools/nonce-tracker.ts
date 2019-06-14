@@ -1,4 +1,4 @@
-import { SubscribableOrPromise, BehaviorSubject, forkJoin } from 'rxjs';
+import { SubscribableOrPromise, BehaviorSubject, forkJoin, of } from 'rxjs';
 import { Dictionary } from 'ramda';
 import { map, first, tap, take } from 'rxjs/operators';
 import { isNotNil } from 'rpc/utils';
@@ -37,13 +37,10 @@ export function createNonceTracker(loadNonce: NonceLoader): NonceTracker {
       );
     },
     down: address => {
-      return current(address).pipe(
-        tap({
-          next: curr => {
-            store.next({ ...store.value, [address]: curr - 1 });
-          }
-        })
-      );
+      const prev = store.value[address] - 1;
+      store.next({ ...store.value, [address]: prev });
+
+      return of(prev);
     }
   };
 }
