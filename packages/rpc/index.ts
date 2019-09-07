@@ -13,5 +13,3 @@ export * from './coder';
 export * from './constants';
 export * from './subscriptions';
 export * from './tools';
-
-export const test = 2;
