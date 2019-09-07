@@ -13,17 +13,23 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 12.x
-    - name: npm install, build, and test
+    - name: install
       run: |
         yarn install
         npm run bootstrap
+    - name: test
+      run: |
         npm run typecheck
-        npm run build
         yarn test
         npm run integration
+    - name: build
+      run: npm run build
     - name: Publish to npm
-      run: npm publish
+      run: npm publish:master
       if: github.event.ref == 'refs/heads/master'
+    - name: Publish to npm
+      run: npm publish:feature
+      if: github.event.ref != 'refs/heads/master'
         
       env:
         CI: true
