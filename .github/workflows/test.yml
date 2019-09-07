@@ -3,8 +3,7 @@ name: Node CI
 on: [push]
 
 jobs:
-  setup:
-
+  - setup:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,8 +15,7 @@ jobs:
       run: yarn install
       run: npm run bootstrap
       
- test:
-
+ - test:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,7 +27,7 @@ jobs:
       run: npm run typecheck
       run: yarn test
       run: npm run integration
-  build:
+  - build:
     needs: setup
     runs-on: ubuntu-latest
 
