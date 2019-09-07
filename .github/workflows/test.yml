@@ -7,23 +7,21 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [12.x]
-
     steps:
     - uses: actions/checkout@v1
-    - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 12.x
     - name: npm install, build, and test
-      run: |
+      - run: |
         yarn install
         npm run bootstrap
         npm run typecheck
         npm run build
         yarn test
         npm run integration
+      - run: npm publish
+        if: github.event.ref === 'refs/heads/master'
+        
       env:
         CI: true
