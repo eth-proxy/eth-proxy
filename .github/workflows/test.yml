@@ -22,8 +22,8 @@ jobs:
         yarn test
         npm run integration
     - name: Publish to npm
-        run: npm publish
-        if: github.event.ref === 'refs/heads/master'
+      run: npm publish
+      if: github.event.ref === 'refs/heads/master'
         
       env:
         CI: true
