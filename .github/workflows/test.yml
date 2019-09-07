@@ -14,14 +14,15 @@ jobs:
       with:
         node-version: 12.x
     - name: npm install, build, and test
-      - run: |
+      run: |
         yarn install
         npm run bootstrap
         npm run typecheck
         npm run build
         yarn test
         npm run integration
-      - run: npm publish
+    - name: Publish to npm
+        run: npm publish
         if: github.event.ref === 'refs/heads/master'
         
       env:
