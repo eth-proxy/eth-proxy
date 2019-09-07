@@ -24,6 +24,8 @@ export function reducer(state = initial, action: actions.Types): State {
       return isLoaded(state) && next === state.value ? state : dataOf(next);
     }
   }
+
+  return state;
 }
 
 export const getSelectors = <T = { [moduleId]: State }>(
