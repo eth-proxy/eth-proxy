@@ -28,7 +28,7 @@ jobs:
       run: npm publish:master
       if: github.event.ref == 'refs/heads/master'
     - name: Publish to npm
-      run: npm publish:feature
+      run: npm run publish:feature
       if: github.event.ref != 'refs/heads/master'
         
       env:
