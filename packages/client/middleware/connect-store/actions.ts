@@ -79,7 +79,7 @@ export function toResponseFailed(
 export const RPC_SUBSCRIPTION = 'rpc_subscription';
 
 export interface RpcSubscriptionAction<T extends RpcSubscriptionEvent> {
-  type: typeof RPC_RESPONSE_ERROR;
+  type: typeof RPC_SUBSCRIPTION;
   method: T['method'];
   payload: T['data']['params']['result'];
 }
@@ -95,7 +95,7 @@ export function toSubscription(method: string, data: SubscriptionData) {
 export type RpcSubscriptionActions = {
   [P in RpcSubscriptionEvent['method']]: RpcSubscriptionAction<
     Extract<RpcSubscriptionEvent, { method: P }>
-  >
+  >;
 };
 
 type RpcActionType<T extends Rpc<any, any> = ClientMethod> =
@@ -106,7 +106,7 @@ type RpcActionType<T extends Rpc<any, any> = ClientMethod> =
 type RpcActions = {
   [P in ClientRequest['method']]: RpcActionType<
     Extract<ClientMethod, { type: P }>
-  >
+  >;
 };
 
 export type Types =
