@@ -24,7 +24,7 @@
     "test:watch": "npm test -- --watch",
     "precommit": "lint-staged",
     "format": "prettier --write \"**/**/*.ts\"",
-    "publish:feature": "npm run lerna publish -- --canary --yes"
+    "publish:feature": "npm run lerna publish -- --canary --yes --force-publish"
   },
   "husky": {
     "hooks": {
