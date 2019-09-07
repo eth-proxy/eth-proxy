@@ -27,9 +27,9 @@ jobs:
     - name: Publish to npm
       run: npm publish:master
       if: github.event.ref == 'refs/heads/master'
+    - uses: johno/actions-yarn@master
     - name: Publish to npm
       if: github.event.ref != 'refs/heads/master'
-      uses: johno/actions-yarn@master
       run: npm run publish:feature
       env:
         NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
