@@ -23,7 +23,9 @@
     "integration": "npm-run-all -r -p testrpc delayed_integration",
     "test:watch": "npm test -- --watch",
     "precommit": "lint-staged",
-    "format": "prettier --write \"**/**/*.ts\""
+    "format": "prettier --write \"**/**/*.ts\"",
+    "publish:feature": "npm run lerna publish -- --canary --yes --force-publish",
+    "publish:master": "npm run lerna publish -- --yes --force-publish"
   },
   "husky": {
     "hooks": {
