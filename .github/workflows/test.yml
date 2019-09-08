@@ -27,6 +27,12 @@ jobs:
     - name: Publish to npm
       run: npm publish:master
       if: github.event.ref == 'refs/heads/master'
+      run: | 
+        echo "//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN" > ~/.npmrc
+        npm run publish:master
+      env:
+        NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Publish to npm
       if: github.event.ref != 'refs/heads/master'
       run: | 
