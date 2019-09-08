@@ -25,5 +25,5 @@ export function createRpc(
     ...methods,
     ...watches,
     ...subscriptions
-  });
+  }) as any;
 }

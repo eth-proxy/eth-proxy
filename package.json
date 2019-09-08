@@ -47,7 +47,7 @@
   "devDependencies": {
     "@types/chai": "^4.2.1",
     "@types/mocha": "^5.2.7",
-    "@types/ramda": "0.25.48",
+    "@types/ramda": "0.26.21",
     "@types/sinon": "7.0.13",
     "bignumber.js": "9.0.0",
     "chai": "^4.2.0",
@@ -67,7 +67,7 @@
     "ts-node": "^8.3.0",
     "tsconfig-paths": "3.8.0",
     "tslint": "5.19.0",
-    "typescript": "~3.4.1",
+    "typescript": "~3.6.2",
     "web3": "0.20.7",
     "tslint-config-prettier": "^1.18.0",
     "@zerollup/ts-transform-paths": "1.7.3"

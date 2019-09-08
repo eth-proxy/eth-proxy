@@ -1,11 +1,11 @@
-import { CurriedFunction2 } from 'ramda';
+import { F } from 'ts-toolbelt';
 import { RpcMethod, RpcRequest } from './rpc-methods';
 import { Observable } from 'rxjs';
 import { BigNumber } from 'bignumber.js';
 
 export type ProviderBound<T> = T extends (provider: Provider) => infer Result
   ? () => Result
-  : T extends CurriedFunction2<Provider, infer A1, infer Result>
+  : T extends F.Curry<(p: Provider, a: infer A1) => infer Result>
   ? (arg: A1) => Result
   : never;
 
