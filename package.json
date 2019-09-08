@@ -25,7 +25,7 @@
     "precommit": "lint-staged",
     "format": "prettier --write \"**/**/*.ts\"",
     "publish:feature": "npm run lerna publish -- --canary --yes --force-publish",
-    "publish:master": "npm run lerna publish -- patch --yes --force-publish"
+    "publish:master": "npm run lerna publish patch -- --yes --force-publish"
   },
   "husky": {
     "hooks": {
