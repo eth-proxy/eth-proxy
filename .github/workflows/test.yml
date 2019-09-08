@@ -25,7 +25,6 @@ jobs:
     - name: build
       run: npm run build
     - name: Publish to npm
-      run: npm publish:master
       if: github.event.ref == 'refs/heads/master'
       run: | 
         echo "//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN" > ~/.npmrc
