@@ -1,8 +1,12 @@
-import { defer, throwError } from 'rxjs';
+import { defer, throwError, of } from 'rxjs';
 import { curry } from 'ramda';
-import { Provider } from 'rpc/interfaces';
+import {
+  Provider,
+  TransactionReceipt,
+  TransactionStatus
+} from 'rpc/interfaces';
 import { getReceipt } from 'rpc/methods';
-import { retryWhen, delay, take, concat } from 'rxjs/operators';
+import { retryWhen, delay, take, concat, mergeMap } from 'rxjs/operators';
 import { isString } from 'rpc/utils';
 
 export type FindReceiptOptions =
@@ -20,13 +24,18 @@ export const findReceipt = curry(
       : options;
 
     return defer(() => getReceipt(provider, txHash)).pipe(
-      retryWhen(err =>
+      retryWhen<TransactionReceipt>(err =>
         err.pipe(
           delay(interval),
           take(attempts),
           concat(throwError('Transaction was not found'))
         )
-      )
+      ),
+      mergeMap(receipt => {
+        return receipt.status === TransactionStatus.Failure
+          ? throwError('Transaction failed onchain')
+          : of(receipt);
+      })
     );
   }
 );
