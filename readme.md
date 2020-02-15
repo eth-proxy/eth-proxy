@@ -96,7 +96,7 @@ ethCall(provider, {
 
 If someone does not like the object options API, there is an alternative provided.
 It might provide better typescript support depending on TS version, and it looks closer to the classes API.
-Detailed explanation of how it works can be found [./packages/client#request-factory](here). 
+Detailed explanation of how it works can be found [here](./packages/client#request-factory). 
 It introduces a little bit of "magic" which might or might not be for your team.
 
 ```
