@@ -1,11 +1,15 @@
-# eth-proxy is a toolset for easy and typesafe integration with Ethereum blockchain. 
+# eth-proxy is a toolset for integration with Ethereum blockchain. 
+
+## What makes it different?
 
 * It is tree-shakable which makes it UI dapps friendly.
 * It has functional API
-* Uses Promises and RxJS observables
-* Typesafe
-* Extendable via middlewares
+* It uses Promises and RxJS observables
+* It is typesafe
+* It is extendable via middlewares
 * It is lazy
+
+<br><br>
 
 ## [@eth-proxy/rpc](./packages/rpc) is like a Ramda for Ethereum [JSON RPC protocol](https://github.com/ethereum/wiki/wiki/json-rpc).
 
@@ -26,12 +30,15 @@ It comes with few common built in middlewares
 [Utilities](./packages/rpc/utils)<br>
 It also exports set of useful utility tools for hashing, units conversion etc
 
+<br><br>
 
 ## [Codegen](./packages/codegen)  generates a typescript declarations from Ethereum solidity contracts ABI. 
 
 ### Available output types are
 * Truffle library [Example](./packages/codegen/example/output/truffle/contracts.ts)
 * @eth-proxy/client [Example](./packages/codegen/example/output/eth-proxy/contracts.ts)
+
+<br><br>
 
 
 ## [Client](./packages/client) is build to make interaction with smart contracts simpler.
